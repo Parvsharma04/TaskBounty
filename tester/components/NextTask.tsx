@@ -15,18 +15,17 @@ interface Task {
   }[];
 }
 
-export const NextTask = ({token, setToken}) => {
+export const NextTask = ({ token, setToken }) => {
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const { publicKey } = useWallet();
 
-
   useEffect(() => {
     async function getTask() {
       try {
-        if( !token ){
-            return new Error("token not found")
+        if (!token) {
+          return new Error("token not found");
         }
         let response = await axios.get(`${BACKEND_URL}/v1/worker/nextTask`, {
           headers: {
@@ -34,12 +33,12 @@ export const NextTask = ({token, setToken}) => {
           },
         });
 
-        console.log(response.data)
-        setCurrentTask(response.data);
-    } catch (error) {
+        console.log(response.data);
+        setCurrentTask(response.data.task);
+      } catch (error) {
         console.error("Error fetching token:", error);
-    }
-    setLoading(false);
+      }
+      setLoading(false);
     }
 
     if (publicKey) {
@@ -73,7 +72,7 @@ export const NextTask = ({token, setToken}) => {
         <div className="pl-4">{submitting && "Submitting..."}</div>
       </div>
       <div className="flex justify-center pt-8">
-        {currentTask.task.options.map((option) => (
+        {currentTask.options.map((option) => (
           <Option
             onSelect={async () => {
               setSubmitting(true);
@@ -86,7 +85,7 @@ export const NextTask = ({token, setToken}) => {
                   },
                   {
                     headers: {
-                      Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure this format is what your backend expects
+                      Authorization: `${localStorage.getItem("token")}`, // Ensure this format is what your backend expects
                     },
                   }
                 );

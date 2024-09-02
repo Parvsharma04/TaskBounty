@@ -10,7 +10,7 @@ import { useState } from "react";
 export const Upload = () => {
     const [images, setImages] = useState<string[]>([]);
     const [title, setTitle] = useState("");
-    const [txSignature, setTxSignature] = useState("");
+    const [txSignature, setTxSignature] = useState("dfsdf");
     const wallet = useWallet();
     const {signMessage} = useWallet();
     const { connection } = useConnection();
