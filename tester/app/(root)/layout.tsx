@@ -1,5 +1,3 @@
-import Appbar from '@/components/Appbar';
-import { NextTask } from '@/components/NextTask';
 import { Wallet } from '@/components/Wallet';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
@@ -21,8 +19,6 @@ export default function RootLayout({
     <html lang='en'>
       <body className={inter.className}>
         <Wallet>
-          <Appbar />
-          <NextTask/>
           {children}
         </Wallet>
       </body>
