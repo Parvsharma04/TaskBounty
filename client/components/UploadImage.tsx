@@ -1,7 +1,7 @@
 "use client"
 import { BACKEND_URL, CLOUDFRONT_URL } from "@/utils";
 import axios from "axios";
-import { useState } from "react"
+import { useState } from "react";
 
 export function UploadImage({ onImageAdded, image }: {
     onImageAdded: (image: string) => void;

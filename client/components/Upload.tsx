@@ -1,17 +1,17 @@
 "use client";
-import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import { UploadImage } from "@/components/UploadImage";
 import { BACKEND_URL } from "@/utils";
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 
 export const Upload = () => {
     const [images, setImages] = useState<string[]>([]);
     const [title, setTitle] = useState("");
     const [txSignature, setTxSignature] = useState("");
-    const { publicKey, sendTransaction } = useWallet();
+    const wallet = useWallet();
     const { connection } = useConnection();
     const router = useRouter();
 
@@ -35,7 +35,7 @@ export const Upload = () => {
 
         const transaction = new Transaction().add(
             SystemProgram.transfer({
-                fromPubkey: publicKey!,
+                fromPubkey: wallet?.publicKey!,
                 toPubkey: new PublicKey("2KeovpYvrgpziaDsq8nbNMP4mc48VNBVXb5arbqrg9Cq"),
                 lamports: 100000000,
             })
@@ -46,7 +46,7 @@ export const Upload = () => {
             value: { blockhash, lastValidBlockHeight }
         } = await connection.getLatestBlockhashAndContext();
 
-        const signature = await sendTransaction(transaction, connection, { minContextSlot });
+        const signature = await wallet?.sendTransaction(transaction, connection, { minContextSlot });
 
         await connection.confirmTransaction({ blockhash, lastValidBlockHeight, signature });
         setTxSignature(signature);
@@ -82,7 +82,7 @@ export const Upload = () => {
                 {txSignature ? "Submit Task" : "Pay 0.1 SOL"}
             </button>
         </div>
-        
+
       </div>
     </div>
 }

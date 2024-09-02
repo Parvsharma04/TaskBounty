@@ -1,5 +1,6 @@
 "use client";
 import { Hero } from "@/components/Hero";
+import { Upload } from "@/components/Upload";
 
 export default function Home() {
 
@@ -7,7 +8,7 @@ export default function Home() {
     <main>
       {/* <Appbar /> */}
       <Hero />
-      {/* <Upload /> */}
+      <Upload />
     </main>
   );
 }
