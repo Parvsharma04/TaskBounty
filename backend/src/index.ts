@@ -2,7 +2,9 @@ import express from "express";
 const app = express();
 import userRouter from "./routes/user";
 import workerRouter from "./routes/worker";
+import cors from "cors";
 
+app.use(cors());
 app.use(express.json());
 app.use("/v1/user", userRouter);
 app.use("/v1/worker", workerRouter);
