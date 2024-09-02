@@ -1,5 +1,4 @@
 'use client';
-
 import { BACKEND_URL } from '@/utils';
 import { useWallet } from '@solana/wallet-adapter-react';
 import axios from 'axios';
@@ -45,7 +44,7 @@ const NavBar = () => {
   return (
     <div className='flex justify-between p-4 border bg-gray-300'>
       <div className='flex items-center space-x-4'>
-        <h3 className='font-serif'>TaskBounty</h3>
+      <h3 className="font-serif text-3xl font-semibold ">TaskBounty</h3>
       </div>
       <div>
         <WalletMultiButtonDynamic>
