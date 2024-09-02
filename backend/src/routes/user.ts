@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { Router } from "express";
+import { response, Router } from "express";
 import jwt from "jsonwebtoken";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
@@ -16,7 +16,7 @@ const s3Client = new S3Client({
   region: "ap-south-1",
 });
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
-const TOTAL_DECIMALS = 10;
+const TOTAL_DECIMALS = 1000;
 
 router.get("/task", authMiddleware, async (req, res) => {
   // @ts-ignore
@@ -150,6 +150,7 @@ router.post("/task", authMiddleware, async (req, res) => {
         user_id: userId,
       },
     });
+    console.log(response);
 
     await tx.option.createMany({
       data: parseData.data.options.map((x) => ({

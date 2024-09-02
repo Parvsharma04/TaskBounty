@@ -29,7 +29,7 @@ const s3Client = new client_s3_1.S3Client({
     region: "ap-south-1",
 });
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
-const TOTAL_DECIMALS = 10;
+const TOTAL_DECIMALS = 1000;
 router.get("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // @ts-ignore
     const taskId = req.query.taskId;
@@ -87,7 +87,6 @@ router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0
     //   },
     // });
     if (!parseData.success) {
-        console.log(parseData.error);
         return res.status(411).json({
             message: "You've sent the wrong inputs",
         });
@@ -139,6 +138,7 @@ router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0
                 user_id: userId,
             },
         });
+        console.log(response);
         yield tx.option.createMany({
             data: parseData.data.options.map((x) => ({
                 image_url: x.imageUrl,

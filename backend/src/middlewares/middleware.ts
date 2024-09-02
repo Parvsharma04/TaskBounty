@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 export const JWT_SECRET = "jwt secret";
+export const WORKER_JWT_SECRET = "worker jwt secret";
 
 export function authMiddleware(
   req: Request,
@@ -31,25 +32,29 @@ export function authMiddleware(
   }
 }
 
-// export function workerMiddleware(req: Request, res: Response, next: NextFunction) {
-//     const authHeader = req.headers["authorization"] ?? "";
+export function workerMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const authHeader = req.headers["authorization"] ?? "";
 
-//     console.log(authHeader);
-//     try {
-//         const decoded = jwt.verify(authHeader, WORKER_JWT_SECRET);
-//         // @ts-ignore
-//         if (decoded.userId) {
-//             // @ts-ignore
-//             req.userId = decoded.userId;
-//             return next();
-//         } else {
-//             return res.status(403).json({
-//                 message: "You are not logged in"
-//             })
-//         }
-//     } catch(e) {
-//         return res.status(403).json({
-//             message: "You are not logged in"
-//         })
-//     }
-// }
+  console.log(authHeader);
+  try {
+    const decoded = jwt.verify(authHeader, WORKER_JWT_SECRET);
+    // @ts-ignore
+    if (decoded.userId) {
+      // @ts-ignore
+      req.userId = decoded.userId;
+      return next();
+    } else {
+      return res.status(403).json({
+        message: "You are not logged in",
+      });
+    }
+  } catch (e) {
+    return res.status(403).json({
+      message: "You are not logged in",
+    });
+  }
+}
