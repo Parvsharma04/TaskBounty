@@ -87,7 +87,6 @@ router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0
     //   },
     // });
     if (!parseData.success) {
-        console.log(parseData.error);
         return res.status(411).json({
             message: "You've sent the wrong inputs",
         });

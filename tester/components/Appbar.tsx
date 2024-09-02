@@ -16,7 +16,7 @@ export const Appbar = () => {
         if (!publicKey) {
             return;
         }
-        const message = new TextEncoder().encode("Sign into mechanical turks as a worker");
+        const message = new TextEncoder().encode("Sign into Task Bounty as a worker");
         const signature = await signMessage?.(message);
         console.log(signature)
         console.log(publicKey)

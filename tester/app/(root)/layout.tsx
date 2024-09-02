@@ -10,7 +10,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const network = WalletAdapterNetwork.Mainnet;
+  const network = WalletAdapterNetwork.Testnet;
 
   // You can also provide a custom RPC endpoint.
   const endpoint = "your_rpc_url";
@@ -19,11 +19,10 @@ export default function RootLayout({
 
   return (
     // <ConnectionProvider endpoint={endpoint}>
-    // <WalletProvider wallets={wallets} autoConnect>
-    // <WalletModalProvider>
-    <div>{children}</div>
-    // </WalletModalProvider>
-    // </WalletProvider>
+    //   <WalletProvider wallets={wallets} autoConnect>
+    //     <WalletModalProvider>{children}</WalletModalProvider>
+    //   </WalletProvider>
     // </ConnectionProvider>
+    <div>{children}</div>
   );
 }
