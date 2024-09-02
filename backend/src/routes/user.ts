@@ -1,8 +1,10 @@
-import { PrismaClient } from "@prisma/client";
-import { response, Router } from "express";
-import jwt from "jsonwebtoken";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client } from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
+import { PrismaClient } from "@prisma/client";
+import { PublicKey } from "@solana/web3.js";
+import { Router } from "express";
+import jwt from "jsonwebtoken";
+import nacl from "tweetnacl";
 import { authMiddleware, JWT_SECRET } from "../middlewares/middleware";
 import { createTaskInput } from "../types";
 
@@ -188,11 +190,15 @@ router.get("/presignedUrl", authMiddleware, async (req, res) => {
 
 //! sigining with wallet
 router.post("/signin", async (req, res) => {
-  const hardCodedWalletAddress = "0x2d209aB8b8BAF8698395a872Ef2d1e355B77BAb8";
-
+  const { publicKey, signature } = req.body;
+  const message = new TextEncoder().encode("verify this to authenticate");
+  const signedString = "verify this to authenticate";
+  const result = nacl.sign.detached.verify(
+    message, new Uint8Array(signature.data), new PublicKey(publicKey).toBytes()
+  )
   const existingUser = await prismaClient.user.findFirst({
     where: {
-      address: hardCodedWalletAddress,
+      address: publicKey,
     },
   });
 
@@ -207,7 +213,7 @@ router.post("/signin", async (req, res) => {
   } else {
     const user = await prismaClient.user.create({
       data: {
-        address: hardCodedWalletAddress,
+        address: publicKey,
       },
     });
 

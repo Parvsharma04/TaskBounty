@@ -12,13 +12,20 @@ const WalletMultiButtonDynamic = dynamic(
 );
 
 const NavBar = () => {
-  const { publicKey, disconnect } = useWallet();
+  const { publicKey, disconnect, signMessage } = useWallet();
 
   useEffect(() => {
     async function getToken() {
       try {
-        let response = await axios.post(`${BACKEND_URL}/v1/user/signin`);
+        if(!publicKey)
+          return;
+        const message = new TextEncoder().encode('verify this to authenticate')
+        const signature = await signMessage?.(message)
+        let response = await axios.post(`${BACKEND_URL}/v1/user/signin`,
+          {signature, publicKey:publicKey?.toString()}
+        );
         localStorage.setItem("token", response.data.token);
+
       } catch (error) {
         console.error('Error fetching token:', error);
       }
