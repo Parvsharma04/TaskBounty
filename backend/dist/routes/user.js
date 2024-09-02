@@ -12,11 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const client_1 = require("@prisma/client");
-const express_1 = require("express");
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const client_s3_1 = require("@aws-sdk/client-s3");
 const s3_presigned_post_1 = require("@aws-sdk/s3-presigned-post");
+const client_1 = require("@prisma/client");
+const web3_js_1 = require("@solana/web3.js");
+const express_1 = require("express");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const tweetnacl_1 = __importDefault(require("tweetnacl"));
 const middleware_1 = require("../middlewares/middleware");
 const types_1 = require("../types");
 const router = (0, express_1.Router)();
@@ -30,6 +32,8 @@ const s3Client = new client_s3_1.S3Client({
 });
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
 const TOTAL_DECIMALS = 1000;
+const connection = new web3_js_1.Connection("https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt" !== null && "https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt" !== void 0 ? "https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt" : "");
+const PARENT_WALLET_ADDRESS = "12AvcKeKRFCn1Gh1qVCzNgumHhXtqnMUpT3xtvoE4fzG";
 router.get("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // @ts-ignore
     const taskId = req.query.taskId;
@@ -76,56 +80,48 @@ router.get("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0,
     });
 }));
 router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d, _e, _f;
     //@ts-ignore
     const userId = req.userId;
     // validate the inputs from the user;
     const body = req.body;
     const parseData = types_1.createTaskInput.safeParse(body);
-    // const user = await prismaClient.user.findFirst({
-    //   where: {
-    //     id: userId,
-    //   },
-    // });
+    const user = yield prismaClient.user.findFirst({
+        where: {
+            id: userId,
+        },
+    });
     if (!parseData.success) {
         return res.status(411).json({
             message: "You've sent the wrong inputs",
         });
     }
-    // const transaction = await connection.getTransaction(
-    //   parseData.data.signature,
-    //   {
-    //     maxSupportedTransactionVersion: 1,
-    //   }
-    // );
-    // console.log(transaction);
-    // if (
-    //   (transaction?.meta?.postBalances[1] ?? 0) -
-    //     (transaction?.meta?.preBalances[1] ?? 0) !==
-    //   100000000
-    // ) {
-    //   return res.status(411).json({
-    //     message: "Transaction signature/amount incorrect",
-    //   });
-    // }
-    // if (
-    //   transaction?.transaction.message.getAccountKeys().get(1)?.toString() !==
-    //   PARENT_WALLET_ADDRESS
-    // ) {
-    //   return res.status(411).json({
-    //     message: "Transaction sent to wrong address",
-    //   });
-    // }
-    // if (
-    //   transaction?.transaction.message.getAccountKeys().get(0)?.toString() !==
-    //   user?.address
-    // ) {
-    //   return res.status(411).json({
-    //     message: "Transaction sent to wrong address",
-    //   });
-    // }
-    // // was this money paid by this user address or a different address?
-    // // parse the signature here to ensure the person has paid 0.1 SOL
-    // // const transaction = Transaction.from(parseData.data.signature);
+    const transaction = yield connection.getTransaction(parseData.data.signature, {
+        maxSupportedTransactionVersion: 1,
+    });
+    console.log(transaction);
+    if (((_b = (_a = transaction === null || transaction === void 0 ? void 0 : transaction.meta) === null || _a === void 0 ? void 0 : _a.postBalances[1]) !== null && _b !== void 0 ? _b : 0) -
+        ((_d = (_c = transaction === null || transaction === void 0 ? void 0 : transaction.meta) === null || _c === void 0 ? void 0 : _c.preBalances[1]) !== null && _d !== void 0 ? _d : 0) !==
+        100000000) {
+        return res.status(411).json({
+            message: "Transaction signature/amount incorrect",
+        });
+    }
+    if (((_e = transaction === null || transaction === void 0 ? void 0 : transaction.transaction.message.getAccountKeys().get(1)) === null || _e === void 0 ? void 0 : _e.toString()) !==
+        PARENT_WALLET_ADDRESS) {
+        return res.status(411).json({
+            message: "Transaction sent to wrong address",
+        });
+    }
+    if (((_f = transaction === null || transaction === void 0 ? void 0 : transaction.transaction.message.getAccountKeys().get(0)) === null || _f === void 0 ? void 0 : _f.toString()) !==
+        (user === null || user === void 0 ? void 0 : user.address)) {
+        return res.status(411).json({
+            message: "Transaction sent to wrong address",
+        });
+    }
+    // was this money paid by this user address or a different address?
+    // parse the signature here to ensure the person has paid 0.1 SOL
+    // const transaction = Transaction.from(parseData.data.signature);
     let response = yield prismaClient.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
         var _a;
         const response = yield tx.task.create({
@@ -169,10 +165,13 @@ router.get("/presignedUrl", middleware_1.authMiddleware, (req, res) => __awaiter
 }));
 //! sigining with wallet
 router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const hardCodedWalletAddress = "0x2d209aB8b8BAF8698395a872Ef2d1e355B77BAb8";
+    const { publicKey, signature } = req.body;
+    const message = new TextEncoder().encode("verify this to authenticate");
+    const signedString = "verify this to authenticate";
+    const result = tweetnacl_1.default.sign.detached.verify(message, new Uint8Array(signature.data), new web3_js_1.PublicKey(publicKey).toBytes());
     const existingUser = yield prismaClient.user.findFirst({
         where: {
-            address: hardCodedWalletAddress,
+            address: publicKey,
         },
     });
     if (existingUser) {
@@ -184,7 +183,7 @@ router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function*
     else {
         const user = yield prismaClient.user.create({
             data: {
-                address: hardCodedWalletAddress,
+                address: publicKey,
             },
         });
         const token = jsonwebtoken_1.default.sign({

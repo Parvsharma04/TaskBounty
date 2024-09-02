@@ -1,7 +1,7 @@
 import { S3Client } from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { PrismaClient } from "@prisma/client";
-import { PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey, Transaction } from "@solana/web3.js";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import nacl from "tweetnacl";
@@ -19,6 +19,11 @@ const s3Client = new S3Client({
 });
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
 const TOTAL_DECIMALS = 1000;
+const connection = new Connection(
+  "https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt" ??
+    ""
+);
+const PARENT_WALLET_ADDRESS = "12AvcKeKRFCn1Gh1qVCzNgumHhXtqnMUpT3xtvoE4fzG";
 
 router.get("/task", authMiddleware, async (req, res) => {
   // @ts-ignore
@@ -88,11 +93,11 @@ router.post("/task", authMiddleware, async (req, res) => {
 
   const parseData = createTaskInput.safeParse(body);
 
-  // const user = await prismaClient.user.findFirst({
-  //   where: {
-  //     id: userId,
-  //   },
-  // });
+  const user = await prismaClient.user.findFirst({
+    where: {
+      id: userId,
+    },
+  });
 
   if (!parseData.success) {
     return res.status(411).json({
@@ -100,46 +105,46 @@ router.post("/task", authMiddleware, async (req, res) => {
     });
   }
 
-  // const transaction = await connection.getTransaction(
-  //   parseData.data.signature,
-  //   {
-  //     maxSupportedTransactionVersion: 1,
-  //   }
-  // );
+  const transaction = await connection.getTransaction(
+    parseData.data.signature,
+    {
+      maxSupportedTransactionVersion: 1,
+    }
+  );
 
-  // console.log(transaction);
+  console.log(transaction);
 
-  // if (
-  //   (transaction?.meta?.postBalances[1] ?? 0) -
-  //     (transaction?.meta?.preBalances[1] ?? 0) !==
-  //   100000000
-  // ) {
-  //   return res.status(411).json({
-  //     message: "Transaction signature/amount incorrect",
-  //   });
-  // }
+  if (
+    (transaction?.meta?.postBalances[1] ?? 0) -
+      (transaction?.meta?.preBalances[1] ?? 0) !==
+    100000000
+  ) {
+    return res.status(411).json({
+      message: "Transaction signature/amount incorrect",
+    });
+  }
 
-  // if (
-  //   transaction?.transaction.message.getAccountKeys().get(1)?.toString() !==
-  //   PARENT_WALLET_ADDRESS
-  // ) {
-  //   return res.status(411).json({
-  //     message: "Transaction sent to wrong address",
-  //   });
-  // }
+  if (
+    transaction?.transaction.message.getAccountKeys().get(1)?.toString() !==
+    PARENT_WALLET_ADDRESS
+  ) {
+    return res.status(411).json({
+      message: "Transaction sent to wrong address",
+    });
+  }
 
-  // if (
-  //   transaction?.transaction.message.getAccountKeys().get(0)?.toString() !==
-  //   user?.address
-  // ) {
-  //   return res.status(411).json({
-  //     message: "Transaction sent to wrong address",
-  //   });
-  // }
-  // // was this money paid by this user address or a different address?
+  if (
+    transaction?.transaction.message.getAccountKeys().get(0)?.toString() !==
+    user?.address
+  ) {
+    return res.status(411).json({
+      message: "Transaction sent to wrong address",
+    });
+  }
+  // was this money paid by this user address or a different address?
 
-  // // parse the signature here to ensure the person has paid 0.1 SOL
-  // // const transaction = Transaction.from(parseData.data.signature);
+  // parse the signature here to ensure the person has paid 0.1 SOL
+  // const transaction = Transaction.from(parseData.data.signature);
 
   let response = await prismaClient.$transaction(async (tx) => {
     const response = await tx.task.create({
@@ -194,8 +199,10 @@ router.post("/signin", async (req, res) => {
   const message = new TextEncoder().encode("verify this to authenticate");
   const signedString = "verify this to authenticate";
   const result = nacl.sign.detached.verify(
-    message, new Uint8Array(signature.data), new PublicKey(publicKey).toBytes()
-  )
+    message,
+    new Uint8Array(signature.data),
+    new PublicKey(publicKey).toBytes()
+  );
   const existingUser = await prismaClient.user.findFirst({
     where: {
       address: publicKey,
