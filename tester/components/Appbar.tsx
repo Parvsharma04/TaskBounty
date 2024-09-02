@@ -1,54 +1,31 @@
-"use client";
-import { BACKEND_URL } from '@/utils';
+'use client';
+
 import { useWallet } from '@solana/wallet-adapter-react';
-import {
-    WalletDisconnectButton,
-    WalletMultiButton
-} from '@solana/wallet-adapter-react-ui';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 
-export const Appbar = () => {
-    const { publicKey , signMessage} = useWallet();
-    const [balance, setBalance] = useState(0);
+const WalletMultiButtonDynamic = dynamic(
+  async () =>
+    (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+  { ssr: false }
+);
 
-    async function signAndSend() {
-        if (!publicKey) {
-            return;
-        }
-        const message = new TextEncoder().encode("Sign into Task Bounty as a worker");
-        const signature = await signMessage?.(message);
-        console.log(signature)
-        console.log(publicKey)
-        const response = await axios.post(`${BACKEND_URL}/v1/worker/signin`, {
-            signature,
-            publicKey: publicKey?.toString()
-        });
+const NavBar = () => {
+  const wallet = useWallet();
 
-        setBalance(response.data.amount)
-
-        localStorage.setItem("token", response.data.token);
-    }
-
-    useEffect(() => {
-        signAndSend()
-    }, [publicKey]);
-
-    return <div className="flex justify-between border-b pb-2 pt-2">
-        <div className="text-2xl pl-4 flex justify-center pt-2">
-            TaskBounty
-        </div>
-        <div className="text-xl pr-4 flex" >
-            <button onClick={() => {
-                axios.post(`${BACKEND_URL}/v1/worker/payout`, {
-
-                }, {
-                    headers: {
-                        "Authorization": localStorage.getItem("token")
-                    }
-                })
-            }} className="m-2 mr-4 text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Pay me out ({balance}) SOL</button>
-            {publicKey  ? <WalletDisconnectButton /> : <WalletMultiButton />}
-        </div>
+  return (
+    <div className='flex justify-between p-4 border bg-gray-300'>
+      <div className='flex items-center space-x-4'>
+        <h3 className='font-serif text-3xl font-semibold'>TaskBounty</h3>
+      </div>
+      <div>
+        <WalletMultiButtonDynamic>
+          {wallet.publicKey
+            ? `${wallet.publicKey.toBase58().substring(0, 7)}...`
+            : 'Connect Wallet'}
+        </WalletMultiButtonDynamic>
+      </div>
     </div>
-}
+  );
+};
+
+export default NavBar;

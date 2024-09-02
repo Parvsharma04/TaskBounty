@@ -1,18 +1,15 @@
 "use client";
-import {Appbar} from "@/components/Appbar";
-import {Hero} from "@/components/Hero";
-import { Upload } from "@/components/Upload";
-import { UploadImage } from "@/components/UploadImage";
-import Image from "next/image";
-import { useState } from "react";
+import { Hero } from "@/components/Hero";
+import WalletTest from '@/components/WalletTest';
 
 export default function Home() {
 
   return (
     <main>
-      <Appbar />
+      {/* <Appbar /> */}
       <Hero />
-      <Upload />
+      <WalletTest/>
+      {/* <Upload /> */}
     </main>
   );
 }

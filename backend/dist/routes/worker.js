@@ -98,6 +98,21 @@ router.get("/balance", middleware_1.workerMiddleware, (req, res) => __awaiter(vo
         lockedAmount: worker === null || worker === void 0 ? void 0 : worker.pending_amount,
     });
 }));
+router.post("/payout", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //@ts-ignore
+    const userId = req.userId;
+    const worker = yield prismaClient.worker.findFirst({
+        where: {
+            id: Number(userId),
+        },
+    });
+    if (!worker) {
+        return res.status(403).json({
+            message: "Worker not found",
+        });
+    }
+    const address = worker.address;
+}));
 //! sigining with wallet
 router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const hardCodedWalletAddress = "0x2d209aB8b8BAF8698395a872Ef2d1e355B77BAb8xdf";
