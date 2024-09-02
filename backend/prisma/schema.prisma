@@ -14,35 +14,35 @@ datasource db {
 }
 
 model User {
-  id      Int    @id @default(autoincrement())
-  address String @unique
+  id      Int       @id @default(autoincrement())
+  address String    @unique
   tasks   Task[]
+  payouts Payouts[]
 }
 
 model Worker {
   id             Int          @id @default(autoincrement())
   address        String       @unique
   submissions    Submission[]
-  balance_id     Int
-  pending_amount Int
+  pending_amount Int // amount in lamports (* 10^9)
   locked_amount  Int
 }
 
 model Task {
   id          Int          @id @default(autoincrement())
-  title       String
+  title       String?      @default("Select the most clickable thumbnail")
   options     Option[]
   user_id     Int
   signature   String
-  amount      String
+  amount      Int
+  done        Boolean      @default(false)
   user        User         @relation(fields: [user_id], references: [id])
   submissions Submission[]
 }
 
 model Option {
   id          Int          @id @default(autoincrement())
-  title       String
-  option_id   Int
+  image_url   String
   task_id     Int
   task        Task         @relation(fields: [task_id], references: [id])
   submissions Submission[]
@@ -56,5 +56,22 @@ model Submission {
   option    Option @relation(fields: [option_id], references: [id])
   task_id   Int
   task      Task   @relation(fields: [task_id], references: [id])
-  amount    String
+  amount    Int
+
+  @@unique([worker_id, task_id])
+}
+
+model Payouts {
+  id        Int       @id @default(autoincrement())
+  user_id   Int
+  user      User      @relation(fields: [user_id], references: [id])
+  amount    Int
+  signature String
+  status    TxnStatus
+}
+
+enum TxnStatus {
+  Processing
+  Success
+  Failure
 }
