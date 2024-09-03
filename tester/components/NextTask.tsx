@@ -15,7 +15,7 @@ interface Task {
   }[];
 }
 
-export const NextTask = ({ token, setToken }) => {
+export const NextTask = ({ token }) => {
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -49,7 +49,13 @@ export const NextTask = ({ token, setToken }) => {
   if (loading) {
     return (
       <div className="h-screen flex justify-center flex-col">
-        <div className="w-full flex justify-center text-2xl">Loading...</div>
+        {token ? (
+          <div className="w-full flex justify-center text-2xl">Loading...</div>
+        ) : (
+          <div className="w-full flex justify-center text-2xl">
+            Please connect your wallet
+          </div>
+        )}
       </div>
     );
   }

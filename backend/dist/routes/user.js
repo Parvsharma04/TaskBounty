@@ -83,69 +83,84 @@ router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0
     var _a, _b, _c, _d, _e, _f;
     //@ts-ignore
     const userId = req.userId;
-    // validate the inputs from the user;
     const body = req.body;
+    // Validate inputs using zod schema
     const parseData = types_1.createTaskInput.safeParse(body);
+    if (!parseData.success) {
+        return res.status(411).json({
+            message: "Invalid input data",
+        });
+    }
     const user = yield prismaClient.user.findFirst({
         where: {
             id: userId,
         },
     });
-    if (!parseData.success) {
+    if (!user) {
         return res.status(411).json({
-            message: "You've sent the wrong inputs",
+            message: "User not found",
         });
     }
     const transaction = yield connection.getTransaction(parseData.data.signature, {
         maxSupportedTransactionVersion: 1,
     });
-    console.log(transaction);
-    if (((_b = (_a = transaction === null || transaction === void 0 ? void 0 : transaction.meta) === null || _a === void 0 ? void 0 : _a.postBalances[1]) !== null && _b !== void 0 ? _b : 0) -
-        ((_d = (_c = transaction === null || transaction === void 0 ? void 0 : transaction.meta) === null || _c === void 0 ? void 0 : _c.preBalances[1]) !== null && _d !== void 0 ? _d : 0) !==
-        100000000) {
+    if (!transaction) {
         return res.status(411).json({
-            message: "Transaction signature/amount incorrect",
+            message: "Transaction not found",
         });
     }
-    if (((_e = transaction === null || transaction === void 0 ? void 0 : transaction.transaction.message.getAccountKeys().get(1)) === null || _e === void 0 ? void 0 : _e.toString()) !==
-        PARENT_WALLET_ADDRESS) {
+    const amountTransferred = ((_b = (_a = transaction.meta) === null || _a === void 0 ? void 0 : _a.postBalances[1]) !== null && _b !== void 0 ? _b : 0) -
+        ((_d = (_c = transaction.meta) === null || _c === void 0 ? void 0 : _c.preBalances[1]) !== null && _d !== void 0 ? _d : 0);
+    if (amountTransferred !== 100000000) {
         return res.status(411).json({
-            message: "Transaction sent to wrong address",
+            message: "Transaction amount is incorrect. Expected 0.1 SOL",
         });
     }
-    if (((_f = transaction === null || transaction === void 0 ? void 0 : transaction.transaction.message.getAccountKeys().get(0)) === null || _f === void 0 ? void 0 : _f.toString()) !==
-        (user === null || user === void 0 ? void 0 : user.address)) {
+    const recipientAddress = (_e = transaction.transaction.message
+        .getAccountKeys()
+        .get(1)) === null || _e === void 0 ? void 0 : _e.toString();
+    const senderAddress = (_f = transaction.transaction.message
+        .getAccountKeys()
+        .get(0)) === null || _f === void 0 ? void 0 : _f.toString();
+    if (recipientAddress !== PARENT_WALLET_ADDRESS) {
         return res.status(411).json({
-            message: "Transaction sent to wrong address",
+            message: "Transaction sent to the wrong address",
         });
     }
-    // was this money paid by this user address or a different address?
-    // parse the signature here to ensure the person has paid 0.1 SOL
-    // const transaction = Transaction.from(parseData.data.signature);
-    let response = yield prismaClient.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a;
-        const response = yield tx.task.create({
-            data: {
-                title: (_a = parseData.data.title) !== null && _a !== void 0 ? _a : DEFAULT_TITLE,
-                amount: 0.1 * TOTAL_DECIMALS,
-                // amount: "1",
-                //TODO: Signature should be unique in the table else people can reuse a signature
-                signature: parseData.data.signature,
-                user_id: userId,
-            },
+    if (senderAddress !== user.address) {
+        return res.status(411).json({
+            message: "Transaction sent from the wrong address",
         });
-        console.log(response);
-        yield tx.option.createMany({
-            data: parseData.data.options.map((x) => ({
-                image_url: x.imageUrl,
-                task_id: response.id,
-            })),
+    }
+    try {
+        const response = yield prismaClient.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+            var _a;
+            const task = yield tx.task.create({
+                data: {
+                    title: (_a = parseData.data.title) !== null && _a !== void 0 ? _a : DEFAULT_TITLE,
+                    amount: 0.1 * TOTAL_DECIMALS,
+                    signature: parseData.data.signature,
+                    user_id: userId,
+                },
+            });
+            yield tx.option.createMany({
+                data: parseData.data.options.map((x) => ({
+                    image_url: x.imageUrl,
+                    task_id: task.id,
+                })),
+            });
+            return task;
+        }));
+        res.json({
+            id: response.id,
         });
-        return response;
-    }));
-    res.json({
-        id: response.id,
-    });
+    }
+    catch (error) {
+        console.error("Error creating task:", error);
+        res.status(500).json({
+            message: "Internal server error",
+        });
+    }
 }));
 router.get("/presignedUrl", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // @ts-ignore

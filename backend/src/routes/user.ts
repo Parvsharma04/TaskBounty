@@ -88,10 +88,15 @@ router.get("/task", authMiddleware, async (req, res) => {
 router.post("/task", authMiddleware, async (req, res) => {
   //@ts-ignore
   const userId = req.userId;
-  // validate the inputs from the user;
   const body = req.body;
 
+  // Validate inputs using zod schema
   const parseData = createTaskInput.safeParse(body);
+  if (!parseData.success) {
+    return res.status(411).json({
+      message: "Invalid input data",
+    });
+  }
 
   const user = await prismaClient.user.findFirst({
     where: {
@@ -99,9 +104,9 @@ router.post("/task", authMiddleware, async (req, res) => {
     },
   });
 
-  if (!parseData.success) {
+  if (!user) {
     return res.status(411).json({
-      message: "You've sent the wrong inputs",
+      message: "User not found",
     });
   }
 
@@ -112,66 +117,73 @@ router.post("/task", authMiddleware, async (req, res) => {
     }
   );
 
-  console.log(transaction);
-
-  if (
-    (transaction?.meta?.postBalances[1] ?? 0) -
-      (transaction?.meta?.preBalances[1] ?? 0) !==
-    100000000
-  ) {
+  if (!transaction) {
     return res.status(411).json({
-      message: "Transaction signature/amount incorrect",
+      message: "Transaction not found",
     });
   }
 
-  if (
-    transaction?.transaction.message.getAccountKeys().get(1)?.toString() !==
-    PARENT_WALLET_ADDRESS
-  ) {
+  const amountTransferred =
+    (transaction.meta?.postBalances[1] ?? 0) -
+    (transaction.meta?.preBalances[1] ?? 0);
+
+  if (amountTransferred !== 100000000) {
     return res.status(411).json({
-      message: "Transaction sent to wrong address",
+      message: "Transaction amount is incorrect. Expected 0.1 SOL",
     });
   }
 
-  if (
-    transaction?.transaction.message.getAccountKeys().get(0)?.toString() !==
-    user?.address
-  ) {
+  const recipientAddress = transaction.transaction.message
+    .getAccountKeys()
+    .get(1)
+    ?.toString();
+  const senderAddress = transaction.transaction.message
+    .getAccountKeys()
+    .get(0)
+    ?.toString();
+
+  if (recipientAddress !== PARENT_WALLET_ADDRESS) {
     return res.status(411).json({
-      message: "Transaction sent to wrong address",
+      message: "Transaction sent to the wrong address",
     });
   }
-  // was this money paid by this user address or a different address?
 
-  // parse the signature here to ensure the person has paid 0.1 SOL
-  // const transaction = Transaction.from(parseData.data.signature);
-
-  let response = await prismaClient.$transaction(async (tx) => {
-    const response = await tx.task.create({
-      data: {
-        title: parseData.data.title ?? DEFAULT_TITLE,
-        amount: 0.1 * TOTAL_DECIMALS,
-        // amount: "1",
-        //TODO: Signature should be unique in the table else people can reuse a signature
-        signature: parseData.data.signature,
-        user_id: userId,
-      },
+  if (senderAddress !== user.address) {
+    return res.status(411).json({
+      message: "Transaction sent from the wrong address",
     });
-    console.log(response);
+  }
 
-    await tx.option.createMany({
-      data: parseData.data.options.map((x) => ({
-        image_url: x.imageUrl,
-        task_id: response.id,
-      })),
+  try {
+    const response = await prismaClient.$transaction(async (tx) => {
+      const task = await tx.task.create({
+        data: {
+          title: parseData.data.title ?? DEFAULT_TITLE,
+          amount: 0.1 * TOTAL_DECIMALS,
+          signature: parseData.data.signature,
+          user_id: userId,
+        },
+      });
+
+      await tx.option.createMany({
+        data: parseData.data.options.map((x) => ({
+          image_url: x.imageUrl,
+          task_id: task.id,
+        })),
+      });
+
+      return task;
     });
 
-    return response;
-  });
-
-  res.json({
-    id: response.id,
-  });
+    res.json({
+      id: response.id,
+    });
+  } catch (error) {
+    console.error("Error creating task:", error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
 });
 
 router.get("/presignedUrl", authMiddleware, async (req, res) => {

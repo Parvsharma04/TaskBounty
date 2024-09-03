@@ -54,12 +54,13 @@ export const Upload = () => {
       minContextSlot,
     });
 
-    await connection.confirmTransaction({
-      blockhash,
-      lastValidBlockHeight,
-      signature,
-    });
     setTxSignature(signature);
+
+    // await connection.confirmTransaction({
+    //   blockhash,
+    //   lastValidBlockHeight,
+    //   signature,
+    // });
   }
 
   return (
@@ -69,7 +70,7 @@ export const Upload = () => {
           Create a task
         </div>
 
-        <label className="pl-4 block mt-2 text-md font-medium text-gray-900 text-black">
+        <label className="pl-4 block mt-2 text-md font-medium text-gray-900">
           Task details
         </label>
 
@@ -84,7 +85,7 @@ export const Upload = () => {
           required
         />
 
-        <label className="pl-4 block mt-8 text-md font-medium text-gray-900 text-black">
+        <label className="pl-4 block mt-8 text-md font-medium text-gray-900">
           Add Images
         </label>
         <div className="flex justify-center pt-4 max-w-screen-lg">
