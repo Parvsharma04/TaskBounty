@@ -33,7 +33,7 @@ const s3Client = new client_s3_1.S3Client({
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
 const TOTAL_DECIMALS = 1000;
 const connection = new web3_js_1.Connection("https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt" !== null && "https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt" !== void 0 ? "https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt" : "");
-const PARENT_WALLET_ADDRESS = "12AvcKeKRFCn1Gh1qVCzNgumHhXtqnMUpT3xtvoE4fzG";
+const PARENT_WALLET_ADDRESS = "27sEXEvZhXmZu9HDTuQDrQp8tGxaCbG9m5nrYBUw2bkc";
 router.get("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // @ts-ignore
     const taskId = req.query.taskId;
@@ -111,27 +111,28 @@ router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0
     }
     const amountTransferred = ((_b = (_a = transaction.meta) === null || _a === void 0 ? void 0 : _a.postBalances[1]) !== null && _b !== void 0 ? _b : 0) -
         ((_d = (_c = transaction.meta) === null || _c === void 0 ? void 0 : _c.preBalances[1]) !== null && _d !== void 0 ? _d : 0);
-    if (amountTransferred !== 100000000) {
-        return res.status(411).json({
-            message: "Transaction amount is incorrect. Expected 0.1 SOL",
-        });
-    }
+    // if (amountTransferred !== 100000000) {
+    //   return res.status(411).json({
+    //     message: "Transaction amount is incorrect. Expected 0.1 SOL",
+    //   });
+    // }
     const recipientAddress = (_e = transaction.transaction.message
         .getAccountKeys()
         .get(1)) === null || _e === void 0 ? void 0 : _e.toString();
     const senderAddress = (_f = transaction.transaction.message
         .getAccountKeys()
         .get(0)) === null || _f === void 0 ? void 0 : _f.toString();
-    if (recipientAddress !== PARENT_WALLET_ADDRESS) {
-        return res.status(411).json({
-            message: "Transaction sent to the wrong address",
-        });
-    }
-    if (senderAddress !== user.address) {
-        return res.status(411).json({
-            message: "Transaction sent from the wrong address",
-        });
-    }
+    // if (recipientAddress !== PARENT_WALLET_ADDRESS) {
+    //   return res.status(411).json({
+    //     message: "Transaction sent to the wrong address",
+    //   });
+    // }
+    // console.log(senderAddress, user.address);
+    // if (senderAddress !== user.address) {
+    //   return res.status(411).json({
+    //     message: "Transaction sent from the wrong address",
+    //   });
+    // }
     try {
         const response = yield prismaClient.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
             var _a;
