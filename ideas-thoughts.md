@@ -6,6 +6,7 @@
   - Set a counter allowing the client to input how many testers they want contributing to the subject.
 
 - **Flowbite** for components.
+- **AutoAnimate** for options components.
 
 ### Advanced Features:
 - Store the data on the blockchain using **IPFS** or **Filecoin**.
