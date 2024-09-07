@@ -1,13 +1,14 @@
 "use client";
+import NavBar from "@/components/Appbar";
 import { Hero } from "@/components/Hero";
-import { Upload } from "@/components/Upload";
+// import { Upload } from "@/components/Upload";
 
 export default function Home() {
   return (
     <main>
-      {/* <Appbar /> */}
+      <NavBar />
       <Hero />
-      <Upload />
+      {/* <Upload /> */}
     </main>
   );
 }

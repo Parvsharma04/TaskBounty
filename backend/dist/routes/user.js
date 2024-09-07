@@ -116,12 +116,14 @@ router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0
     //     message: "Transaction amount is incorrect. Expected 0.1 SOL",
     //   });
     // }
+    console.log(transaction.transaction.message.getAccountKeys());
     const recipientAddress = (_e = transaction.transaction.message
         .getAccountKeys()
         .get(1)) === null || _e === void 0 ? void 0 : _e.toString();
     const senderAddress = (_f = transaction.transaction.message
         .getAccountKeys()
         .get(0)) === null || _f === void 0 ? void 0 : _f.toString();
+    console.log(PARENT_WALLET_ADDRESS, recipientAddress, senderAddress);
     // if (recipientAddress !== PARENT_WALLET_ADDRESS) {
     //   return res.status(411).json({
     //     message: "Transaction sent to the wrong address",

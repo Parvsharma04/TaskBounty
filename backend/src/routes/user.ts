@@ -133,6 +133,8 @@ router.post("/task", authMiddleware, async (req, res) => {
   //   });
   // }
 
+  console.log(transaction.transaction.message.getAccountKeys());
+
   const recipientAddress = transaction.transaction.message
     .getAccountKeys()
     .get(1)
@@ -141,6 +143,8 @@ router.post("/task", authMiddleware, async (req, res) => {
     .getAccountKeys()
     .get(0)
     ?.toString();
+
+  console.log(PARENT_WALLET_ADDRESS, recipientAddress, senderAddress);
 
   // if (recipientAddress !== PARENT_WALLET_ADDRESS) {
   //   return res.status(411).json({
