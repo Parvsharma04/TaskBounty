@@ -29,7 +29,7 @@ This project is a decentralized application (DApp) that enables users to create 
 
 - **Blockchain**: Ethereum
 - **Smart Contracts**: Solidity
-- **Frontend**: React.js, Web3.js
+- **Frontend**: Next.js, Web3.js
 - **Backend**: Node.js, Express.js
 - **Database**: IPFS for decentralized storage
 - **Wallet Integration**: MetaMask
