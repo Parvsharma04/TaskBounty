@@ -14,7 +14,7 @@
     "@aws-sdk/client-s3": "^3.637.0",
     "@aws-sdk/s3-presigned-post": "^3.637.0",
     "@aws-sdk/s3-request-presigner": "^3.637.0",
-    "@prisma/client": "^5.19.0",
+    "@prisma/client": "^5.19.1",
     "@solana/web3.js": "^1.95.3",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
@@ -23,8 +23,10 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
-    "prisma": "^5.19.0",
     "tweetnacl": "^1.0.3",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "prisma": "^5.19.1"
   }
 }
