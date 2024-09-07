@@ -8,6 +8,7 @@ const app = (0, express_1.default)();
 const user_1 = __importDefault(require("./routes/user"));
 const worker_1 = __importDefault(require("./routes/worker"));
 const cors_1 = __importDefault(require("cors"));
+require("dotenv/config");
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use("/v1/user", user_1.default);

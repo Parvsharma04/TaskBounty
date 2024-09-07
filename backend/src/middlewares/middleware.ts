@@ -1,9 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-// import { JWT_SECRET, WORKER_JWT_SECRET } from "./config";
+import "dotenv/config";
 import jwt from "jsonwebtoken";
-
-export const JWT_SECRET = "jwt secret";
-export const WORKER_JWT_SECRET = "worker jwt secret";
 
 export function authMiddleware(
   req: Request,
@@ -13,8 +10,8 @@ export function authMiddleware(
   const authHeader = req.headers["authorization"] ?? "";
 
   try {
-    const decoded = jwt.verify(authHeader, JWT_SECRET);
-    console.log(decoded);
+    const decoded = jwt.verify(authHeader, process.env.JWT_SECRET as string);
+    // console.log(decoded);
     // @ts-ignore
     if (decoded.userId) {
       // @ts-ignore
@@ -39,9 +36,12 @@ export function workerMiddleware(
 ) {
   const authHeader = req.headers["authorization"] ?? "";
 
-  console.log(authHeader);
+  // console.log("authHeader = ", authHeader);
   try {
-    const decoded = jwt.verify(authHeader, WORKER_JWT_SECRET);
+    const decoded = jwt.verify(
+      authHeader,
+      process.env.WORKER_JWT_SECRET as string
+    );
     // @ts-ignore
     if (decoded.userId) {
       // @ts-ignore

@@ -3,6 +3,7 @@ const app = express();
 import userRouter from "./routes/user";
 import workerRouter from "./routes/worker";
 import cors from "cors";
+import "dotenv/config";
 
 app.use(cors());
 app.use(express.json());

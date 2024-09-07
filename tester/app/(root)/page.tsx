@@ -1,6 +1,6 @@
 "use client";
 
-import Appbar from "@/components/Appbar";
+import NavBar from "@/components/Appbar";
 import { NextTask } from "@/components/NextTask";
 import { useState } from "react";
 
@@ -9,7 +9,7 @@ export default function Home() {
 
   return (
     <div>
-      <Appbar setToken={setToken} />
+      <NavBar setToken={setToken} />
       <NextTask token={token} />
     </div>
   );

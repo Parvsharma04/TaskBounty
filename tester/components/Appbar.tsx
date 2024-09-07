@@ -12,7 +12,7 @@ const WalletMultiButtonDynamic = dynamic(
   { ssr: false }
 );
 
-const NavBar = ({setToken}: any) => {
+const NavBar = ({ setToken }: any) => {
   const { publicKey, disconnect } = useWallet();
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const NavBar = ({setToken}: any) => {
       try {
         let response = await axios.post(`${BACKEND_URL}/v1/worker/signin`);
         localStorage.setItem("token", response.data.token);
-        setToken(response.data.token)
+        setToken(response.data.token);
       } catch (error) {
         console.error("Error fetching token:", error);
       }
@@ -28,11 +28,7 @@ const NavBar = ({setToken}: any) => {
 
     if (publicKey) {
       getToken();
-    }
-  }, [publicKey]);
-
-  useEffect(() => {
-    if (!publicKey) {
+    } else {
       localStorage.removeItem("token");
     }
   }, [publicKey]);

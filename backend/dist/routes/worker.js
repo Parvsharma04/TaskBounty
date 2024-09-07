@@ -60,7 +60,7 @@ router.post("/submission", middleware_1.workerMiddleware, (req, res) => __awaite
                     amount: Number(amount),
                 },
             });
-            console.log(submission);
+            // console.log(submission);
             yield tx.worker.update({
                 where: {
                     id: userId,
@@ -98,6 +98,7 @@ router.get("/balance", middleware_1.workerMiddleware, (req, res) => __awaiter(vo
         lockedAmount: worker === null || worker === void 0 ? void 0 : worker.pending_amount,
     });
 }));
+//! payout logic is pending
 router.post("/payout", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const userId = req.userId;
@@ -124,7 +125,7 @@ router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function*
     if (existingUser) {
         const token = jsonwebtoken_1.default.sign({
             userId: existingUser.id,
-        }, middleware_1.WORKER_JWT_SECRET);
+        }, process.env.WORKER_JWT_SECRET);
         res.json({ token });
     }
     else {
@@ -137,7 +138,7 @@ router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function*
         });
         const token = jsonwebtoken_1.default.sign({
             userId: user.id,
-        }, middleware_1.WORKER_JWT_SECRET);
+        }, process.env.WORKER_JWT_SECRET);
         res.json({ token });
     }
 }));

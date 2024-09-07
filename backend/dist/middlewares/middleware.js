@@ -3,19 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WORKER_JWT_SECRET = exports.JWT_SECRET = void 0;
 exports.authMiddleware = authMiddleware;
 exports.workerMiddleware = workerMiddleware;
-// import { JWT_SECRET, WORKER_JWT_SECRET } from "./config";
+require("dotenv/config");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-exports.JWT_SECRET = "jwt secret";
-exports.WORKER_JWT_SECRET = "worker jwt secret";
 function authMiddleware(req, res, next) {
     var _a;
     const authHeader = (_a = req.headers["authorization"]) !== null && _a !== void 0 ? _a : "";
     try {
-        const decoded = jsonwebtoken_1.default.verify(authHeader, exports.JWT_SECRET);
-        console.log(decoded);
+        const decoded = jsonwebtoken_1.default.verify(authHeader, process.env.JWT_SECRET);
+        // console.log(decoded);
         // @ts-ignore
         if (decoded.userId) {
             // @ts-ignore
@@ -37,9 +34,9 @@ function authMiddleware(req, res, next) {
 function workerMiddleware(req, res, next) {
     var _a;
     const authHeader = (_a = req.headers["authorization"]) !== null && _a !== void 0 ? _a : "";
-    console.log(authHeader);
+    // console.log("authHeader = ", authHeader);
     try {
-        const decoded = jsonwebtoken_1.default.verify(authHeader, exports.WORKER_JWT_SECRET);
+        const decoded = jsonwebtoken_1.default.verify(authHeader, process.env.WORKER_JWT_SECRET);
         // @ts-ignore
         if (decoded.userId) {
             // @ts-ignore

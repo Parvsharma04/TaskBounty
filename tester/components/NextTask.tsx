@@ -15,7 +15,7 @@ interface Task {
   }[];
 }
 
-export const NextTask = ({ token }) => {
+export const NextTask = ({ token }: { token: string }) => {
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -29,7 +29,7 @@ export const NextTask = ({ token }) => {
         }
         let response = await axios.get(`${BACKEND_URL}/v1/worker/nextTask`, {
           headers: {
-            Authorization: token,
+            Authorization: token || localStorage.getItem("token"),
           },
         });
 
@@ -44,7 +44,7 @@ export const NextTask = ({ token }) => {
     if (publicKey) {
       getTask();
     }
-  }, [publicKey]);
+  }, [publicKey, token]);
 
   if (loading) {
     return (

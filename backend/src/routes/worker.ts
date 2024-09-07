@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
-import { workerMiddleware, WORKER_JWT_SECRET } from "../middlewares/middleware";
+import { workerMiddleware } from "../middlewares/middleware";
 import { createSubmissionInput, createTaskInput } from "../types";
 import { getNextTask } from "../db";
 
@@ -52,7 +52,7 @@ router.post("/submission", workerMiddleware, async (req, res) => {
           amount: Number(amount),
         },
       });
-      console.log(submission);
+      // console.log(submission);
 
       await tx.worker.update({
         where: {
@@ -94,6 +94,8 @@ router.get("/balance", workerMiddleware, async (req, res) => {
     lockedAmount: worker?.pending_amount,
   });
 });
+
+//! payout logic is pending
 router.post("/payout", async (req, res) => {
   //@ts-ignore
   const userId: string = req.userId;
@@ -129,7 +131,7 @@ router.post("/signin", async (req, res) => {
       {
         userId: existingUser.id,
       },
-      WORKER_JWT_SECRET
+      process.env.WORKER_JWT_SECRET as string
     );
     res.json({ token });
   } else {
@@ -145,7 +147,7 @@ router.post("/signin", async (req, res) => {
       {
         userId: user.id,
       },
-      WORKER_JWT_SECRET
+      process.env.WORKER_JWT_SECRET as string
     );
 
     res.json({ token });

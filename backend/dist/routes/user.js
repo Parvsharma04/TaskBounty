@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("dotenv/config");
 const client_s3_1 = require("@aws-sdk/client-s3");
 const s3_presigned_post_1 = require("@aws-sdk/s3-presigned-post");
 const client_1 = require("@prisma/client");
@@ -25,15 +26,14 @@ const router = (0, express_1.Router)();
 const prismaClient = new client_1.PrismaClient();
 const s3Client = new client_s3_1.S3Client({
     credentials: {
-        accessKeyId: "AKIAYS2NSTW6ZSQX4H4E",
-        secretAccessKey: "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",
+        accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
     },
-    region: "ap-south-1",
+    region: process.env.AWS_REGION,
 });
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
 const TOTAL_DECIMALS = 1000;
 const connection = new web3_js_1.Connection("https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt" !== null && "https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt" !== void 0 ? "https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt" : "");
-const PARENT_WALLET_ADDRESS = "27sEXEvZhXmZu9HDTuQDrQp8tGxaCbG9m5nrYBUw2bkc";
 router.get("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // @ts-ignore
     const taskId = req.query.taskId;
@@ -116,14 +116,13 @@ router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0
     //     message: "Transaction amount is incorrect. Expected 0.1 SOL",
     //   });
     // }
-    console.log(transaction.transaction.message.getAccountKeys());
+    // console.log(transaction.transaction.message.getAccountKeys());
     const recipientAddress = (_e = transaction.transaction.message
         .getAccountKeys()
         .get(1)) === null || _e === void 0 ? void 0 : _e.toString();
     const senderAddress = (_f = transaction.transaction.message
         .getAccountKeys()
         .get(0)) === null || _f === void 0 ? void 0 : _f.toString();
-    console.log(PARENT_WALLET_ADDRESS, recipientAddress, senderAddress);
     // if (recipientAddress !== PARENT_WALLET_ADDRESS) {
     //   return res.status(411).json({
     //     message: "Transaction sent to the wrong address",
@@ -169,7 +168,7 @@ router.get("/presignedUrl", middleware_1.authMiddleware, (req, res) => __awaiter
     // @ts-ignore
     const userId = req.userId;
     const { url, fields } = yield (0, s3_presigned_post_1.createPresignedPost)(s3Client, {
-        Bucket: "hackindiaspark5",
+        Bucket: process.env.AWS_S3_BUCKET_NAME,
         Key: `fiver/${userId}/${Math.random()}/image.jpg`,
         Conditions: [
             ["content-length-range", 0, 5 * 1024 * 1024], // 5 MB max
@@ -195,7 +194,7 @@ router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function*
     if (existingUser) {
         const token = jsonwebtoken_1.default.sign({
             userId: existingUser.id,
-        }, middleware_1.JWT_SECRET);
+        }, process.env.JWT_SECRET);
         res.json({ token });
     }
     else {
@@ -206,7 +205,7 @@ router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function*
         });
         const token = jsonwebtoken_1.default.sign({
             userId: user.id,
-        }, middleware_1.JWT_SECRET);
+        }, process.env.JWT_SECRET);
         res.json({ token });
     }
 }));

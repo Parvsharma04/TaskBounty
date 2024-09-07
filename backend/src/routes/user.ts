@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { S3Client } from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { PrismaClient } from "@prisma/client";
@@ -5,17 +6,17 @@ import { Connection, PublicKey, Transaction } from "@solana/web3.js";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import nacl from "tweetnacl";
-import { authMiddleware, JWT_SECRET } from "../middlewares/middleware";
+import { authMiddleware } from "../middlewares/middleware";
 import { createTaskInput } from "../types";
 
 const router = Router();
 const prismaClient = new PrismaClient();
 const s3Client = new S3Client({
   credentials: {
-    accessKeyId: "AKIAYS2NSTW6ZSQX4H4E",
-    secretAccessKey: "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",
+    accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY as string,
   },
-  region: "ap-south-1",
+  region: process.env.AWS_REGION as string,
 });
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
 const TOTAL_DECIMALS = 1000;
@@ -23,7 +24,6 @@ const connection = new Connection(
   "https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt" ??
     ""
 );
-const PARENT_WALLET_ADDRESS = "27sEXEvZhXmZu9HDTuQDrQp8tGxaCbG9m5nrYBUw2bkc";
 
 router.get("/task", authMiddleware, async (req, res) => {
   // @ts-ignore
@@ -133,7 +133,7 @@ router.post("/task", authMiddleware, async (req, res) => {
   //   });
   // }
 
-  console.log(transaction.transaction.message.getAccountKeys());
+  // console.log(transaction.transaction.message.getAccountKeys());
 
   const recipientAddress = transaction.transaction.message
     .getAccountKeys()
@@ -143,8 +143,6 @@ router.post("/task", authMiddleware, async (req, res) => {
     .getAccountKeys()
     .get(0)
     ?.toString();
-
-  console.log(PARENT_WALLET_ADDRESS, recipientAddress, senderAddress);
 
   // if (recipientAddress !== PARENT_WALLET_ADDRESS) {
   //   return res.status(411).json({
@@ -190,13 +188,12 @@ router.post("/task", authMiddleware, async (req, res) => {
     });
   }
 });
-
 router.get("/presignedUrl", authMiddleware, async (req, res) => {
   // @ts-ignore
   const userId = req.userId;
 
   const { url, fields } = await createPresignedPost(s3Client, {
-    Bucket: "hackindiaspark5",
+    Bucket: process.env.AWS_S3_BUCKET_NAME as string,
     Key: `fiver/${userId}/${Math.random()}/image.jpg`,
     Conditions: [
       ["content-length-range", 0, 5 * 1024 * 1024], // 5 MB max
@@ -231,7 +228,7 @@ router.post("/signin", async (req, res) => {
       {
         userId: existingUser.id,
       },
-      JWT_SECRET
+      process.env.JWT_SECRET as string
     );
     res.json({ token });
   } else {
@@ -245,7 +242,7 @@ router.post("/signin", async (req, res) => {
       {
         userId: user.id,
       },
-      JWT_SECRET
+      process.env.JWT_SECRET as string
     );
 
     res.json({ token });
