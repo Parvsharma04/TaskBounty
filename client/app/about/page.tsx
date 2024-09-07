@@ -3,7 +3,6 @@ import NavBar from "@/components/Appbar";
 function aboutPage() {
   return (
     <>
-      <NavBar />
       <div className="sm:flex items-center max-w-screen-xl">
         <div className="sm:w-1/2 p-10">
           <div className="image object-center text-center">
