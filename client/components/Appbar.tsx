@@ -122,23 +122,18 @@ const NavBar = () => {
                 Upload Task
               </Link>
             </li>
+            <li>
+              <Link
+                href="/taskAnalytics"
+                className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+              >
+                Task Analytics
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
     </nav>
-
-    // <div className='flex justify-between p-4 border bg-gray-300'>
-    //   <div className='flex items-center space-x-4'>
-    //   <h3 className="font-serif text-3xl font-semibold ">TaskBounty</h3>
-    //   </div>
-    //   <div>
-    //     <WalletMultiButtonDynamic>
-    //       {publicKey
-    //         ? `${publicKey.toBase58().substring(0, 7)}...`
-    //         : 'Connect Wallet'}
-    //     </WalletMultiButtonDynamic>
-    //   </div>
-    // </div>
   );
 };
 

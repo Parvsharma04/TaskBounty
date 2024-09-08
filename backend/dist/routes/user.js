@@ -79,6 +79,31 @@ router.get("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0,
         taskDetails,
     });
 }));
+router.get("/getAllTask", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // @ts-ignore
+    const userId = req.userId;
+    const tasksDetails = yield prismaClient.task.findMany({
+        where: {
+            user_id: Number(userId),
+        },
+        select: {
+            id: true,
+            title: true,
+            amount: true,
+            done: true,
+            options: true,
+        },
+    });
+    if (!tasksDetails) {
+        return res.status(411).json({
+            message: "You dont have access to this task",
+        });
+    }
+    res.json({
+        tasksDetails,
+        message: "All tasks fetched successfully",
+    });
+}));
 router.post("/task", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e, _f;
     //@ts-ignore
