@@ -15,11 +15,12 @@ interface Task {
   }[];
 }
 
-export const NextTask = ({ token }: { token: string }) => {
+export const NextTask = () => {
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const { publicKey } = useWallet();
+  const { publicKey, disconnect } = useWallet();
+  let token = localStorage.getItem("token");
 
   useEffect(() => {
     async function getTask() {
@@ -44,7 +45,13 @@ export const NextTask = ({ token }: { token: string }) => {
     if (publicKey) {
       getTask();
     }
-  }, [publicKey, token]);
+  }, [publicKey, localStorage.getItem("token")]);
+  useEffect(() => {
+    if (!publicKey) {
+      localStorage.removeItem("token");
+      setLoading(true);
+    }
+  }, [publicKey, disconnect]);
 
   if (loading) {
     return (

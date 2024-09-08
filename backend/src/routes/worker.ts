@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import { workerMiddleware } from "../middlewares/middleware";
 import { createSubmissionInput, createTaskInput } from "../types";
 import { getNextTask } from "../db";
+import nacl from "tweetnacl";
+import { PublicKey } from "@solana/web3.js";
 
 const router = Router();
 const prismaClient = new PrismaClient();
@@ -117,8 +119,17 @@ router.post("/payout", async (req, res) => {
 
 //! sigining with wallet
 router.post("/signin", async (req, res) => {
-  const hardCodedWalletAddress =
-    "0x2d209aB8b8BAF8698395a872Ef2d1e355B77BAb8xdf";
+  const { publicKey, signature } = req.body;
+
+  const message = new TextEncoder().encode("verify this to authenticate");
+  const signedString = "verify this to authenticate";
+  const result = nacl.sign.detached.verify(
+    message,
+    new Uint8Array(signature.data),
+    new PublicKey(publicKey).toBytes()
+  );
+
+  const hardCodedWalletAddress = publicKey;
 
   const existingUser = await prismaClient.worker.findFirst({
     where: {

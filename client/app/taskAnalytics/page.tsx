@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DataTable from "react-data-table-component";
+import Link from "next/link";
 
 function taskAnalytics() {
   const [AllTasks, setAllTasks] = useState([]);
@@ -33,7 +34,7 @@ function taskAnalytics() {
             theme: "colored",
           });
         }
-        console.log(res.data.tasksDetails);
+        // console.log(res.data.tasksDetails);
         setAllTasks(res.data.tasksDetails);
       } catch (err: any) {
         toast.error(err.response.data.message, {
@@ -82,6 +83,7 @@ function taskAnalytics() {
       },
     },
   };
+
   const columns = [
     {
       name: "id",
@@ -108,6 +110,12 @@ function taskAnalytics() {
       name: "options",
       selector: (row: { options: any }) => row.options[0].image_url,
       sortable: true,
+    },
+    {
+      name: "actions",
+      cell: (row: { id: any }) => (
+        <Link href={`/task/${row.id}`}>View Details</Link>
+      ),
     },
   ];
 

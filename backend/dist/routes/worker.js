@@ -116,6 +116,8 @@ router.post("/payout", (req, res) => __awaiter(void 0, void 0, void 0, function*
 }));
 //! sigining with wallet
 router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { publicKey, signature } = req.body;
+    console.log(publicKey, signature);
     const hardCodedWalletAddress = "0x2d209aB8b8BAF8698395a872Ef2d1e355B77BAb8xdf";
     const existingUser = yield prismaClient.worker.findFirst({
         where: {

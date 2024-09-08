@@ -1,0 +1,6 @@
+.wallet-adapter-button {
+  background-color: #1a56db;
+}
+.wallet-adapter-button:hover {
+  background-color: #447efa !important;
+}

@@ -1,6 +1,3 @@
-import Appbar from "@/components/Appbar";
-import { Hero } from "@/components/Hero";
-import { Upload } from "@/components/Upload";
 import { Wallet } from "@/components/Wallet";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
