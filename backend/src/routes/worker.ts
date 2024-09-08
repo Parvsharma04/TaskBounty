@@ -1,11 +1,11 @@
 import { PrismaClient } from "@prisma/client";
+import { PublicKey } from "@solana/web3.js";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
-import { workerMiddleware } from "../middlewares/middleware";
-import { createSubmissionInput, createTaskInput } from "../types";
-import { getNextTask } from "../db";
 import nacl from "tweetnacl";
-import { PublicKey } from "@solana/web3.js";
+import { getNextTask } from "../db";
+import { workerMiddleware } from "../middlewares/middleware";
+import { createSubmissionInput } from "../types";
 
 const router = Router();
 const prismaClient = new PrismaClient();
@@ -71,7 +71,7 @@ router.post("/submission", workerMiddleware, async (req, res) => {
     });
 
     const nextTask = await getNextTask(Number(userId));
-    res.json({
+    res.status(200).json({
       nextTask,
       amount,
     });

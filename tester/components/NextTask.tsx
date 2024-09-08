@@ -2,7 +2,9 @@
 import { BACKEND_URL } from "@/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 interface Task {
   id: number;
@@ -15,122 +17,150 @@ interface Task {
   }[];
 }
 
-export const NextTask = () => {
+interface NextTaskProps {
+  noMoreTasks: boolean;
+  setNoMoreTasks: Dispatch<SetStateAction<boolean>>;
+}
+
+export const NextTask: React.FC<NextTaskProps> = ({
+  noMoreTasks,
+  setNoMoreTasks,
+}) => {
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const { publicKey, disconnect } = useWallet();
-  let token = localStorage.getItem("token");
+  const [loading, setLoading] = useState(false);
+  // const [submitting, setSubmitting] = useState(false);s
+  const wallet = useWallet();
+  const router = useRouter();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    async function getTask() {
-      try {
-        if (!token) {
-          return new Error("token not found");
-        }
-        let response = await axios.get(`${BACKEND_URL}/v1/worker/nextTask`, {
-          headers: {
-            Authorization: token || localStorage.getItem("token"),
-          },
-        });
-
-        console.log(response.data);
-        setCurrentTask(response.data.task);
-      } catch (error) {
-        console.error("Error fetching token:", error);
-      }
-      setLoading(false);
-    }
-
-    if (publicKey) {
+    if (!wallet.connected) {
+      router.push("/");
+    } else {
       getTask();
     }
-  }, [publicKey, localStorage.getItem("token")]);
-  useEffect(() => {
-    if (!publicKey) {
-      localStorage.removeItem("token");
-      setLoading(true);
-    }
-  }, [publicKey, disconnect]);
+  }, [wallet]);
 
-  if (loading) {
-    return (
-      <div className="h-screen flex justify-center flex-col">
-        {token ? (
-          <div className="w-full flex justify-center text-2xl">Loading...</div>
-        ) : (
+  const getTask = async () => {
+    if (wallet.connected && token) {
+      console.log("wallet connected");
+      setLoading(true);
+      try {
+        let response = await axios.get(`${BACKEND_URL}/v1/worker/nextTask`, {
+          headers: {
+            Authorization: token,
+          },
+        });
+        setCurrentTask(response.data.task);
+        setNoMoreTasks(false);
+      } catch (error) {
+        console.log(error.response.data.message);
+        setCurrentTask(null);
+        setNoMoreTasks(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+  // useEffect(() => {
+  //   if (wallet.connected === false) router.push("/");
+  //   getTask();
+  // }, [wallet.connected, token]);
+
+  return (
+    <>
+      <ToastContainer
+        position="top-left"
+        autoClose={1100}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+      {!wallet.connected ? (
+        <div className="h-screen flex justify-center flex-col">
           <div className="w-full flex justify-center text-2xl">
             Please connect your wallet
           </div>
-        )}
-      </div>
-    );
-  }
-
-  if (!currentTask) {
-    return (
-      <div className="h-screen flex justify-center flex-col">
-        <div className="w-full flex justify-center text-2xl">
-          Please check back in some time, there are no pending tasks at the
-          moment
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <div className="text-2xl pt-20 flex justify-center">
-        {currentTask.title}
-        <div className="pl-4">{submitting && "Submitting..."}</div>
-      </div>
-      <div className="flex justify-center pt-8">
-        {currentTask.options.map((option) => (
-          <Option
-            onSelect={async () => {
-              setSubmitting(true);
-              try {
-                const response = await axios.post(
-                  `${BACKEND_URL}/v1/worker/submission`,
-                  {
-                    taskId: currentTask.id.toString(),
-                    selection: option.id.toString(),
-                  },
-                  {
-                    headers: {
-                      Authorization: `${localStorage.getItem("token")}`, // Ensure this format is what your backend expects
-                    },
+      ) : loading ? (
+        <div className="h-screen flex justify-center flex-col">
+          <div className="w-full flex justify-center text-2xl">
+            Loading Bounty...
+          </div>
+        </div>
+      ) : currentTask === null ? (
+        (!noMoreTasks && getTask(),
+        (
+          <div className="h-screen flex justify-center flex-col">
+            <div className="w-full flex justify-center text-2xl">
+              Please check back in some time, there are no pending bounties at
+              the moment.
+            </div>
+          </div>
+        ))
+      ) : (
+        <div>
+          <div className="text-2xl pt-20 flex justify-center">
+            {currentTask?.title}
+          </div>
+          <div className="flex justify-center pt-8">
+            {currentTask?.options.map((option) => (
+              <Option
+                onSelect={async () => {
+                  setLoading(true);
+                  try {
+                    const response = await axios.post(
+                      `${BACKEND_URL}/v1/worker/submission`,
+                      {
+                        taskId: currentTask.id.toString(),
+                        selection: option.id.toString(),
+                      },
+                      {
+                        headers: {
+                          Authorization: token, // Ensure this format is what your backend expects
+                        },
+                      }
+                    );
+                    console.log(response);
+                    if (response.status === 200) {
+                      toast.success(response.data.message);
+                    }
+                    const nextTask = response.data.nextTask;
+                    if (nextTask) {
+                      setCurrentTask(nextTask);
+                    } else {
+                      setCurrentTask(null);
+                      setNoMoreTasks(true);
+                    }
+                    // Refresh the user balance in the appbar
+                  } catch (err) {
+                    if (axios.isAxiosError(err)) {
+                      // Handle Axios errors
+                      console.error(
+                        "Error fetching next task:",
+                        err.response?.data || err.message
+                      );
+                    } else {
+                      // Handle non-Axios errors
+                      console.error("Unexpected error:", err);
+                    }
+                    setCurrentTask(null);
                   }
-                );
-
-                const nextTask = response.data.nextTask;
-                if (nextTask) {
-                  setCurrentTask(nextTask);
-                } else {
-                  setCurrentTask(null);
-                }
-                // Refresh the user balance in the appbar
-              } catch (err) {
-                if (axios.isAxiosError(err)) {
-                  // Handle Axios errors
-                  console.error(
-                    "Error fetching next task:",
-                    err.response?.data || err.message
-                  );
-                } else {
-                  // Handle non-Axios errors
-                  console.error("Unexpected error:", err);
-                }
-                setCurrentTask(null);
-              }
-              setSubmitting(false);
-            }}
-            key={option.id}
-            imageUrl={option.image_url}
-          />
-        ))}
-      </div>
-    </div>
+                  setLoading(false);
+                }}
+                key={option.id}
+                imageUrl={option.image_url}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

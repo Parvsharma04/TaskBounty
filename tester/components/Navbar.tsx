@@ -10,12 +10,12 @@ import "../styles/navbar.css";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
-    (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
+    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
   { ssr: false }
 );
 
 const NavBar = () => {
-  const { publicKey, disconnect, signMessage } = useWallet();
+  const { publicKey, disconnect, signMessage, connected } = useWallet();
 
   useEffect(() => {
     async function getToken() {
@@ -63,11 +63,11 @@ const NavBar = () => {
           </span>
         </a>
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-        <WalletMultiButtonDynamic>
-          {publicKey
-            ? `${publicKey.toBase58().substring(0, 7)}...`
-            : 'Connect Wallet'}
-        </WalletMultiButtonDynamic>
+          <WalletMultiButtonDynamic>
+            {publicKey
+              ? `${publicKey.toBase58().substring(0, 7)}...`
+              : "Connect Wallet"}
+          </WalletMultiButtonDynamic>
           <button
             data-collapse-toggle="navbar-cta"
             type="button"
@@ -93,38 +93,40 @@ const NavBar = () => {
             </svg>
           </button>
         </div>
-        <div
-          className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
-          id="navbar-cta"
-        >
-          <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0">
-            <li>
-              <Link
-                href="/"
-                className="block py-2 px-3 md:p-0 bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500"
-                aria-current="page"
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/earnByTask"
-                className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent dark:border-gray-700"
-              >
-                Earn By Task
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/tester-analytics"
-                className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent dark:border-gray-700"
-              >
-                Tester Analytics
-              </Link>
-            </li>
-          </ul>
-        </div>
+        {connected && (
+          <div
+            className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
+            id="navbar-cta"
+          >
+            <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0">
+              <li>
+                <Link
+                  href="/"
+                  className="block py-2 px-3 md:p-0 bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500"
+                  aria-current="page"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/bounty"
+                  className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent dark:border-gray-700"
+                >
+                  Hunt Bounties
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/tester-analytics"
+                  className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent dark:border-gray-700"
+                >
+                  Tester Analytics
+                </Link>
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
     </nav>
   );
