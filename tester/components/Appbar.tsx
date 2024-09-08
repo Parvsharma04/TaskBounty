@@ -4,8 +4,8 @@ import { BACKEND_URL } from "@/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
 import Link from "next/link";
+import { useEffect } from "react";
 import "../styles/navbar.css";
 
 const WalletMultiButtonDynamic = dynamic(
@@ -14,7 +14,7 @@ const WalletMultiButtonDynamic = dynamic(
   { ssr: false }
 );
 
-const NavBar = ({ setToken }: any) => {
+const NavBar = () => {
   const { publicKey, disconnect, signMessage } = useWallet();
 
   useEffect(() => {
@@ -28,7 +28,6 @@ const NavBar = ({ setToken }: any) => {
           publicKey: publicKey?.toString(),
         });
         localStorage.setItem("token", response.data.token);
-        setToken(response.data.token);
       } catch (error) {
         console.error("Error fetching token:", error);
       }
