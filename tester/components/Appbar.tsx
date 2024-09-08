@@ -10,7 +10,7 @@ import "../styles/navbar.css";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
-    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
+    (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
   { ssr: false }
 );
 
@@ -63,11 +63,11 @@ const NavBar = () => {
           </span>
         </a>
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-          <WalletMultiButtonDynamic>
-            {publicKey
-              ? `${publicKey.toBase58().substring(0, 7)}...`
-              : "Connect Wallet"}
-          </WalletMultiButtonDynamic>
+        <WalletMultiButtonDynamic>
+          {publicKey
+            ? `${publicKey.toBase58().substring(0, 7)}...`
+            : 'Connect Wallet'}
+        </WalletMultiButtonDynamic>
           <button
             data-collapse-toggle="navbar-cta"
             type="button"
@@ -117,10 +117,10 @@ const NavBar = () => {
             </li>
             <li>
               <Link
-                href="/taskHistory"
+                href="/tester-analytics"
                 className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent dark:border-gray-700"
               >
-                Task History
+                Tester Analytics
               </Link>
             </li>
           </ul>

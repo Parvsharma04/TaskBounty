@@ -1,7 +1,8 @@
+import { TesterAnalytics } from '@/components/TesterAnalytics';
 const taskHistory = () => {
   return (
     <div>
-      <h1>Task History</h1>
+      <TesterAnalytics/>
     </div>
   );
 };

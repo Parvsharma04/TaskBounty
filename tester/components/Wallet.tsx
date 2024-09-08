@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
 import {
   ConnectionProvider,
   WalletProvider,
-} from "@solana/wallet-adapter-react";
-import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+} from '@solana/wallet-adapter-react';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import {
   AlphaWalletAdapter,
   LedgerWalletAdapter,
   SolflareWalletAdapter,
-} from "@solana/wallet-adapter-wallets";
-import { FC, useMemo } from "react";
+} from '@solana/wallet-adapter-wallets';
+import { FC, useMemo } from 'react';
 
-import "@solana/wallet-adapter-react-ui/styles.css";
+import '@solana/wallet-adapter-react-ui/styles.css';
 
 type Props = {
   children?: React.ReactNode;
@@ -20,7 +20,7 @@ type Props = {
 
 export const Wallet: FC<Props> = ({ children }) => {
   //input your RPC as your endpoint value
-  const endpoint = "https://api-devnet.helius.xyz";
+  const endpoint = 'https://api-devnet.helius.xyz';
 
   const wallets = useMemo(
     () => [
@@ -33,7 +33,7 @@ export const Wallet: FC<Props> = ({ children }) => {
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets}>
+      <WalletProvider wallets={wallets} autoConnect={true}>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
