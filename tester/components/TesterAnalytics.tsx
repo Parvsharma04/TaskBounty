@@ -1,6 +1,7 @@
 "use client";
 import { useWallet } from "@solana/wallet-adapter-react";
-
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 interface Task {
   id: number;
   amount: number;
@@ -14,6 +15,13 @@ interface Task {
 
 export const TesterAnalytics = () => {
   const wallet = useWallet();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!wallet.connected) {
+      router.push("/");
+    }
+  }, [wallet]);
 
   if (wallet.connected) {
     return (

@@ -7,6 +7,8 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingSpinner from "./LoadingSpinner";
+import TaskImage from "./TaskImage";
+import TaskStatement from "./TaskStatement";
 
 interface Task {
   id: number;
@@ -30,7 +32,6 @@ export const NextTask: React.FC<NextTaskProps> = ({
 }) => {
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(false);
-  // const [submitting, setSubmitting] = useState(false);s
   const wallet = useWallet();
   const router = useRouter();
   const token = localStorage.getItem("token");
@@ -53,7 +54,6 @@ export const NextTask: React.FC<NextTaskProps> = ({
             Authorization: token,
           },
         });
-        // console.log(response);
         setCurrentTask(response.data.task);
         setNoMoreTasks(false);
       } catch (error: any) {
@@ -90,7 +90,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
       ) : loading ? (
         <div className="h-screen flex justify-center flex-col">
           <div className="w-full flex justify-center text-2xl">
-            {/* Loading Bounty... */}<LoadingSpinner/>
+            <LoadingSpinner />
           </div>
         </div>
       ) : currentTask === null ? (
@@ -104,80 +104,60 @@ export const NextTask: React.FC<NextTaskProps> = ({
           </div>
         ))
       ) : (
-        <div>
-          <div className="text-2xl pt-20 flex justify-center">
-            {currentTask?.title}
-          </div>
-          <div className="flex justify-center pt-8">
-            {currentTask?.options.map((option) => (
-              <Option
-                onSelect={async () => {
-                  setLoading(true);
-                  try {
-                    const response = await axios.post(
-                      `${BACKEND_URL}/v1/worker/submission`,
-                      {
-                        taskId: currentTask.id.toString(),
-                        selection: option.id.toString(),
-                      },
-                      {
-                        headers: {
-                          Authorization: token, // Ensure this format is what your backend expects
+        <div className="flex justify-center h-screen items-center">
+          <div className="bg-gray-500 border-1px border-gray-100 p-10 w-fit rounded-2xl h-fit">
+            <div className="flex justify-center">
+              <TaskStatement taskTitle={currentTask.title} />
+            </div>
+            <div className="flex justify-center  gap-5 pt-8">
+              {currentTask?.options.map((option) => (
+                <TaskImage
+                  onSelect={async () => {
+                    setLoading(true);
+                    try {
+                      const response = await axios.post(
+                        `${BACKEND_URL}/v1/worker/submission`,
+                        {
+                          taskId: currentTask.id.toString(),
+                          selection: option.id.toString(),
                         },
-                      }
-                    );
-                    if (response.status === 200) {
-                      toast.success("task completed successfully");
-                    }
-                    const nextTask = response.data.nextTask;
-                    if (nextTask) {
-                      setCurrentTask(nextTask);
-                    } else {
-                      setCurrentTask(null);
-                      setNoMoreTasks(true);
-                    }
-                    // Refresh the user balance in the appbar
-                  } catch (err) {
-                    if (axios.isAxiosError(err)) {
-                      // Handle Axios errors
-                      console.error(
-                        "Error fetching next task:",
-                        err.response?.data || err.message
+                        {
+                          headers: {
+                            Authorization: token,
+                          },
+                        }
                       );
-                    } else {
-                      // Handle non-Axios errors
-                      console.error("Unexpected error:", err);
+                      if (response.status === 200) {
+                        toast.success("task completed successfully");
+                      }
+                      const nextTask = response.data.nextTask;
+                      if (nextTask) {
+                        setCurrentTask(nextTask);
+                      } else {
+                        setCurrentTask(null);
+                        setNoMoreTasks(true);
+                      }
+                    } catch (err) {
+                      if (axios.isAxiosError(err)) {
+                        console.error(
+                          "Error fetching next task:",
+                          err.response?.data || err.message
+                        );
+                      } else {
+                        console.error("Unexpected error:", err);
+                      }
+                      setCurrentTask(null);
                     }
-                    setCurrentTask(null);
-                  }
-                  setLoading(false);
-                }}
-                key={option.id}
-                imageUrl={option.image_url}
-              />
-            ))}
+                    setLoading(false);
+                  }}
+                  key={option.id}
+                  imageUrl={option.image_url}
+                />
+              ))}
+            </div>
           </div>
         </div>
       )}
     </>
   );
 };
-
-function Option({
-  imageUrl,
-  onSelect,
-}: {
-  imageUrl: string;
-  onSelect: () => void;
-}) {
-  return (
-    <div>
-      <img
-        onClick={onSelect}
-        className={"p-2 w-96 rounded-md cursor-pointer"} // Added cursor-pointer for better UX
-        src={imageUrl}
-        alt="Option" // Added alt text for better accessibility
-      />
-    </div>
-  );
-}
