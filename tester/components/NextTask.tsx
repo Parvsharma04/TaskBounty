@@ -5,6 +5,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Task {
   id: number;
@@ -128,9 +129,8 @@ export const NextTask: React.FC<NextTaskProps> = ({
                         },
                       }
                     );
-                    console.log(response);
                     if (response.status === 200) {
-                      toast.success(response.data.message);
+                      toast.success("task completed successfully");
                     }
                     const nextTask = response.data.nextTask;
                     if (nextTask) {
