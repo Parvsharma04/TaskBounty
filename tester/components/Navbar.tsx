@@ -18,7 +18,6 @@ const NavBar = () => {
   const wallet = useWallet();
 
   async function getToken() {
-    console.log("get Token", wallet.connected);
     if (wallet.connected) {
       try {
         const message = new TextEncoder().encode("verify this to authenticate");
@@ -28,7 +27,6 @@ const NavBar = () => {
           publicKey: wallet.publicKey?.toString(),
         });
         localStorage.setItem("token", response.data.token);
-        console.log("token", response.data.token);
       } catch (error) {
         console.error("Error fetching token:", error);
       }
@@ -39,7 +37,6 @@ const NavBar = () => {
   }
 
   useEffect(() => {
-    console.log("wallet connection status: ", wallet.connected);
     getToken();
   }, [wallet.connected]);
 
