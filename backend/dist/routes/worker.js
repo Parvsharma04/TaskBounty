@@ -13,11 +13,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
+const web3_js_1 = require("@solana/web3.js");
 const express_1 = require("express");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const tweetnacl_1 = __importDefault(require("tweetnacl"));
+const db_1 = require("../db");
 const middleware_1 = require("../middlewares/middleware");
 const types_1 = require("../types");
-const db_1 = require("../db");
 const router = (0, express_1.Router)();
 const prismaClient = new client_1.PrismaClient();
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
@@ -74,7 +76,7 @@ router.post("/submission", middleware_1.workerMiddleware, (req, res) => __awaite
             return submission;
         }));
         const nextTask = yield (0, db_1.getNextTask)(Number(userId));
-        res.json({
+        res.status(200).json({
             nextTask,
             amount,
         });
@@ -117,8 +119,10 @@ router.post("/payout", (req, res) => __awaiter(void 0, void 0, void 0, function*
 //! sigining with wallet
 router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { publicKey, signature } = req.body;
-    console.log(publicKey, signature);
-    const hardCodedWalletAddress = "0x2d209aB8b8BAF8698395a872Ef2d1e355B77BAb8xdf";
+    const message = new TextEncoder().encode("verify this to authenticate");
+    const signedString = "verify this to authenticate";
+    const result = tweetnacl_1.default.sign.detached.verify(message, new Uint8Array(signature.data), new web3_js_1.PublicKey(publicKey).toBytes());
+    const hardCodedWalletAddress = publicKey;
     const existingUser = yield prismaClient.worker.findFirst({
         where: {
             address: hardCodedWalletAddress,
