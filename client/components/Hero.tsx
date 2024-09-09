@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const Hero = () => {
   return (
-    <>
+    <div className=" pt-10">
       <section className="bg-white dark:bg-gray-900">
         <div className="flex justify-evenly items-center max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16">
           <div className="place-self-center">
@@ -44,6 +44,6 @@ export const Hero = () => {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 };

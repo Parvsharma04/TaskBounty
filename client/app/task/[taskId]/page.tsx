@@ -45,7 +45,7 @@ export default function Page({
 
   return (
     <div>
-      <div className="text-2xl pt-20 flex justify-center">
+      <div className="capitalize font-semibold text-3xl pt-32 flex justify-center">
         {taskDetails.title}
       </div>
       <div className="flex justify-center pt-8">
@@ -64,7 +64,7 @@ function Task({ imageUrl, votes }: { imageUrl: string; votes: number }) {
   return (
     <div>
       <img className={"p-2 w-96 rounded-md"} src={imageUrl} />
-      <div className="flex justify-center">{votes}</div>
+      <div className="flex justify-center">Votes : {votes}</div>
     </div>
   );
 }

@@ -6,9 +6,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DataTable from "react-data-table-component";
 import Link from "next/link";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useRouter } from "next/navigation";
 
 function taskAnalytics() {
   const [AllTasks, setAllTasks] = useState([]);
+  const wallet = useWallet();
+  const Router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,6 +57,11 @@ function taskAnalytics() {
 
     fetchData();
   }, []);
+  useEffect(() => {
+    if (!wallet.connected) {
+      Router.replace("/");
+    }
+  }, [wallet.connected]);
 
   const customStyles = {
     header: {
@@ -121,7 +130,7 @@ function taskAnalytics() {
   ];
 
   return (
-    <>
+    <div className=" pt-10">
       <ToastContainer
         position="top-left"
         autoClose={1100}
@@ -154,7 +163,7 @@ function taskAnalytics() {
           <div className="text-3xl font-bold text-gray-500">No Data Found</div>
         </div>
       )}
-    </>
+    </div>
   );
 }
 

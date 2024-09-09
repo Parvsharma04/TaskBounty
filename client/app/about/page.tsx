@@ -1,9 +1,22 @@
-import NavBar from "@/components/Appbar";
+"use client";
+
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useRouter } from "next/navigation";
+import React from "react";
 
 function aboutPage() {
+  const wallet = useWallet();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (!wallet.connected) {
+      router.replace("/");
+    }
+  }, [wallet.connected]);
+
   return (
     <>
-      <div className="sm:flex items-center max-w-screen-xl">
+      <div className="sm:flex items-center max-w-screen-xl pt-10">
         <div className="sm:w-1/2 p-10">
           <div className="image object-center text-center">
             <img src="https://i.imgur.com/WbQnbas.png" />

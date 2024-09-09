@@ -2,6 +2,8 @@
 import { BACKEND_URL, CLOUDFRONT_URL } from "@/utils";
 import axios from "axios";
 import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export function UploadImage({
   onImageAdded,
@@ -13,35 +15,63 @@ export function UploadImage({
   const [uploading, setUploading] = useState(false);
   const [signinError, setSigninError] = useState(false);
 
+  async function uploadFile(fileUrl: File) {
+    const file = fileUrl;
+    const response = await axios.get(`${BACKEND_URL}/v1/user/presignedUrl`, {
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+    });
+    const presignedUrl = response.data.preSignedUrl;
+    const formData = new FormData();
+    formData.set("bucket", response.data.fields["bucket"]);
+    formData.set("X-Amz-Algorithm", response.data.fields["X-Amz-Algorithm"]);
+    formData.set("X-Amz-Credential", response.data.fields["X-Amz-Credential"]);
+    formData.set("X-Amz-Algorithm", response.data.fields["X-Amz-Algorithm"]);
+    formData.set("X-Amz-Date", response.data.fields["X-Amz-Date"]);
+    formData.set("key", response.data.fields["key"]);
+    formData.set("Policy", response.data.fields["Policy"]);
+    formData.set("X-Amz-Signature", response.data.fields["X-Amz-Signature"]);
+    formData.set("X-Amz-Algorithm", response.data.fields["X-Amz-Algorithm"]);
+    formData.append("file", file);
+    const awsResponse = await axios.post(presignedUrl, formData);
+
+    if (awsResponse.status == 204) {
+      toast.success("Image uploaded successfully", {
+        position: "top-left",
+        autoClose: 1100,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    } else {
+      toast.error("Unable to upload image", {
+        position: "top-left",
+        autoClose: 1100,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+
+    onImageAdded(`${CLOUDFRONT_URL}/${response.data.fields["key"]}`);
+  }
+
   async function onFileSelect(e: any) {
     setUploading(true);
     try {
-      const file = e.target.files[0];
-      const response = await axios.get(`${BACKEND_URL}/v1/user/presignedUrl`, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
+      const fileArr: File[] = Array.from(e.target.files);
+      fileArr.map((file: File) => {
+        uploadFile(file);
       });
-      const presignedUrl = response.data.preSignedUrl;
-      const formData = new FormData();
-      formData.set("bucket", response.data.fields["bucket"]);
-      formData.set("X-Amz-Algorithm", response.data.fields["X-Amz-Algorithm"]);
-      formData.set(
-        "X-Amz-Credential",
-        response.data.fields["X-Amz-Credential"]
-      );
-      formData.set("X-Amz-Algorithm", response.data.fields["X-Amz-Algorithm"]);
-      formData.set("X-Amz-Date", response.data.fields["X-Amz-Date"]);
-      formData.set("key", response.data.fields["key"]);
-      formData.set("Policy", response.data.fields["Policy"]);
-      formData.set("X-Amz-Signature", response.data.fields["X-Amz-Signature"]);
-      formData.set("X-Amz-Algorithm", response.data.fields["X-Amz-Algorithm"]);
-      formData.append("file", file);
-      const awsResponse = await axios.post(presignedUrl, formData);
-
-      onImageAdded(`${CLOUDFRONT_URL}/${response.data.fields["key"]}`);
     } catch (e) {
-    //   console.log(e);
+      console.log(e);
       setSigninError(true);
     }
     setUploading(false);
@@ -66,15 +96,13 @@ export function UploadImage({
           </svg>
           <span className="sr-only">Warning icon</span>
         </div>
-        <div className="ms-3 text-sm font-normal">
-          Connect Your Wallet.
-        </div>
+        <div className="ms-3 text-sm font-normal">Connect Your Wallet.</div>
         <button
           type="button"
           className="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
           data-dismiss-target="#toast-warning"
           aria-label="Close"
-          onClick={()=>setSigninError(false)}
+          onClick={() => setSigninError(false)}
         >
           <span className="sr-only">Close</span>
           <svg
@@ -97,36 +125,64 @@ export function UploadImage({
     );
   }
 
-  if (image) {
-    return <img className={"p-2 w-96 rounded"} src={image} />;
-  }
-
   return (
-    <div>
-      <div className="w-40 h-40 rounded border text-2xl cursor-pointer">
+    <div className="w-full">
+      <ToastContainer
+        position="top-left"
+        autoClose={1100}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+      <div className="h-auto rounded border text-2xl cursor-pointer">
         <div className="h-full flex justify-center flex-col relative w-full">
-          <div className="h-full flex justify-center w-full pt-16 text-4xl">
+          <div className="h-full flex justify-center w-full text-4xl">
             {uploading ? (
               <div className="text-sm">Loading...</div>
             ) : (
-              <>
-                +
-                <input
-                  className="w-full h-full bg-red-400 w-40"
-                  type="file"
-                  style={{
-                    position: "absolute",
-                    opacity: 0,
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                    width: "100%",
-                    height: "100%",
-                  }}
-                  onChange={onFileSelect}
-                />
-              </>
+              <div className="flex items-center justify-center w-full">
+                <label
+                  htmlFor="dropzone-file"
+                  className="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 "
+                >
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg
+                      className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 16"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                      />
+                    </svg>
+                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                      <span className="font-semibold">Click to upload</span> or
+                      drag and drop
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      SVG, PNG, JPG or GIF
+                    </p>
+                  </div>
+                  <input
+                    id="dropzone-file"
+                    type="file"
+                    multiple
+                    onChange={onFileSelect}
+                    className="hidden"
+                  />
+                </label>
+              </div>
             )}
           </div>
         </div>

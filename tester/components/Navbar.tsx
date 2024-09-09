@@ -30,9 +30,8 @@ const NavBar = () => {
       } catch (error) {
         console.error("Error fetching token:", error);
       }
-    }
-    else{
-      localStorage.clear()
+    } else {
+      localStorage.clear();
     }
   }
 
