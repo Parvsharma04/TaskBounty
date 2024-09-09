@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import LoadingSpinner from "./LoadingSpinner";
 
 interface Task {
   id: number;
@@ -65,10 +66,6 @@ export const NextTask: React.FC<NextTaskProps> = ({
       }
     }
   };
-  // useEffect(() => {
-  //   if (wallet.connected === false) router.push("/");
-  //   getTask();
-  // }, [wallet.connected, token]);
 
   return (
     <>
@@ -93,7 +90,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
       ) : loading ? (
         <div className="h-screen flex justify-center flex-col">
           <div className="w-full flex justify-center text-2xl">
-            Loading Bounty...
+            {/* Loading Bounty... */}<LoadingSpinner/>
           </div>
         </div>
       ) : currentTask === null ? (
