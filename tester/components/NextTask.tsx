@@ -51,9 +51,11 @@ export const NextTask: React.FC<NextTaskProps> = ({
             Authorization: token,
           },
         });
+        // console.log(response);
         setCurrentTask(response.data.task);
         setNoMoreTasks(false);
-      } catch (error) {
+      } catch (error: any) {
+        console.log(error);
         console.log(error.response.data.message);
         setCurrentTask(null);
         setNoMoreTasks(true);
