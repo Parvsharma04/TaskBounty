@@ -15,44 +15,35 @@ const WalletMultiButtonDynamic = dynamic(
 );
 
 const NavBar = () => {
-  const { publicKey, disconnect, signMessage, connected } = useWallet();
+  const wallet = useWallet();
 
-  useEffect(() => {
-    async function getToken() {
+  async function getToken() {
+    if (wallet.connected) {
       try {
-        if (!publicKey) return;
         const message = new TextEncoder().encode("verify this to authenticate");
-        const signature = await signMessage?.(message);
+        const signature = await wallet.signMessage?.(message);
         let response = await axios.post(`${BACKEND_URL}/v1/worker/signin`, {
           signature,
-          publicKey: publicKey?.toString(),
+          publicKey: wallet.publicKey?.toString(),
         });
         localStorage.setItem("token", response.data.token);
       } catch (error) {
         console.error("Error fetching token:", error);
       }
     }
-
-    if (publicKey) {
-      getToken();
-    } else {
-      localStorage.removeItem("token");
+    else{
+      localStorage.clear()
     }
-  }, [publicKey, disconnect]);
+  }
 
   useEffect(() => {
-    if (!publicKey) {
-      localStorage.removeItem("token");
-    }
-  }, [publicKey]);
+    getToken();
+  }, [wallet.connected]);
 
   return (
     <nav>
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <a
-          href="https://flowbite.com/"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
-        >
+        <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           <img
             src="https://flowbite.com/docs/images/logo.svg"
             className="h-8"
@@ -63,9 +54,9 @@ const NavBar = () => {
           </span>
         </a>
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-          <WalletMultiButtonDynamic>
-            {publicKey
-              ? `${publicKey.toBase58().substring(0, 7)}...`
+          <WalletMultiButtonDynamic onClick={() => getToken()}>
+            {wallet.connected
+              ? `${wallet.publicKey?.toBase58().substring(0, 7)}...`
               : "Connect Wallet"}
           </WalletMultiButtonDynamic>
           <button
@@ -93,7 +84,7 @@ const NavBar = () => {
             </svg>
           </button>
         </div>
-        {connected && (
+        {wallet.connected && (
           <div
             className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
             id="navbar-cta"

@@ -119,7 +119,12 @@ router.post("/payout", async (req, res) => {
 
 //! sigining with wallet
 router.post("/signin", async (req, res) => {
+  // console.log(req.body);
   const { publicKey, signature } = req.body;
+
+  if (!publicKey || !signature) {
+    return res.status(400).json({ message: "Missing publicKey or signature" });
+  }
 
   const message = new TextEncoder().encode("verify this to authenticate");
   const signedString = "verify this to authenticate";
