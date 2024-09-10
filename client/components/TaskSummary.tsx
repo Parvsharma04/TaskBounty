@@ -5,19 +5,36 @@ const TaskSummary = ({
   totalTasks,
   doneTasks,
   pendingTasks,
+  prevAmtSpent,
+  prevTotalTasks,
+  prevDoneTasks,
+  prevPendingTasks,
 }: {
   amtSpent: number;
   totalTasks: number;
   doneTasks: number;
   pendingTasks: number;
+  prevAmtSpent: number;
+  prevTotalTasks: number;
+  prevDoneTasks: number;
+  prevPendingTasks: number;
 }) => {
+  const calculateRate = (current: number, previous: number) => {
+    if (previous === 0) return 0; // Avoid division by zero
+    const rate = ((current - previous) / previous) * 100;
+    console.log(parseFloat(`${rate.toFixed(2)})`));
+    return parseFloat(`${rate.toFixed(2)}`);
+  };
+
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5 p-6">
       <CardDataStats
         title="Amount Spent"
         total={`$ ${amtSpent}`}
-        rate="4.35%"
-        levelUp
+        rate={`${calculateRate(amtSpent, prevAmtSpent)} %`}
+        {...(calculateRate(amtSpent, prevAmtSpent) > 0
+          ? { levelUp: true }
+          : { levelDown: true })}
       >
         <div className="flex justify-start w-full items-start">
           <div className="bg-gray-300 p-2 rounded-full">
@@ -41,8 +58,10 @@ const TaskSummary = ({
       <CardDataStats
         title="Total Tasks"
         total={`${totalTasks}`}
-        rate="2.59%"
-        levelUp
+        rate={`${calculateRate(totalTasks, prevTotalTasks)} %`}
+        {...(calculateRate(totalTasks, prevTotalTasks) > 0
+          ? { levelUp: true }
+          : { levelDown: true })}
       >
         <div className="flex justify-start w-full items-start">
           <div className="bg-gray-300 p-2 rounded-full">
@@ -66,8 +85,10 @@ const TaskSummary = ({
       <CardDataStats
         title="Done Tasks"
         total={`${doneTasks}`}
-        rate="0.95%"
-        levelDown
+        rate={`${calculateRate(doneTasks, prevDoneTasks)} %`}
+        {...(calculateRate(doneTasks, prevDoneTasks) > 0
+          ? { levelUp: true }
+          : { levelDown: true })}
       >
         <div className="flex justify-start w-full items-start">
           <div className="bg-gray-300 p-2 rounded-full">
@@ -91,8 +112,10 @@ const TaskSummary = ({
       <CardDataStats
         title="Pending Tasks"
         total={`${pendingTasks}`}
-        rate="0.43%"
-        levelUp
+        rate={`${calculateRate(pendingTasks, prevPendingTasks)} %`}
+        {...(calculateRate(pendingTasks, prevPendingTasks) > 0
+          ? { levelUp: true }
+          : { levelDown: true })}
       >
         <div className="flex justify-start w-full items-start">
           <div className="bg-gray-300 p-2 rounded-full">

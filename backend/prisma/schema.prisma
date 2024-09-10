@@ -38,6 +38,9 @@ model Task {
   done        Boolean      @default(false)
   user        User         @relation(fields: [user_id], references: [id])
   submissions Submission[]
+  postDate    Int
+  postMonth   Int
+  postYear    Int
 }
 
 model Option {

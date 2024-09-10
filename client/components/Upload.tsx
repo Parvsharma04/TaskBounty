@@ -28,6 +28,11 @@ export const Upload = () => {
   }, [wallet.connected]);
 
   async function onSubmit() {
+    let d = new Date();
+    let currDate = d.getUTCDate();
+    let currMonth = d.getUTCMonth();
+    let currYear = d.getUTCFullYear();
+
     const response = await axios.post(
       `${BACKEND_URL}/v1/user/task`,
       {
@@ -36,6 +41,9 @@ export const Upload = () => {
         })),
         title,
         signature: txSignature,
+        postDate: currDate,
+        postMonth: currMonth,
+        postYear: currYear,
       },
       {
         headers: {

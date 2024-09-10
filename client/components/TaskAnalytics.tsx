@@ -173,8 +173,14 @@ function TaskAnalytics() {
         totalTasks={totalTasks}
         doneTasks={doneTasks}
         pendingTasks={pendingTasks}
+        prevAmtSpent={10}
+        prevTotalTasks={1}
+        prevDoneTasks={3}
+        prevPendingTasks={3}
       />
-      <ChartAnalytics />
+      <div className="p-6 pb-0">
+        {AllTasks.length > 0 && <ChartAnalytics userTasks={AllTasks} />}
+      </div>
       <div>
         {AllTasks ? (
           <div className="p-12 pt-0 flex flex-col justify-center items-center">

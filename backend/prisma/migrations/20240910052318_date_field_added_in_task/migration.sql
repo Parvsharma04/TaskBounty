@@ -27,6 +27,7 @@ CREATE TABLE "Task" (
     "signature" TEXT NOT NULL,
     "amount" INTEGER NOT NULL,
     "done" BOOLEAN NOT NULL DEFAULT false,
+    "date" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
 );

@@ -33,8 +33,8 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
 
         <span
           className={`flex items-center gap-1 text-sm font-medium ${
-            levelUp && "text-meta-3"
-          } ${levelDown && "text-meta-5"} `}
+            levelUp && "text-green-600"
+          } ${levelDown && "text-red-600"} `}
         >
           {rate}
 
@@ -45,7 +45,7 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              className="size-6"
+              className="size-6 text-green-600"
             >
               <path
                 stroke-linecap="round"
@@ -61,7 +61,7 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              className="size-6"
+              className="size-6 text-red-600"
             >
               <path
                 stroke-linecap="round"

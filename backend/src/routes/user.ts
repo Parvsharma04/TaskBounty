@@ -99,6 +99,9 @@ router.get("/getAllTask", authMiddleware, async (req, res) => {
       amount: true,
       done: true,
       options: true,
+      postDate: true,
+      postMonth: true,
+      postYear: true,
     },
   });
 
@@ -193,6 +196,9 @@ router.post("/task", authMiddleware, async (req, res) => {
           amount: 0.1 * TOTAL_DECIMALS,
           signature: parseData.data.signature,
           user_id: userId,
+          postDate: body.postDate,
+          postMonth: body.postMonth,
+          postYear: body.postYear,
         },
       });
 
