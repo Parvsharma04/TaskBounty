@@ -272,7 +272,7 @@ router.post("/signin", async (req, res) => {
     new PublicKey(publicKey).toBytes()
   );
 
-  console.log(result);
+  // console.log(result);
 
   const existingUser = await prismaClient.user.findFirst({
     where: {

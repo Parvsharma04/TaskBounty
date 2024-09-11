@@ -149,7 +149,7 @@ const ChartAnalytics: React.FC<ChartAnalyticsProps> = ({ userTasks }) => {
     setUserSelectedCurrYear(arr[0]);
   }, []);
   useEffect(() => {
-    console.log("calling");
+    // console.log("calling");
     setDoneTasks(Array(12).fill(0));
     setPendingTasks(Array(12).fill(0));
     configureGraph();
