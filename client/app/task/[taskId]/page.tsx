@@ -37,10 +37,21 @@ export default function Page({
   }>({});
 
   useEffect(() => {
+    //! adding polling logic
     getTaskDetails(taskId).then((data) => {
       setResult(data.result);
       setTaskDetails(data.taskDetails);
     });
+    const timer = setTimeout(() => {
+      getTaskDetails(taskId).then((data) => {
+        setResult(data.result);
+        setTaskDetails(data.taskDetails);
+      });
+    }, 5000);
+
+    return () => {
+      clearTimeout(timer);
+    };
   }, [taskId]);
 
   return (

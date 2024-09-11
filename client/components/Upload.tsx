@@ -1,7 +1,7 @@
 "use client";
 
 import { UploadImage } from "@/components/UploadImage";
-import { BACKEND_URL } from "@/utils";
+import { BACKEND_URL, PARENT_WALLET_ADDRESS } from "@/utils";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import axios from "axios";
@@ -58,9 +58,9 @@ export const Upload = () => {
   async function makePayment() {
     const transaction = new Transaction().add(
       SystemProgram.transfer({
-        fromPubkey: wallet?.publicKey!,
-        toPubkey: new PublicKey("12AvcKeKRFCn1Gh1qVCzNgumHhXtqnMUpT3xtvoE4fzG"),
-        lamports: 100000000,
+        fromPubkey: wallet.publicKey!,
+        toPubkey: new PublicKey(PARENT_WALLET_ADDRESS),
+        lamports: 10000000000,
       })
     );
 
@@ -69,18 +69,20 @@ export const Upload = () => {
       value: { blockhash, lastValidBlockHeight },
     } = await connection.getLatestBlockhashAndContext();
 
-    const signature = await wallet?.sendTransaction(transaction, connection, {
+    const signature = await wallet.sendTransaction(transaction, connection, {
       minContextSlot,
+    });
+
+    console.log(connection);
+
+    await connection.confirmTransaction({
+      blockhash,
+      lastValidBlockHeight,
+      signature,
     });
 
     setTxSignature(signature);
     closeModal();
-
-    // await connection.confirmTransaction({
-    //   blockhash,
-    //   lastValidBlockHeight,
-    //   signature,
-    // });
   }
 
   const handlePrev = () => {

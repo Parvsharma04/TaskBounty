@@ -22,6 +22,7 @@ const NavBar = () => {
     async function getToken() {
       try {
         if (!publicKey) return;
+        //! make the message unique which makes it more secure
         const message = new TextEncoder().encode("verify this to authenticate");
         const signature = await signMessage?.(message);
         let response = await axios.post(`${BACKEND_URL}/v1/user/signin`, {
@@ -50,8 +51,8 @@ const NavBar = () => {
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900 fixed w-full shadow-md z-50">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <a
-          href="https://flowbite.com/"
+        <Link
+          href="/"
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
           <img
@@ -62,7 +63,7 @@ const NavBar = () => {
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
             TaskBounty
           </span>
-        </a>
+        </Link>
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
           <WalletMultiButtonDynamic>
             {publicKey

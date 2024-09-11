@@ -25,6 +25,16 @@ const connection = new Connection(
     ""
 );
 
+// prismaClient.$transaction(
+//   async (prisma) => {
+//     // code running in a transaction...
+//   },
+//   {
+//     maxWait: 5000,
+//     timeout: 10000,
+//   }
+// );
+
 router.get("/task", authMiddleware, async (req, res) => {
   // @ts-ignore
   const taskId: string = req.query.taskId;
@@ -141,40 +151,43 @@ router.post("/task", authMiddleware, async (req, res) => {
     });
   }
 
-  const transaction = await connection.getTransaction(
-    parseData.data.signature,
-    {
-      maxSupportedTransactionVersion: 1,
+  console.log("dummy delay for 10 sec active");
+  //! add dummy delay for 10 sec
+  setTimeout(async () => {
+    const transaction = await connection.getTransaction(
+      parseData.data.signature,
+      {
+        maxSupportedTransactionVersion: 1,
+      }
+    );
+
+    if (!transaction) {
+      return res.status(411).json({
+        message: "Transaction not found",
+      });
     }
-  );
 
-  if (!transaction) {
-    return res.status(411).json({
-      message: "Transaction not found",
-    });
-  }
+    const amountTransferred =
+      (transaction.meta?.postBalances[1] ?? 0) -
+      (transaction.meta?.preBalances[1] ?? 0);
 
-  const amountTransferred =
-    (transaction.meta?.postBalances[1] ?? 0) -
-    (transaction.meta?.preBalances[1] ?? 0);
+    // if (amountTransferred !== 100000000) {
+    //   return res.status(411).json({
+    //     message: "Transaction amount is incorrect. Expected 0.1 SOL",
+    //   });
+    // }
 
-  // if (amountTransferred !== 100000000) {
-  //   return res.status(411).json({
-  //     message: "Transaction amount is incorrect. Expected 0.1 SOL",
-  //   });
-  // }
+    // console.log(transaction.transaction.message.getAccountKeys());
 
-  // console.log(transaction.transaction.message.getAccountKeys());
-
-  const recipientAddress = transaction.transaction.message
-    .getAccountKeys()
-    .get(1)
-    ?.toString();
-  const senderAddress = transaction.transaction.message
-    .getAccountKeys()
-    .get(0)
-    ?.toString();
-
+    const recipientAddress = transaction.transaction.message
+      .getAccountKeys()
+      .get(1)
+      ?.toString();
+    const senderAddress = transaction.transaction.message
+      .getAccountKeys()
+      .get(0)
+      ?.toString();
+  }, 10000);
   // if (recipientAddress !== PARENT_WALLET_ADDRESS) {
   //   return res.status(411).json({
   //     message: "Transaction sent to the wrong address",
@@ -189,28 +202,34 @@ router.post("/task", authMiddleware, async (req, res) => {
   // }
 
   try {
-    const response = await prismaClient.$transaction(async (tx) => {
-      const task = await tx.task.create({
-        data: {
-          title: parseData.data.title ?? DEFAULT_TITLE,
-          amount: 0.1 * TOTAL_DECIMALS,
-          signature: parseData.data.signature,
-          user_id: userId,
-          postDate: body.postDate,
-          postMonth: body.postMonth,
-          postYear: body.postYear,
-        },
-      });
+    const response = await prismaClient.$transaction(
+      async (tx) => {
+        const task = await tx.task.create({
+          data: {
+            title: parseData.data.title ?? DEFAULT_TITLE,
+            amount: 0.1 * TOTAL_DECIMALS,
+            signature: parseData.data.signature,
+            user_id: userId,
+            postDate: body.postDate,
+            postMonth: body.postMonth,
+            postYear: body.postYear,
+          },
+        });
 
-      await tx.option.createMany({
-        data: parseData.data.options.map((x) => ({
-          image_url: x.imageUrl,
-          task_id: task.id,
-        })),
-      });
+        await tx.option.createMany({
+          data: parseData.data.options.map((x) => ({
+            image_url: x.imageUrl,
+            task_id: task.id,
+          })),
+        });
 
-      return task;
-    });
+        return task;
+      },
+      {
+        maxWait: 5000,
+        timeout: 10000,
+      }
+    );
 
     res.json({
       id: response.id,
@@ -246,11 +265,15 @@ router.post("/signin", async (req, res) => {
   const { publicKey, signature } = req.body;
   const message = new TextEncoder().encode("verify this to authenticate");
   const signedString = "verify this to authenticate";
+
   const result = nacl.sign.detached.verify(
     message,
     new Uint8Array(signature.data),
     new PublicKey(publicKey).toBytes()
   );
+
+  console.log(result);
+
   const existingUser = await prismaClient.user.findFirst({
     where: {
       address: publicKey,

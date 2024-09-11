@@ -65,10 +65,10 @@ model Submission {
 }
 
 model Payouts {
-  id        Int       @id @default(autoincrement())
+  id        BigInt    @id @default(autoincrement())
   user_id   Int
   user      User      @relation(fields: [user_id], references: [id])
-  amount    Int
+  amount    BigInt
   signature String
   status    TxnStatus
 }

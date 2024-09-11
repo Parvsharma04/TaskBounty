@@ -98,7 +98,7 @@ router.get("/balance", workerMiddleware, async (req, res) => {
 });
 
 //! payout logic is pending
-router.post("/payout", async (req, res) => {
+router.post("/payout", workerMiddleware, async (req, res) => {
   //@ts-ignore
   const userId: string = req.userId;
 
@@ -115,6 +115,34 @@ router.post("/payout", async (req, res) => {
   }
 
   const address = worker.address;
+  const txnId = "0x123123123";
+
+  //! we should add the lock here
+  await prismaClient.$transaction(async (tx) => {
+    await tx.worker.update({
+      where: {
+        id: Number(userId),
+      },
+      data: {
+        pending_amount: {
+          decrement: worker.pending_amount,
+        },
+        locked_amount: {
+          increment: worker.pending_amount,
+        },
+      },
+    });
+
+    await tx.payouts.create({
+      data: {
+        id: Number(txnId), //! fix this later
+        user_id: Number(userId),
+        amount: worker.pending_amount,
+        status: "Processing",
+        signature: txnId,
+      },
+    });
+  });
 });
 
 //! sigining with wallet
