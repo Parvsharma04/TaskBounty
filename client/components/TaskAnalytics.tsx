@@ -10,6 +10,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useRouter } from "next/navigation";
 import TaskSummary from "./TaskSummary";
 import ChartAnalytics from "./ChartAnalytics";
+import { BACKEND_URL } from "@/utils";
 
 function TaskAnalytics() {
   const [AllTasks, setAllTasks] = useState([]);
@@ -23,14 +24,11 @@ function TaskAnalytics() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:3000/v1/user/getAllTask`,
-          {
-            headers: {
-              Authorization: localStorage.getItem("token"),
-            },
-          }
-        );
+        const res = await axios.get(`${BACKEND_URL}/v1/user/getAllTask`, {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        });
 
         if (res.status === 200) {
           toast.success(res.data.message, {

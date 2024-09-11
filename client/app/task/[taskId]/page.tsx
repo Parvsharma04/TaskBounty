@@ -1,8 +1,10 @@
 "use client";
-import Appbar from "@/components/Appbar";
+
 import TaskCard from "@/components/TaskCard";
 import { BACKEND_URL } from "@/utils";
+import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 async function getTaskDetails(taskId: string) {
@@ -36,6 +38,15 @@ export default function Page({
   const [taskDetails, setTaskDetails] = useState<{
     title?: string;
   }>({});
+
+  const wallet = useWallet();
+  const Router = useRouter();
+
+  useEffect(() => {
+    if (!wallet.connected) {
+      Router.replace("/");
+    }
+  }, [wallet.connected]);
 
   useEffect(() => {
     //! adding polling logic
