@@ -60,7 +60,7 @@ export const Upload = () => {
       SystemProgram.transfer({
         fromPubkey: wallet.publicKey!,
         toPubkey: new PublicKey(PARENT_WALLET_ADDRESS),
-        lamports: 10000000000,
+        lamports: 100000000,
       })
     );
 
