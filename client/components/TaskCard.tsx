@@ -1,3 +1,4 @@
+import Image from "next/image";
 import "../styles/taskCard.css";
 
 interface TaskCardProps {
@@ -10,7 +11,13 @@ const TaskCard = ({ imageUrl, votes }: TaskCardProps) => {
     <div className="flip-card">
       <div className="flip-card-inner">
         <div className="flip-card-front">
-          <img src={imageUrl} className="p-3 rounded-3xl" alt="Task img" />
+          <Image
+            width={400}
+            height={400}
+            src={imageUrl}
+            className="p-3 rounded-3xl"
+            alt="Task img"
+          />
           <p className="title mt-3 text-black">
             <span>Votes: </span>
             {votes}

@@ -5,6 +5,7 @@ import { BACKEND_URL, PARENT_WALLET_ADDRESS } from "@/utils";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import axios from "axios";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
@@ -25,7 +26,7 @@ export const Upload = () => {
     if (!wallet.connected) {
       router.replace("/");
     }
-  }, [wallet.connected]);
+  }, [wallet.connected, router]);
 
   async function onSubmit() {
     let d = new Date();
@@ -182,7 +183,7 @@ export const Upload = () => {
                     }`}
                     data-carousel-item
                   >
-                    <img
+                    <Image
                       src={image}
                       className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
                       alt={`Slide ${idx}`}

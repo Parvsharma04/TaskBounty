@@ -40,13 +40,13 @@ export default function Page({
   }>({});
 
   const wallet = useWallet();
-  const Router = useRouter();
+  const router = useRouter();
 
   useEffect(() => {
     if (!wallet.connected) {
-      Router.replace("/");
+      router.replace("/");
     }
-  }, [wallet.connected]);
+  }, [wallet.connected, router]);
 
   useEffect(() => {
     //! adding polling logic
@@ -74,6 +74,7 @@ export default function Page({
       <div className="flex flex-wrap justify-center pt-8 gap-5">
         {Object.keys(result || {}).map((taskId) => (
           <Task
+            key={taskId}
             imageUrl={result[taskId].option.imageUrl}
             votes={result[taskId].count}
           />

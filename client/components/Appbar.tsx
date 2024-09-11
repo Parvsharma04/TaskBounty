@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import "../styles/home.css";
 import Link from "next/link";
-import { Wallet } from "./Wallet";
+import Image from "next/image";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -39,7 +39,7 @@ const NavBar = () => {
     if (publicKey) {
       getToken();
     }
-  }, [publicKey]);
+  }, [publicKey, signMessage]);
 
   useEffect(() => {
     if (!publicKey) {
@@ -55,10 +55,12 @@ const NavBar = () => {
           href="/"
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
-          <img
+          <Image
             src="https://flowbite.com/docs/images/logo.svg"
             className="h-8"
             alt="Flowbite Logo"
+            width={32}
+            height={32}
           />
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
             TaskBounty

@@ -66,7 +66,7 @@ function TaskAnalytics() {
     if (!wallet.connected) {
       Router.replace("/");
     }
-  }, [wallet.connected]);
+  }, [wallet.connected, Router]);
 
   const customStyles = {
     header: {
@@ -117,38 +117,43 @@ function TaskAnalytics() {
     setPendingTasks(pending);
   };
 
+  interface Task {
+    id: string;
+    title: string;
+    amount: string;
+    done: boolean;
+    options: { image_url: string }[];
+  }
+
   const columns = [
     {
       name: "id",
-      selector: (row: { id: any }) => row.id,
+      selector: (row: Task) => row.id,
       sortable: true,
     },
     {
       name: "title",
-      selector: (row: { title: any }) => row.title,
+      selector: (row: Task) => row.title,
       sortable: true,
     },
     {
       name: "amount",
-      selector: (row: { amount: any }) => row.amount,
+      selector: (row: Task) => row.amount,
       sortable: true,
     },
     {
       name: "done",
-      selector: (row: { done: any }) =>
-        row.done == false ? "Not Done" : "Done",
+      selector: (row: Task) => (row.done == false ? "Not Done" : "Done"),
       sortable: true,
     },
     {
       name: "options",
-      selector: (row: { options: any }) => row.options[0].image_url,
+      selector: (row: Task) => row.options[0].image_url,
       sortable: true,
     },
     {
       name: "actions",
-      cell: (row: { id: any }) => (
-        <Link href={`/task/${row.id}`}>View Details</Link>
-      ),
+      cell: (row: Task) => <Link href={`/task/${row.id}`}>View Details</Link>,
     },
   ];
 

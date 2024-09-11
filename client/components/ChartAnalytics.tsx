@@ -1,7 +1,7 @@
 "use client";
 
 import { ApexOptions } from "apexcharts";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -136,11 +136,12 @@ const ChartAnalytics: React.FC<ChartAnalyticsProps> = ({ userTasks }) => {
   const [PendingTasks, setPendingTasks] = useState(Array(12).fill(0));
   const [Period, setPeriod] = useState("day");
   const d = new Date();
-  const [year, setYear] = useState([]);
+  const [year, setYear] = useState<Number[]>([]);
   const [userSelectedCurrYear, setUserSelectedCurrYear] = useState(0);
 
+  // Move 'd' outside to avoid dependency warnings
   useEffect(() => {
-    const arr: any = [];
+    const arr = [];
     for (let i = d.getUTCFullYear() - 10; i <= d.getUTCFullYear(); i++) {
       arr.push(i);
     }
@@ -148,20 +149,14 @@ const ChartAnalytics: React.FC<ChartAnalyticsProps> = ({ userTasks }) => {
     setYear(arr);
     setUserSelectedCurrYear(arr[0]);
   }, []);
-  useEffect(() => {
-    // console.log("calling");
+
+  // Memoize 'configureGraph' to prevent re-creation in each render
+  const configureGraph = useCallback(() => {
     setDoneTasks(Array(12).fill(0));
     setPendingTasks(Array(12).fill(0));
-    configureGraph();
-  }, [userSelectedCurrYear]);
-
-  //! configure the data acc. to month and year
-  const configureGraph = () => {
-    userTasks.map((task, idx) => {
-      //! year filtering
-      if (task.postYear == userSelectedCurrYear) {
-        //! month filtering
-        if (task.done == false) {
+    userTasks.forEach((task) => {
+      if (task.postYear === userSelectedCurrYear) {
+        if (!task.done) {
           setPendingTasks((prev) => {
             const newPendingTasks = [...prev];
             newPendingTasks[task.postMonth - 1]++;
@@ -176,7 +171,11 @@ const ChartAnalytics: React.FC<ChartAnalyticsProps> = ({ userTasks }) => {
         }
       }
     });
-  };
+  }, [userSelectedCurrYear, userTasks]);
+
+  useEffect(() => {
+    configureGraph();
+  }, [userSelectedCurrYear, configureGraph]);
 
   const series = [
     {
@@ -219,7 +218,9 @@ const ChartAnalytics: React.FC<ChartAnalyticsProps> = ({ userTasks }) => {
               onChange={(e) => setUserSelectedCurrYear(Number(e.target.value))}
             >
               {year.map((yr) => (
-                <option value={yr}>{yr}</option>
+                <option key={yr.toString()} value={yr.toString()}>
+                  {yr.toString()}
+                </option>
               ))}
             </select>
           </div>

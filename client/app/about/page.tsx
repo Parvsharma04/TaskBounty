@@ -5,7 +5,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-function aboutPage() {
+function AboutPageComponent() {
   const wallet = useWallet();
   const router = useRouter();
 
@@ -13,7 +13,7 @@ function aboutPage() {
     if (!wallet.connected) {
       router.replace("/");
     }
-  }, [wallet.connected]);
+  }, [wallet.connected, router]);
 
   return (
     <>
@@ -22,4 +22,4 @@ function aboutPage() {
   );
 }
 
-export default aboutPage;
+export default AboutPageComponent;
