@@ -113,6 +113,10 @@ export const NextTask: React.FC<NextTaskProps> = ({
               {currentTask?.options.map((option) => (
                 <TaskImage
                   onSelect={async () => {
+                    let d = new Date();
+                    let currDate = d.getUTCDate();
+                    let currMonth = d.getUTCMonth();
+                    let currYear = d.getUTCFullYear();
                     setLoading(true);
                     try {
                       const response = await axios.post(
@@ -120,6 +124,9 @@ export const NextTask: React.FC<NextTaskProps> = ({
                         {
                           taskId: currentTask.id.toString(),
                           selection: option.id.toString(),
+                          postDate: currDate,
+                          postMonth: currMonth,
+                          postYear: currYear,
                         },
                         {
                           headers: {

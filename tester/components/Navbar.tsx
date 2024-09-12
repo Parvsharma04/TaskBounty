@@ -29,7 +29,7 @@ const NavBar = () => {
       } catch (error) {
         console.error("Error fetching token:", error);
       }
-    } else {
+    } else if(!wallet.connected){
       localStorage.clear();
     }
   }
