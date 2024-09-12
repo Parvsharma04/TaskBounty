@@ -46,7 +46,7 @@ router.post("/submission", workerMiddleware, async (req, res) => {
     const amount = (Number(task.amount) / TOTAL_SUBMISSIONS).toString();
 
     const submission = await prismaClient.$transaction(async (tx) => {
-      const submission = await tx.submission.create({
+      const submission = await prismaClient.submission.create({
         data: {
           option_id: Number(parsedBody.data.selection),
           worker_id: userId,
