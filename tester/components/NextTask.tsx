@@ -46,7 +46,6 @@ export const NextTask: React.FC<NextTaskProps> = ({
 
   const getTask = async () => {
     if (wallet.connected && token) {
-      console.log("wallet connected");
       setLoading(true);
       try {
         let response = await axios.get(`${BACKEND_URL}/v1/worker/nextTask`, {

@@ -114,7 +114,7 @@ const ChartOne = ({ submissions } : any) => {
 
   const series = [
     {
-      name: "Completed Tasks",
+      name: "Bounties Hunted",
       data: doneTasks,
     }
   ];

@@ -102,10 +102,61 @@ router.get("/balance", workerMiddleware, async (req, res) => {
 });
 
 //! payout logic is pending
+// router.post("/payout", workerMiddleware, async (req, res) => {
+//   //@ts-ignore
+//   const userId: string = req.userId;
+
+//   const worker = await prismaClient.worker.findFirst({
+//     where: {
+//       id: Number(userId),
+//     },
+//   });
+
+//   if (!worker) {
+//     return res.status(403).json({
+//       message: "Worker not found",
+//     });
+//   }
+
+//   const address = worker.address;
+//   const txnId = "0x123123123";
+
+//   //! we should add the lock here
+//   await prismaClient.$transaction(async (tx) => {
+//     await tx.worker.update({
+//       where: {
+//         id: Number(userId),
+//       },
+//       data: {
+//         pending_amount: {
+//           decrement: worker.pending_amount,
+//         },
+//         locked_amount: {
+//           increment: worker.pending_amount,
+//         },
+//       },
+//     });
+
+//     await tx.payouts.create({
+//       data: {
+//         id: Number(txnId), //! fix this later
+//         user_id: Number(userId),
+//         amount: worker.pending_amount,
+//         status: "Processing",
+//         signature: txnId,
+//       },
+//     });
+//   });
+// });
+
 router.post("/payout", workerMiddleware, async (req, res) => {
   //@ts-ignore
   const userId: string = req.userId;
 
+  // Minimum amount required for a payout
+  const MIN_AMOUNT_FOR_PAYOUT = 10000000;
+
+  // Fetch worker details
   const worker = await prismaClient.worker.findFirst({
     where: {
       id: Number(userId),
@@ -118,35 +169,53 @@ router.post("/payout", workerMiddleware, async (req, res) => {
     });
   }
 
+  if (worker.pending_amount < MIN_AMOUNT_FOR_PAYOUT) {
+    return res.status(400).json({
+      message: `Pending amount must be at least ${MIN_AMOUNT_FOR_PAYOUT} for payout`,
+    });
+  }
+
   const address = worker.address;
-  const txnId = "0x123123123";
+  const txnId = "0x123123123"; // You should generate or obtain a real transaction ID
 
-  //! we should add the lock here
-  await prismaClient.$transaction(async (tx) => {
-    await tx.worker.update({
-      where: {
-        id: Number(userId),
-      },
-      data: {
-        pending_amount: {
-          decrement: worker.pending_amount,
+  try {
+    await prismaClient.$transaction(async (tx) => {
+      await tx.worker.update({
+        where: {
+          id: Number(userId),
         },
-        locked_amount: {
-          increment: worker.pending_amount,
+        data: {
+          pending_amount: {
+            decrement: worker.pending_amount,
+          },
+          locked_amount: {
+            increment: worker.pending_amount,
+          },
+          withdrawn: {
+            increment: worker.pending_amount,
+          },
         },
-      },
+      });
+
+      await tx.payouts.create({
+        data: {
+          user_id: Number(userId),
+          amount: worker.pending_amount,
+          status: "Processing",
+          signature: txnId,
+        },
+      });
     });
 
-    await tx.payouts.create({
-      data: {
-        id: Number(txnId), //! fix this later
-        user_id: Number(userId),
-        amount: worker.pending_amount,
-        status: "Processing",
-        signature: txnId,
-      },
+    res.status(200).json({
+      message: "Payout initiated successfully",
     });
-  });
+  } catch (error) {
+    console.error("Error processing payout:", error);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
 });
 
 //! sigining with wallet
@@ -202,32 +271,6 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-// router.get("/getTesterData", workerMiddleware, async (req, res) => {
-//   const { publicKey } = req.query; // Extract publicKey from query params
-
-//   if (!publicKey) {
-//     return res.status(400).json({ error: "Public key is required" });
-//   }
-
-//   try {
-//     let testerData = await prismaClient.worker.findFirst({
-//       where: {
-//         address: String(publicKey), // Ensure that 'address' is the correct field in your database schema
-//       },
-//     });
-
-//     if (!testerData) {
-//       return res.status(404).json({ error: "Tester not found" });
-//     }
-
-//     res.json(testerData);
-//   } catch (error) {
-//     console.error("Error fetching tester data:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-
 router.get("/getTesterData", workerMiddleware, async (req, res) => {
   const { publicKey } = req.query; // Extract publicKey from query params
 
@@ -244,7 +287,7 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
       include: {
         submissions: {
           include: {
-            task: true,   // Includes task details
+            task: true, // Includes task details
             option: true, // Includes option details
           },
         },
@@ -257,7 +300,7 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
 
     // Fetch the count of submissions grouped by month and year
     const submissionCountByMonthYear = await prismaClient.submission.groupBy({
-      by: ['postMonth', 'postYear'],
+      by: ["postMonth", "postYear"],
       where: {
         worker_id: testerData.id,
       },
@@ -270,6 +313,7 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
     res.json({
       testerData,
       submissionCountByMonthYear,
+      withdrawn: testerData.withdrawn, // Include withdrawn field
     });
   } catch (error) {
     console.error("Error fetching tester data:", error);

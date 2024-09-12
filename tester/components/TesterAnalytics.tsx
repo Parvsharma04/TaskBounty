@@ -1,11 +1,11 @@
-"use client";
-
+"use client"
 import { BACKEND_URL } from "@/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChartOne from "./charts/Graph";
+import TaskSummary from "./TaskSummary";
 
 interface Submission {
   id: number;
@@ -43,31 +43,28 @@ interface SubmissionCount {
 }
 
 interface TesterData {
-  submissions: Submission[];
+  testerData: {
+    submissions: Submission[];
+    pending_amount: number;
+    locked_amount: number;
+  };
   submissionCountByMonthYear: SubmissionCount[];
+  withdrawn: number
 }
 
-export const TesterAnalytics = () => {
+export const TesterAnalytics: React.FC = () => {
   const wallet = useWallet();
   const router = useRouter();
   const [testerData, setTesterData] = useState<TesterData | null>(null);
-
-  async function getTesterData() {
-    try {
-      const response = await axios.get(`${BACKEND_URL}/v1/worker/getTesterData`, {
-        params: {
-          publicKey: wallet.publicKey?.toBase58(),
-        },
-        headers: {
-          Authorization: localStorage.getItem("token") || "",
-        },
-      });
-      // console.log("Fetched Data:", response.data);
-      setTesterData(response.data);
-    } catch (error) {
-      console.error("Error fetching tester data:", error);
-    }
-  }
+  const [testCount, setTestCount] = useState(0);
+  const [taskRate, setTaskRate] = useState<{
+    rate: string;
+    increase: boolean;
+  } | null>(null);
+  const [totalEarned, setTotalEarned] = useState(0);
+  const [totalPayout, setTotalPayout] = useState(0); // New state for total payout
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!wallet.connected) {
@@ -77,31 +74,113 @@ export const TesterAnalytics = () => {
     }
   }, [wallet, router]);
 
-  if (!wallet.connected) {
+  const processData = (data: TesterData) => {
+    calculateNumberOfTests(data.submissionCountByMonthYear);
+    calculateTaskRate(data.submissionCountByMonthYear);
+    calculateTotalEarned(data.testerData.submissions);
+    setTotalPayout(data.withdrawn)
+  };
+
+  const calculateNumberOfTests = (submissionCounts: SubmissionCount[]) => {
+    const tests = submissionCounts.reduce(
+      (total, ele) => total + ele._count.id,
+      0
+    );
+    setTestCount(tests);
+  };
+
+  const calculateTaskRate = (submissionCounts: SubmissionCount[]) => {
+    const sortedCounts = submissionCounts.sort(
+      (a, b) => b.postYear * 12 + b.postMonth - (a.postYear * 12 + a.postMonth)
+    );
+
+    if (sortedCounts.length >= 2) {
+      const currentMonth = sortedCounts[0]._count.id;
+      const previousMonth = sortedCounts[1]._count.id;
+
+      if (previousMonth > 0) {
+        const changeRate =
+          ((currentMonth - previousMonth) / previousMonth) * 100;
+        setTaskRate({
+          rate: `${Math.abs(changeRate).toFixed(2)}%`,
+          increase: changeRate >= 0,
+        });
+      } else if (currentMonth > 0) {
+        setTaskRate({ rate: "100%", increase: true });
+      } else {
+        setTaskRate({ rate: "0%", increase: false });
+      }
+    } else if (sortedCounts.length === 1 && sortedCounts[0]._count.id > 0) {
+      setTaskRate({ rate: "100%", increase: true });
+    } else {
+      setTaskRate({ rate: "0%", increase: false });
+    }
+  };
+
+  const calculateTotalEarned = (submissions: Submission[]) => {
+    const total = submissions.reduce(
+      (sum, submission) => sum + submission.amount,
+      0
+    );
+    setTotalEarned(total / 100 / 1000);
+  };
+
+  const getTesterData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(
+        `${BACKEND_URL}/v1/worker/getTesterData`,
+        {
+          params: { publicKey: wallet.publicKey?.toBase58() },
+          headers: { Authorization: localStorage.getItem("token") || "" },
+        }
+      );
+      setTesterData(response.data);
+      processData(response.data);
+    } catch (error) {
+      console.error("Error fetching tester data:", error);
+      setError("Failed to fetch tester data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
     return (
-      <div className="h-screen flex justify-center flex-col">
-        <div className="w-full flex justify-center text-2xl">
-          Please connect your wallet
-        </div>
+      <div className="h-screen flex justify-center items-center text-2xl">
+        Loading data...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="h-screen flex justify-center items-center text-2xl text-red-500">
+        {error}
       </div>
     );
   }
 
   if (!testerData) {
     return (
-      <div className="h-screen flex justify-center flex-col">
-        <div className="w-full flex justify-center text-2xl">
-          Loading data...
-        </div>
+      <div className="h-screen flex justify-center items-center text-2xl">
+        No data available.
       </div>
     );
   }
 
   return (
     <div className="h-screen flex flex-col">
-      <ChartOne
-        submissions={testerData.submissionCountByMonthYear}
+      <TaskSummary
+        doneTasks={testCount}
+        rate={taskRate ? taskRate.rate : "0%"}
+        levelUp={taskRate ? taskRate.increase : false}
+        levelDown={taskRate ? !taskRate.increase : false}
+        totalEarned={totalEarned}
+        totalPayout={totalPayout}
       />
+      <ChartOne submissions={testerData.submissionCountByMonthYear} />
     </div>
   );
 };

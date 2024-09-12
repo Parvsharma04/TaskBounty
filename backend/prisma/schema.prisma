@@ -24,9 +24,11 @@ model Worker {
   id             Int          @id @default(autoincrement())
   address        String       @unique
   submissions    Submission[]
-  pending_amount Int // amount in lamports (* 10^9)
+  pending_amount Int          // amount in lamports (* 10^9)
   locked_amount  Int
+  withdrawn      Int          @default(0)  // Added field with default value of 0
 }
+
 
 model Task {
   id          Int          @id @default(autoincrement())
