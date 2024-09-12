@@ -2,7 +2,7 @@
 
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
-import React from "react";
+import { useEffect, useState } from "react";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -27,7 +27,6 @@ const options: ApexOptions = {
       left: 0,
       opacity: 0.1,
     },
-
     toolbar: {
       show: false,
     },
@@ -52,12 +51,8 @@ const options: ApexOptions = {
   ],
   stroke: {
     width: [2, 2],
-    curve: "straight",
+    curve: "smooth",
   },
-  // labels: {
-  //   show: false,
-  //   position: "top",
-  // },
   grid: {
     xaxis: {
       lines: {
@@ -79,9 +74,7 @@ const options: ApexOptions = {
     strokeColors: ["#3056D3", "#80CAEE"],
     strokeWidth: 3,
     strokeOpacity: 0.9,
-    strokeDashArray: 0,
     fillOpacity: 1,
-    discrete: [],
     hover: {
       size: undefined,
       sizeOffset: 5,
@@ -90,18 +83,7 @@ const options: ApexOptions = {
   xaxis: {
     type: "category",
     categories: [
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
     ],
     axisBorder: {
       show: false,
@@ -117,59 +99,42 @@ const options: ApexOptions = {
       },
     },
     min: 0,
-    max: 100,
   },
 };
+const ChartOne = ({ submissions } : any) => {
+  const [doneTasks, setDoneTasks] = useState<number[]>(Array(12).fill(0));
 
-interface ChartOneState {
-  series: {
-    name: string;
-    data: number[];
-  }[];
-}
+  useEffect(() => {
+    const doneTasksTemp = Array(12).fill(0);
+    submissions.forEach((ele: { postMonth: number; _count: { id: any; }; })=>{
+      doneTasksTemp[ele.postMonth] = ele._count.id
+    })
+    setDoneTasks(doneTasksTemp);
+  }, [submissions]);
 
-const ChartOne: React.FC = () => {
   const series = [
     {
-      name: "Tests",
-      data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
-    },
+      name: "Completed Tasks",
+      data: doneTasks,
+    }
   ];
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
-      <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
+      <div className="flex flex-wrap items-center p-4 justify-between gap-3 sm:flex-nowrap">
         <div className="flex w-full flex-wrap gap-3 sm:gap-5">
-          <div className="flex min-w-47.5">
-            <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-primary">
-              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-primary"></span>
+          {/* <div className="flex w-1/3">
+            <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-purple-600">
+              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-purple-700"></span>
             </span>
             <div className="w-full">
-              <p className="font-semibold text-primary">Total Revenue</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
+              <p className="font-semibold text-primary">Completed Tasks</p>
             </div>
-          </div>
-          <div className="flex min-w-47.5">
-            <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-secondary">
-              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-secondary"></span>
-            </span>
-            <div className="w-full">
-              <p className="font-semibold text-secondary">Total Sales</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
-            </div>
-          </div>
+          </div> */}
         </div>
-        <div className="flex w-full max-w-45 justify-end">
-          <div className="inline-flex items-center rounded-md bg-whiter p-1.5 dark:bg-meta-4">
-            <button className="rounded bg-white px-3 py-1 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:bg-boxdark dark:text-white dark:hover:bg-boxdark">
-              Day
-            </button>
-            <button className="rounded px-3 py-1 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark">
-              Week
-            </button>
-            <button className="rounded px-3 py-1 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark">
-              Month
-            </button>
+        <div className="flex w-full max-w-45 justify-end gap-3">
+          <div className="inline-flex items-center rounded-md bg-whiter p-1.5 bg-gray-300">
+            <label className="text-xl text-black mr-2">Year: </label>
           </div>
         </div>
       </div>

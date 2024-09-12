@@ -52,11 +52,12 @@ router.post("/submission", workerMiddleware, async (req, res) => {
           worker_id: userId,
           task_id: Number(parsedBody.data.taskId),
           amount: Number(amount),
-          postDate: body.postDate,
-          postMonth: body.postMonth,
-          postYear: body.postYear,
+          postDate: body.postDate, // Day from frontend
+          postMonth: body.postMonth, // Month from frontend
+          postYear: body.postYear, // Year from frontend
         },
       });
+
       // console.log(submission);
 
       await tx.worker.update({
@@ -201,6 +202,32 @@ router.post("/signin", async (req, res) => {
   }
 });
 
+// router.get("/getTesterData", workerMiddleware, async (req, res) => {
+//   const { publicKey } = req.query; // Extract publicKey from query params
+
+//   if (!publicKey) {
+//     return res.status(400).json({ error: "Public key is required" });
+//   }
+
+//   try {
+//     let testerData = await prismaClient.worker.findFirst({
+//       where: {
+//         address: String(publicKey), // Ensure that 'address' is the correct field in your database schema
+//       },
+//     });
+
+//     if (!testerData) {
+//       return res.status(404).json({ error: "Tester not found" });
+//     }
+
+//     res.json(testerData);
+//   } catch (error) {
+//     console.error("Error fetching tester data:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+
 router.get("/getTesterData", workerMiddleware, async (req, res) => {
   const { publicKey } = req.query; // Extract publicKey from query params
 
@@ -209,9 +236,18 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
   }
 
   try {
+    // Fetch tester data with their submissions
     let testerData = await prismaClient.worker.findFirst({
       where: {
         address: String(publicKey), // Ensure that 'address' is the correct field in your database schema
+      },
+      include: {
+        submissions: {
+          include: {
+            task: true,   // Includes task details
+            option: true, // Includes option details
+          },
+        },
       },
     });
 
@@ -219,7 +255,22 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
       return res.status(404).json({ error: "Tester not found" });
     }
 
-    res.json(testerData);
+    // Fetch the count of submissions grouped by month and year
+    const submissionCountByMonthYear = await prismaClient.submission.groupBy({
+      by: ['postMonth', 'postYear'],
+      where: {
+        worker_id: testerData.id,
+      },
+      _count: {
+        id: true, // Count number of submissions
+      },
+    });
+
+    // Respond with both tester data and the monthly submission counts
+    res.json({
+      testerData,
+      submissionCountByMonthYear,
+    });
   } catch (error) {
     console.error("Error fetching tester data:", error);
     res.status(500).json({ error: "Internal Server Error" });
