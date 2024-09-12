@@ -1,6 +1,6 @@
 import React from "react";
 import CardDataStats from "./charts/CardDataStats";
-import CircularProgressBar from './CircularProgressBar';
+import CircularProgressCountUp from "./CircularProgressBar";
 
 interface TaskSummaryProps {
   doneTasks: number;
@@ -99,7 +99,7 @@ const TaskSummary: React.FC<TaskSummaryProps> = ({
           </div>
         </div>
       </CardDataStats>
-      <CircularProgressBar percentage={totalEarned}/>
+      <CircularProgressCountUp/>
     </div>
   );
 };
