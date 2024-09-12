@@ -60,12 +60,16 @@ model Submission {
   task_id   Int
   task      Task   @relation(fields: [task_id], references: [id])
   amount    Int
+  postDate  Int // Day the submission was made
+  postMonth Int // Month the submission was made
+  postYear  Int // Year the submission was made
 
   @@unique([worker_id, task_id])
 }
 
+
 model Payouts {
-  id        BigInt    @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   user_id   Int
   user      User      @relation(fields: [user_id], references: [id])
   amount    BigInt
