@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import LoadingSpinner from "./LoadingSpinner";
+import Loading from "./Loading";
 import TaskImage from "./TaskImage";
 import TaskStatement from "./TaskStatement";
 
@@ -81,15 +81,15 @@ export const NextTask: React.FC<NextTaskProps> = ({
         theme="colored"
       />
       {!wallet.connected ? (
-        <div className="h-screen flex justify-center flex-col">
+        <div className="h-screen flex justify-center flex-col bg-black text-white">
           <div className="w-full flex justify-center text-2xl">
             Please connect your wallet
           </div>
         </div>
       ) : loading ? (
-        <div className="h-screen flex justify-center flex-col">
+        <div className="h-screen flex justify-center flex-col bg-black text-white" >
           <div className="w-full flex justify-center text-2xl">
-            <LoadingSpinner />
+            <Loading />
           </div>
         </div>
       ) : currentTask === null ? (

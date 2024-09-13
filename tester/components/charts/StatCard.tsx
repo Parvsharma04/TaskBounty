@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 
-interface CardDataStatsProps {
+interface StatCardProps {
   title: string;
   total: string;
   rate: string;
@@ -9,7 +9,7 @@ interface CardDataStatsProps {
   children: ReactNode;
 }
 
-const CardDataStats: React.FC<CardDataStatsProps> = ({
+const StatCard: React.FC<StatCardProps> = ({
   title,
   total,
   rate,
@@ -76,4 +76,4 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
   );
 };
 
-export default CardDataStats;
+export default StatCard;
