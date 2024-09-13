@@ -5,7 +5,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import ChartOne from "./charts/Graph";
-import TaskSummary from "./TaskSummary";
+import TesterDash from "./TesterDash";
 
 interface Submission {
   id: number;
@@ -171,16 +171,21 @@ export const TesterAnalytics: React.FC = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col">
-      <TaskSummary
+    <div className="h-screen flex flex-col mt-10">
+      <TesterDash
         doneTasks={testCount}
         rate={taskRate ? taskRate.rate : "0%"}
         levelUp={taskRate ? taskRate.increase : false}
         levelDown={taskRate ? !taskRate.increase : false}
         totalEarned={totalEarned}
         totalPayout={totalPayout}
+        pendingAmount={testerData.testerData.pending_amount}
       />
-      <ChartOne submissions={testerData.submissionCountByMonthYear} />
+      <ChartOne
+        submissions={testerData.submissionCountByMonthYear}
+        className="mt-8 mx-auto"
+      />
     </div>
   );
+
 };
