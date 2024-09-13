@@ -4,7 +4,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import ChartOne from "./charts/Graph";
+import Graph from "./charts/Graph";
 import TesterDash from "./TesterDash";
 
 interface Submission {
@@ -181,7 +181,7 @@ export const TesterAnalytics: React.FC = () => {
         totalPayout={totalPayout}
         pendingAmount={testerData.testerData.pending_amount}
       />
-      <ChartOne
+      <Graph
         submissions={testerData.submissionCountByMonthYear}
         className="mt-8 mx-auto"
       />
