@@ -19,7 +19,6 @@ const s3Client = new S3Client({
   region: process.env.AWS_REGION as string,
 });
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
-const TOTAL_DECIMALS = 1000;
 const connection = new Connection(
   "https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt" ??
     ""
@@ -167,15 +166,10 @@ router.post("/task", authMiddleware, async (req, res) => {
       });
     }
 
-    const amountTransferred =
+    const amountTransferred = (
       (transaction.meta?.postBalances[1] ?? 0) -
-      (transaction.meta?.preBalances[1] ?? 0);
-
-    // if (amountTransferred !== 100000000) {
-    //   return res.status(411).json({
-    //     message: "Transaction amount is incorrect. Expected 0.1 SOL",
-    //   });
-    // }
+      (transaction.meta?.preBalances[1] ?? 0)
+    ).toString();
 
     // console.log(transaction.transaction.message.getAccountKeys());
 
@@ -187,59 +181,60 @@ router.post("/task", authMiddleware, async (req, res) => {
       .getAccountKeys()
       .get(0)
       ?.toString();
+
+    // if (recipientAddress !== PARENT_WALLET_ADDRESS) {
+    //   return res.status(411).json({
+    //     message: "Transaction sent to the wrong address",
+    //   });
+    // }
+
+    // console.log(senderAddress, user.address);
+    // if (senderAddress !== user.address) {
+    //   return res.status(411).json({
+    //     message: "Transaction sent from the wrong address",
+    //   });
+    // }
+
+    try {
+      const response = await prismaClient.$transaction(
+        async (tx) => {
+          const task = await tx.task.create({
+            data: {
+              title: parseData.data.title ?? DEFAULT_TITLE,
+              amount: amountTransferred,
+              signature: parseData.data.signature,
+              user_id: userId,
+              postDate: body.postDate,
+              postMonth: body.postMonth,
+              postYear: body.postYear,
+            },
+          });
+
+          await tx.option.createMany({
+            data: parseData.data.options.map((x) => ({
+              image_url: x.imageUrl,
+              task_id: task.id,
+            })),
+          });
+
+          return task;
+        },
+        {
+          maxWait: 5000,
+          timeout: 10000,
+        }
+      );
+
+      res.json({
+        id: response.id,
+      });
+    } catch (error) {
+      console.error("Error creating task:", error);
+      res.status(500).json({
+        message: "Internal server error",
+      });
+    }
   }, 10000);
-  // if (recipientAddress !== PARENT_WALLET_ADDRESS) {
-  //   return res.status(411).json({
-  //     message: "Transaction sent to the wrong address",
-  //   });
-  // }
-
-  // console.log(senderAddress, user.address);
-  // if (senderAddress !== user.address) {
-  //   return res.status(411).json({
-  //     message: "Transaction sent from the wrong address",
-  //   });
-  // }
-
-  try {
-    const response = await prismaClient.$transaction(
-      async (tx) => {
-        const task = await tx.task.create({
-          data: {
-            title: parseData.data.title ?? DEFAULT_TITLE,
-            amount: 0.1 * TOTAL_DECIMALS,
-            signature: parseData.data.signature,
-            user_id: userId,
-            postDate: body.postDate,
-            postMonth: body.postMonth,
-            postYear: body.postYear,
-          },
-        });
-
-        await tx.option.createMany({
-          data: parseData.data.options.map((x) => ({
-            image_url: x.imageUrl,
-            task_id: task.id,
-          })),
-        });
-
-        return task;
-      },
-      {
-        maxWait: 5000,
-        timeout: 10000,
-      }
-    );
-
-    res.json({
-      id: response.id,
-    });
-  } catch (error) {
-    console.error("Error creating task:", error);
-    res.status(500).json({
-      message: "Internal server error",
-    });
-  }
 });
 router.get("/presignedUrl", authMiddleware, async (req, res) => {
   // @ts-ignore

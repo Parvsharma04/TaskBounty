@@ -74,8 +74,6 @@ export const Upload = () => {
       minContextSlot,
     });
 
-    console.log(connection);
-
     await connection.confirmTransaction({
       blockhash,
       lastValidBlockHeight,

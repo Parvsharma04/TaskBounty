@@ -1,17 +1,27 @@
 import { PrismaClient } from "@prisma/client";
-import { PublicKey } from "@solana/web3.js";
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  sendAndConfirmTransaction,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import nacl from "tweetnacl";
 import { getNextTask } from "../db";
 import { workerMiddleware } from "../middlewares/middleware";
 import { createSubmissionInput } from "../types";
+import { decode } from "bs58";
 
 const router = Router();
 const prismaClient = new PrismaClient();
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
-const TOTAL_DECIMALS = 10;
-const TOTAL_SUBMISSIONS = 1;
+const TOTAL_DECIMALS = 1000000000;
+const SOL_PRICE = 134.64; //! 1 SOL = $134.64
+const TASK_SUBMISSION_AMT = 0.000007428;
+const connection = new Connection("https://api.devnet.solana.com");
 
 router.get("/nextTask", workerMiddleware, async (req, res) => {
   // @ts-ignore
@@ -43,7 +53,19 @@ router.post("/submission", workerMiddleware, async (req, res) => {
       });
     }
 
-    const amount = (Number(task.amount) / TOTAL_SUBMISSIONS).toString();
+    const worker = await prismaClient.worker.findFirst({
+      where: {
+        id: Number(userId),
+      },
+    });
+
+    if (!worker) {
+      return res.status(403).json({
+        message: "Worker not found",
+      });
+    }
+
+    const amount = TASK_SUBMISSION_AMT.toString();
 
     const submission = await prismaClient.$transaction(async (tx) => {
       const submission = await prismaClient.submission.create({
@@ -51,7 +73,7 @@ router.post("/submission", workerMiddleware, async (req, res) => {
           option_id: Number(parsedBody.data.selection),
           worker_id: userId,
           task_id: Number(parsedBody.data.taskId),
-          amount: Number(amount),
+          amount: amount,
           postDate: body.postDate, // Day from frontend
           postMonth: body.postMonth, // Month from frontend
           postYear: body.postYear, // Year from frontend
@@ -65,9 +87,9 @@ router.post("/submission", workerMiddleware, async (req, res) => {
           id: userId,
         },
         data: {
-          pending_amount: {
-            increment: Number(amount),
-          },
+          pending_amount: (
+            Number(worker.pending_amount) + Number(amount)
+          ).toString(),
         },
       });
 
@@ -97,7 +119,7 @@ router.get("/balance", workerMiddleware, async (req, res) => {
 
   res.json({
     pendingAmount: worker?.pending_amount,
-    lockedAmount: worker?.pending_amount,
+    lockedAmount: worker?.locked_amount,
   });
 });
 
@@ -154,7 +176,7 @@ router.post("/payout", workerMiddleware, async (req, res) => {
   const userId: string = req.userId;
 
   // Minimum amount required for a payout
-  const MIN_AMOUNT_FOR_PAYOUT = 10000000;
+  const MIN_AMOUNT_FOR_PAYOUT = 2;
 
   // Fetch worker details
   const worker = await prismaClient.worker.findFirst({
@@ -169,14 +191,40 @@ router.post("/payout", workerMiddleware, async (req, res) => {
     });
   }
 
-  if (worker.pending_amount < MIN_AMOUNT_FOR_PAYOUT) {
+  if (parseFloat(worker.pending_amount) < MIN_AMOUNT_FOR_PAYOUT) {
     return res.status(400).json({
-      message: `Pending amount must be at least ${MIN_AMOUNT_FOR_PAYOUT} for payout`,
+      message: `Pending amount must be at least ${MIN_AMOUNT_FOR_PAYOUT} sol for payout`,
     });
   }
 
-  const address = worker.address;
-  const txnId = "0x123123123"; // You should generate or obtain a real transaction ID
+  const transaction = new Transaction().add(
+    SystemProgram.transfer({
+      fromPubkey: new PublicKey("12AvcKeKRFCn1Gh1qVCzNgumHhXtqnMUpT3xtvoE4fzG"),
+      toPubkey: new PublicKey(worker.address),
+      lamports: 1000_000_000 * parseFloat(worker.pending_amount),
+    })
+  );
+
+  // console.log(worker.address);
+
+  const keypair = Keypair.fromSecretKey(
+    decode(process.env.PRIVATE_KEY as string)
+  );
+
+  // TODO: There's a double spending problem here
+  //! The user can request the withdrawal multiple times
+  let signature = "";
+  try {
+    signature = await sendAndConfirmTransaction(connection, transaction, [
+      keypair,
+    ]);
+  } catch (e) {
+    return res.json({
+      message: "Transaction failed",
+    });
+  }
+
+  // console.log(signature);
 
   try {
     await prismaClient.$transaction(async (tx) => {
@@ -185,15 +233,15 @@ router.post("/payout", workerMiddleware, async (req, res) => {
           id: Number(userId),
         },
         data: {
-          pending_amount: {
-            decrement: worker.pending_amount,
-          },
-          locked_amount: {
-            increment: worker.pending_amount,
-          },
-          withdrawn: {
-            increment: worker.pending_amount,
-          },
+          pending_amount: (
+            BigInt(worker.pending_amount) - BigInt(worker.pending_amount)
+          ).toString(),
+          locked_amount: (
+            BigInt(worker.locked_amount) + BigInt(worker.pending_amount)
+          ).toString(),
+          withdrawn: (
+            BigInt(worker.withdrawn) + BigInt(worker.pending_amount)
+          ).toString(),
         },
       });
 
@@ -202,13 +250,14 @@ router.post("/payout", workerMiddleware, async (req, res) => {
           user_id: Number(userId),
           amount: worker.pending_amount,
           status: "Processing",
-          signature: txnId,
+          signature: signature,
         },
       });
     });
 
     res.status(200).json({
       message: "Payout initiated successfully",
+      amount: 0,
     });
   } catch (error) {
     console.error("Error processing payout:", error);
@@ -243,6 +292,8 @@ router.post("/signin", async (req, res) => {
     },
   });
 
+  // console.log(existingUser);
+
   if (existingUser) {
     const token = jwt.sign(
       {
@@ -250,13 +301,13 @@ router.post("/signin", async (req, res) => {
       },
       process.env.WORKER_JWT_SECRET as string
     );
-    res.json({ token });
+    res.json({ token, amount: existingUser.pending_amount });
   } else {
     const user = await prismaClient.worker.create({
       data: {
         address: hardCodedWalletAddress,
-        locked_amount: 0,
-        pending_amount: 0,
+        locked_amount: "0",
+        pending_amount: "0",
       },
     });
 
@@ -267,7 +318,7 @@ router.post("/signin", async (req, res) => {
       process.env.WORKER_JWT_SECRET as string
     );
 
-    res.json({ token });
+    res.json({ token, amount: 0 });
   }
 });
 

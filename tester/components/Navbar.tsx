@@ -5,7 +5,9 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -15,6 +17,7 @@ const WalletMultiButtonDynamic = dynamic(
 
 const NavBar = () => {
   const wallet = useWallet();
+  const [payoutAmt, setPayoutAmt] = useState("0");
 
   async function getToken() {
     if (wallet.connected) {
@@ -26,10 +29,12 @@ const NavBar = () => {
           publicKey: wallet.publicKey?.toString(),
         });
         localStorage.setItem("token", response.data.token);
+
+        setPayoutAmt(response.data.amount);
       } catch (error) {
         console.error("Error fetching token:", error);
       }
-    } else if(!wallet.connected){
+    } else if (!wallet.connected) {
       localStorage.clear();
     }
   }
@@ -38,8 +43,40 @@ const NavBar = () => {
     getToken();
   }, [wallet.connected]);
 
+  const handlePayoutAmt = async () => {
+    try {
+      let response = await axios.post(
+        `${BACKEND_URL}/v1/worker/payout`,
+        {},
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      console.log(response.data);
+      setPayoutAmt(response.data.amount);
+      toast.success(response.data.message);
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+      console.error("Error processing payout:", error);
+    }
+  };
+
   return (
     <nav>
+      <ToastContainer
+        position="top-left"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           <img
@@ -51,7 +88,18 @@ const NavBar = () => {
             TaskBounty
           </span>
         </a>
-        <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+        <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse gap-2">
+          {wallet.connected && (
+            <button
+              onClick={handlePayoutAmt}
+              className="bg-blue-700 text-white p-3 pl-5 pr-5 rounded-3xl hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out"
+            >
+              {/* {`Pay out ${
+                payoutAmt.length > 1 ? payoutAmt.substring(0, 9) : payoutAmt
+              } SOL`} */}
+              {`Pay out ${payoutAmt} SOL`}
+            </button>
+          )}
           <WalletMultiButtonDynamic onClick={() => getToken()}>
             {wallet.connected
               ? `${wallet.publicKey?.toBase58().substring(0, 7)}...`

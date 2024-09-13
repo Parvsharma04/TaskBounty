@@ -13,8 +13,9 @@ CREATE TABLE "User" (
 CREATE TABLE "Worker" (
     "id" SERIAL NOT NULL,
     "address" TEXT NOT NULL,
-    "pending_amount" INTEGER NOT NULL,
-    "locked_amount" INTEGER NOT NULL,
+    "pending_amount" TEXT NOT NULL,
+    "locked_amount" TEXT NOT NULL,
+    "withdrawn" TEXT NOT NULL DEFAULT '0',
 
     CONSTRAINT "Worker_pkey" PRIMARY KEY ("id")
 );
@@ -25,9 +26,11 @@ CREATE TABLE "Task" (
     "title" TEXT DEFAULT 'Select the most clickable thumbnail',
     "user_id" INTEGER NOT NULL,
     "signature" TEXT NOT NULL,
-    "amount" INTEGER NOT NULL,
+    "amount" TEXT NOT NULL,
     "done" BOOLEAN NOT NULL DEFAULT false,
-    "date" TIMESTAMP(3) NOT NULL,
+    "postDate" INTEGER NOT NULL,
+    "postMonth" INTEGER NOT NULL,
+    "postYear" INTEGER NOT NULL,
 
     CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
 );
@@ -47,7 +50,10 @@ CREATE TABLE "Submission" (
     "worker_id" INTEGER NOT NULL,
     "option_id" INTEGER NOT NULL,
     "task_id" INTEGER NOT NULL,
-    "amount" INTEGER NOT NULL,
+    "amount" TEXT NOT NULL,
+    "postDate" INTEGER NOT NULL,
+    "postMonth" INTEGER NOT NULL,
+    "postYear" INTEGER NOT NULL,
 
     CONSTRAINT "Submission_pkey" PRIMARY KEY ("id")
 );
@@ -56,7 +62,7 @@ CREATE TABLE "Submission" (
 CREATE TABLE "Payouts" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
-    "amount" INTEGER NOT NULL,
+    "amount" TEXT NOT NULL,
     "signature" TEXT NOT NULL,
     "status" "TxnStatus" NOT NULL,
 

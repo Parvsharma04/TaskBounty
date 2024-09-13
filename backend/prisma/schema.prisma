@@ -14,21 +14,20 @@ datasource db {
 }
 
 model User {
-  id      Int       @id @default(autoincrement())
-  address String    @unique
+  id      Int    @id @default(autoincrement())
+  address String @unique
   tasks   Task[]
-  payouts Payouts[]
 }
 
 model Worker {
   id             Int          @id @default(autoincrement())
   address        String       @unique
   submissions    Submission[]
-  pending_amount Int          // amount in lamports (* 10^9)
-  locked_amount  Int
-  withdrawn      Int          @default(0)  // Added field with default value of 0
+  pending_amount String // amount in lamports (* 10^9)
+  locked_amount  String
+  withdrawn      String       @default("0") // Added field with default value of 0
+  payouts        Payouts[]
 }
-
 
 model Task {
   id          Int          @id @default(autoincrement())
@@ -36,7 +35,7 @@ model Task {
   options     Option[]
   user_id     Int
   signature   String
-  amount      Int
+  amount      String
   done        Boolean      @default(false)
   user        User         @relation(fields: [user_id], references: [id])
   submissions Submission[]
@@ -61,7 +60,7 @@ model Submission {
   option    Option @relation(fields: [option_id], references: [id])
   task_id   Int
   task      Task   @relation(fields: [task_id], references: [id])
-  amount    Int
+  amount    String
   postDate  Int // Day the submission was made
   postMonth Int // Month the submission was made
   postYear  Int // Year the submission was made
@@ -69,12 +68,11 @@ model Submission {
   @@unique([worker_id, task_id])
 }
 
-
 model Payouts {
-  id        Int    @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   user_id   Int
-  user      User      @relation(fields: [user_id], references: [id])
-  amount    BigInt
+  worker    Worker    @relation(fields: [user_id], references: [id])
+  amount    String
   signature String
   status    TxnStatus
 }
