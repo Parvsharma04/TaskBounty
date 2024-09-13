@@ -1,16 +1,16 @@
 "use client";
 
+import { BACKEND_URL } from "@/utils";
+import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import DataTable from "react-data-table-component";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import DataTable from "react-data-table-component";
-import Link from "next/link";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useRouter } from "next/navigation";
-import TaskSummary from "./TaskSummary";
 import ChartAnalytics from "./ChartAnalytics";
-import { BACKEND_URL } from "@/utils";
+import TaskSummary from "./TaskSummary";
 
 function TaskAnalytics() {
   const [AllTasks, setAllTasks] = useState([]);
@@ -181,7 +181,7 @@ function TaskAnalytics() {
         prevDoneTasks={3}
         prevPendingTasks={3}
       />
-      <div className="p-6 pb-0">
+      <div className="p-6 pb-0 bg-black text-white">
         {AllTasks.length > 0 && <ChartAnalytics userTasks={AllTasks} />}
       </div>
       <div>
