@@ -5,6 +5,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // Import usePathname from next/navigation
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -18,6 +19,7 @@ const WalletMultiButtonDynamic = dynamic(
 const NavBar = () => {
   const wallet = useWallet();
   const [payoutAmt, setPayoutAmt] = useState("0");
+  const pathname = usePathname(); // Get current path
 
   async function getToken() {
     if (wallet.connected) {
@@ -64,7 +66,7 @@ const NavBar = () => {
   };
 
   return (
-    <nav>
+    <nav className="w-full bg-black">
       <ToastContainer
         position="top-left"
         autoClose={2000}
@@ -77,14 +79,17 @@ const NavBar = () => {
         pauseOnHover
         theme="colored"
       />
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+      <div className="mx-auto flex flex-wrap items-center justify-between p-4 w-[100%]">
+        <a
+          href="/"
+          className="flex items-center space-x-3 rtl:space-x-reverse "
+        >
           <img
             src="https://flowbite.com/docs/images/logo.svg"
             className="h-8"
             alt="Flowbite Logo"
           />
-          <span className="self-center text-2xl font-semibold whitespace-nowrap">
+          <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
             TaskBounty
           </span>
         </a>
@@ -136,8 +141,11 @@ const NavBar = () => {
               <li>
                 <Link
                   href="/"
-                  className="block py-2 px-3 md:p-0 bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500"
-                  aria-current="page"
+                  className={`block py-2 px-3 md:p-0 rounded ${
+                    pathname === "/"
+                      ? "text-blue-700"
+                      : "text-white hover:text-blue-700"
+                  }`}
                 >
                   Home
                 </Link>
@@ -145,7 +153,11 @@ const NavBar = () => {
               <li>
                 <Link
                   href="/bounty"
-                  className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent dark:border-gray-700"
+                  className={`block py-2 px-3 md:p-0 rounded ${
+                    pathname === "/bounty"
+                      ? "text-blue-700"
+                      : "text-white hover:text-blue-700"
+                  }`}
                 >
                   Hunt Bounties
                 </Link>
@@ -153,7 +165,11 @@ const NavBar = () => {
               <li>
                 <Link
                   href="/tester-analytics"
-                  className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:bg-transparent dark:border-gray-700"
+                  className={`block py-2 px-3 md:p-0 rounded ${
+                    pathname === "/tester-analytics"
+                      ? "text-blue-700"
+                      : "text-white hover:text-blue-700"
+                  }`}
                 >
                   Tester Analytics
                 </Link>
