@@ -5,12 +5,14 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ChartAnalytics from "./ChartAnalytics";
 import TaskSummary from "./TaskSummary";
+import LoadingPage from "./Loading";
+import DashboardSkeleton from "./Skeletons";
 
 function TaskAnalytics() {
   const [AllTasks, setAllTasks] = useState([]);
@@ -20,10 +22,12 @@ function TaskAnalytics() {
   const [pendingTasks, setPendingTasks] = useState(0);
   const wallet = useWallet();
   const Router = useRouter();
+  const [Loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const res = await axios.get(`${BACKEND_URL}/v1/user/getAllTask`, {
           headers: {
             Authorization: localStorage.getItem("token"),
@@ -58,6 +62,7 @@ function TaskAnalytics() {
           theme: "colored",
         });
       }
+      setLoading(false);
     };
 
     fetchData();
@@ -188,6 +193,7 @@ function TaskAnalytics() {
 
   return (
     <div className="pt-28 h-screen bg-black text-white">
+      {Loading && <LoadingPage />}
       <ToastContainer
         position="top-left"
         autoClose={1100}
@@ -213,9 +219,9 @@ function TaskAnalytics() {
       <section className="p-6 pb-0 bg-black text-white">
         {AllTasks.length > 0 && <ChartAnalytics userTasks={AllTasks} />}
       </section>
-      <section>
+      <section className="bg-black text-white pt-10 pb-10">
         {AllTasks.length > 0 ? (
-          <div className="pt-0 flex flex-col justify-center items-center bg-black text-white border ml-6 mr-6 mt-10">
+          <div className="flex flex-col justify-center items-center bg-black text-white border ml-6 mr-6">
             <DataTable
               customStyles={customStyles}
               className="dataTables_wrapper"
