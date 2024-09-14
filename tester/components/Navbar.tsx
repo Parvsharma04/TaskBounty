@@ -6,7 +6,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // Import usePathname from next/navigation
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -67,7 +67,7 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="w-full bg-black shadow-[0_4px_8px_rgba(255,255,255,0.2)]">
+    <nav className="fixed top-0 left-0 w-full bg-black shadow-[0_4px_8px_rgba(255,255,255,0.2)] z-50">
       <ToastContainer
         position="top-left"
         autoClose={2000}

@@ -80,7 +80,7 @@ export const TesterAnalytics: React.FC = () => {
       );
       setTesterData(response.data);
       processData(response.data);
-      console.log(response.data)
+      console.log(response.data);
     } catch (error) {
       console.error("Error fetching tester data:", error);
       setError("Failed to fetch tester data. Please try again.");
@@ -142,17 +142,17 @@ export const TesterAnalytics: React.FC = () => {
 
   const calculateTotalEarned = (submissions: Submission[]) => {
     let total = 0;
-    submissions.forEach(ele=>{
-      total += Number(ele.amount)
-    })
+    submissions.forEach((ele) => {
+      total += Number(ele.amount);
+    });
     setTotalEarned(total);
-    console.log(totalEarned)
+    console.log(totalEarned);
   };
 
   if (loading) {
     return (
       <div className="h-screen flex justify-center items-center text-2xl bg-black text-white">
-        <Loading/>
+        <Loading />
       </div>
     );
   }
@@ -174,19 +174,19 @@ export const TesterAnalytics: React.FC = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-black text-white mb-0">
-      <TesterDash
-        doneTasks={testCount}
-        rate={taskRate ? taskRate.rate : "0%"}
-        levelUp={taskRate ? taskRate.increase : false}
-        levelDown={taskRate ? !taskRate.increase : false}
-        totalEarned={Number(totalEarned)}
-        totalPayout={totalPayout}
-        pendingAmount={Number(testerData.testerData.pending_amount)}
-      />
-      <Graph
-        submissions={testerData.submissionCountByMonthYear}
-      />
+    <div className="bg-black">
+      <div className="h-screen flex flex-col bg-black text-white mt-20" >
+        <TesterDash
+          doneTasks={testCount}
+          rate={taskRate ? taskRate.rate : "0%"}
+          levelUp={taskRate ? taskRate.increase : false}
+          levelDown={taskRate ? !taskRate.increase : false}
+          totalEarned={Number(totalEarned)}
+          totalPayout={totalPayout}
+          pendingAmount={Number(testerData.testerData.pending_amount)}
+        />
+        <Graph submissions={testerData.submissionCountByMonthYear} />
+      </div>
     </div>
   );
 };
