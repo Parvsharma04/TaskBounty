@@ -22,7 +22,7 @@ button.wallet-adapter-button-trigger:hover, button.loading-spinner {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #091e4a;
+  background-color: #111827;
   /* background-color: #1a56db; */
   opacity: 0.5;
   border-radius: 20px;
