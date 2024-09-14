@@ -20,7 +20,7 @@ const prismaClient = new PrismaClient();
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
 const TOTAL_DECIMALS = 1000000000;
 const SOL_PRICE = 134.64; //! 1 SOL = $134.64
-const TASK_SUBMISSION_AMT = 0.000007428;
+const TASK_SUBMISSION_AMT = 0.0002;
 const connection = new Connection("https://api.devnet.solana.com");
 
 router.get("/nextTask", workerMiddleware, async (req, res) => {
