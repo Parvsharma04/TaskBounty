@@ -66,7 +66,7 @@ const NavBar = () => {
   };
 
   return (
-    <nav>
+    <nav className="w-full bg-black">
       <ToastContainer
         position="top-left"
         autoClose={2000}
@@ -79,8 +79,11 @@ const NavBar = () => {
         pauseOnHover
         theme="colored"
       />
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4 bg-black">
-        <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+      <div className="mx-auto flex flex-wrap items-center justify-between p-4 w-[100%]">
+        <a
+          href="/"
+          className="flex items-center space-x-3 rtl:space-x-reverse "
+        >
           <img
             src="https://flowbite.com/docs/images/logo.svg"
             className="h-8"
@@ -134,7 +137,7 @@ const NavBar = () => {
             className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
             id="navbar-cta"
           >
-            <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 ">
+            <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0">
               <li>
                 <Link
                   href="/"
