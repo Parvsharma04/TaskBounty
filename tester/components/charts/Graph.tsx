@@ -8,7 +8,7 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-const Graph = ({ submissions }: { submissions: Array<{ _count: { id: number }, postMonth: number, postYear: number }> }) => {
+const Graph = ({ submissions }: { submissions: Array<{ _count: { id: any }, postMonth: any, postYear: any }> }) => {
   const [doneTasks, setDoneTasks] = useState<number[]>(Array(12).fill(0));
   const [year, setYear] = useState<number[]>([]);
   const [userSelectedCurrYear, setUserSelectedCurrYear] = useState<number>(0);
