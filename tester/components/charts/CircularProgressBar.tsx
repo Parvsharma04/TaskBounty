@@ -4,20 +4,19 @@ import * as React from "react";
 import { useCountUp } from "use-count-up";
 
 interface CircularProgressCountUpProps {
-  pendingAmount: number,
+  pendingAmount: number;
   children: React.ReactNode;
 }
 
 export default function CircularProgressCountUp({
-  pendingAmount, children,
+  pendingAmount,
+  children,
 }: CircularProgressCountUpProps) {
   const { value: progressValue } = useCountUp({
     isCounting: true,
     duration: 1,
     start: 0,
-    end: pendingAmount, // Use pendingAmount as the end value
-    // Format to display a percentage if needed
-    // formattingFn: (value: number) => `${Math.round(value)}%`,
+    end: pendingAmount,
   });
 
   return (
@@ -45,7 +44,13 @@ export default function CircularProgressCountUp({
             height: "80px",
           }}
         >
-          <Typography>{progressValue}%</Typography>
+          <Typography
+            sx={{
+              color: "white", // Make the text inside the bar white
+            }}
+          >
+            {progressValue}%
+          </Typography>
         </CircularProgress>
       </div>
     </div>

@@ -22,7 +22,7 @@ const TesterDash: React.FC<TesterDashProps> = ({
   pendingAmount
 }) => {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5 bg-black text-white">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5 bg-black text-white pt-15 p-10">
       <StatCard
         title="Bounties Hunted"
         total={`${doneTasks}`}
@@ -31,13 +31,13 @@ const TesterDash: React.FC<TesterDashProps> = ({
         levelDown={levelDown}
       >
         <div className="flex justify-start w-full items-start">
-          <div className="bg-gray-300 p-2 rounded-full">
+          <div className="bg-gray-600 p-2 rounded-full"> {/* Changed to a darker gray */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth="1.5"
-              stroke="currentColor"
+              stroke="#ffffff"
               className="size-6"
             >
               <path
@@ -58,13 +58,13 @@ const TesterDash: React.FC<TesterDashProps> = ({
         levelDown={levelDown}
       >
         <div className="flex justify-start w-full items-start">
-          <div className="bg-gray-300 p-2 rounded-full">
+          <div className="bg-gray-600 p-2 rounded-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth="1.5"
-              stroke="currentColor"
+              stroke="#ffffff"
               className="size-6"
             >
               <path
@@ -83,13 +83,13 @@ const TesterDash: React.FC<TesterDashProps> = ({
         rate={""} // No rate for payout, can be an empty string or handle as needed
       >
         <div className="flex justify-start w-full items-start">
-          <div className="bg-gray-300 p-2 rounded-full">
+          <div className="bg-gray-600 p-2 rounded-full"> {/* Changed to a darker gray */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth="1.5"
-              stroke="currentColor"
+              stroke="#ffffff"
               className="size-6"
             >
               <path
@@ -104,13 +104,13 @@ const TesterDash: React.FC<TesterDashProps> = ({
 
       <CircularProgressCountUp pendingAmount={parseFloat(((pendingAmount / 2) * 100).toFixed(2))}>
         <div className="flex justify-start w-full items-start">
-          <div className="bg-gray-300 p-2 rounded-full">
+          <div className="bg-gray-600 p-2 rounded-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth="1.5"
-              stroke="currentColor"
+              stroke="#ffffff"
               className="size-6"
             >
               <path

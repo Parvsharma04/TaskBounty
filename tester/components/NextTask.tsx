@@ -95,7 +95,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
       ) : currentTask === null ? (
         (!noMoreTasks && getTask(),
         (
-          <div className="h-screen flex justify-center flex-col">
+          <div className="h-screen flex justify-center flex-col bg-black text-white">
             <div className="w-full flex justify-center text-2xl">
               Please check back in some time, there are no pending bounties at
               the moment.
@@ -103,8 +103,8 @@ export const NextTask: React.FC<NextTaskProps> = ({
           </div>
         ))
       ) : (
-        <div className="flex justify-center h-screen items-center">
-          <div className="bg-gray-500 border-1px border-gray-100 p-10 w-fit rounded-2xl h-fit">
+        <div className="flex justify-center h-screen items-center bg-black text-white">
+          <div className="bg-gray-900 border-1px border-gray-100 p-10 w-fit rounded-2xl h-fit">
             <div className="flex justify-center">
               <TaskStatement taskTitle={currentTask.title} />
             </div>

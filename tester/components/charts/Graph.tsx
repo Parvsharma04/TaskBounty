@@ -73,6 +73,7 @@ const Graph = ({
       toolbar: {
         show: false,
       },
+      // background: '#121212', // Dark background
     },
     responsive: [
       {
@@ -93,7 +94,7 @@ const Graph = ({
       },
     ],
     stroke: {
-      width: [2, 2],
+      width: [2],
       curve: "smooth",
     },
     grid: {
@@ -114,13 +115,33 @@ const Graph = ({
     markers: {
       size: 4,
       colors: "#fff",
-      strokeColors: ["#3056D3", "#80CAEE"],
+      strokeColors: ["#3C50E0", "#80CAEE"], // Keep existing marker stroke colors
       strokeWidth: 3,
       strokeOpacity: 0.9,
       fillOpacity: 1,
       hover: {
         size: undefined,
         sizeOffset: 5,
+      },
+    },
+    tooltip: {
+      theme: 'dark', // Dark theme for tooltips
+      style: {
+        fontSize: '12px',
+        colors: '#FFFFFF', // Tooltip text color
+      },
+      marker: {
+        show: false, // Hide markers in tooltips
+      },
+      x: {
+        show: true,
+        format: 'MMM yyyy', // Customize date format if needed
+      },
+      y: {
+        formatter: (val) => val.toString(),
+        title: {
+          formatter: (seriesName) => seriesName,
+        },
       },
     },
     xaxis: {
@@ -132,6 +153,15 @@ const Graph = ({
       axisTicks: {
         show: false,
       },
+      labels: {
+        style: {
+          colors: '#B0BEC5', // Slightly lighter color for the labels to contrast against the dark background
+          fontSize: '12px', // Adjust font size as needed
+        },
+      },
+      tooltip: {
+        enabled: true, // Hide tooltip on xaxis labels
+      },
     },
     yaxis: {
       title: {
@@ -140,17 +170,22 @@ const Graph = ({
         },
       },
       min: 0,
+      labels: {
+        style: {
+          colors: '#FFF', // Light-colored labels
+        },
+      },
     },
   };
 
   return (
-    <div className="col-span-12 rounded-sm border px-5 pb-5 pt-7.5 shadow-default border-strokedark bg-boxdark sm:px-7.5 xl:col-span-8 bg-black text-white">
+    <div className="col-span-12 rounded-sm border px-5 pb-5 pt-7.5 shadow-default border-strokedark bg-boxdark sm:px-7.5 xl:col-span-8 bg-black text-white m-10">
       <div className="flex flex-wrap items-center p-4 justify-between gap-3 sm:flex-nowrap">
         <div className="flex w-full max-w-45 justify-end gap-3">
           <div className="inline-flex items-center rounded-md bg-whiter p-1.5 bg-black">
             <label className="text-xl text-white mr-2">Year: </label>
             <select
-              className=" bg-black text-white"
+              className="bg-black text-white border border-gray-700"
               value={userSelectedCurrYear}
               onChange={(e) => setUserSelectedCurrYear(Number(e.target.value))}
             >
@@ -158,7 +193,7 @@ const Graph = ({
                 <option
                   key={yr.toString()}
                   value={yr.toString()}
-                  className=" bg-black text-white"
+                  className="bg-black text-white"
                 >
                   {yr.toString()}
                 </option>
@@ -169,7 +204,7 @@ const Graph = ({
       </div>
 
       <div>
-        <div id="Graph" className="-ml-5  bg-black text-white">
+        <div id="Graph" className="-ml-5 bg-black text-white">
           <ReactApexChart
             options={options}
             series={series}

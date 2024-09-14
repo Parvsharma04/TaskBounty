@@ -151,7 +151,7 @@ export const TesterAnalytics: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-screen flex justify-center items-center text-2xl">
+      <div className="h-screen flex justify-center items-center text-2xl bg-black text-white">
         <Loading/>
       </div>
     );
@@ -159,7 +159,7 @@ export const TesterAnalytics: React.FC = () => {
 
   if (error) {
     return (
-      <div className="h-screen flex justify-center items-center text-2xl text-red-500">
+      <div className="h-screen flex justify-center items-center text-2xl text-red-500 bg-black ">
         {error}
       </div>
     );
@@ -167,14 +167,14 @@ export const TesterAnalytics: React.FC = () => {
 
   if (!testerData) {
     return (
-      <div className="h-screen flex justify-center items-center text-2xl">
+      <div className="h-screen flex justify-center items-center text-2xl bg-black text-white">
         No data available.
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex flex-col mt-10 bg-black text-white">
+    <div className="h-screen flex flex-col bg-black text-white">
       <TesterDash
         doneTasks={testCount}
         rate={taskRate ? taskRate.rate : "0%"}
