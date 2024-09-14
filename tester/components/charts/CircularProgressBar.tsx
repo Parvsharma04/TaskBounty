@@ -17,7 +17,7 @@ export default function CircularProgressCountUp({
     start: 0,
     end: pendingAmount, // Use pendingAmount as the end value
     // Format to display a percentage if needed
-    formattingFn: (value: number) => `${Math.round(value)}%`,
+    // formattingFn: (value: number) => `${Math.round(value)}%`,
   });
 
   return (

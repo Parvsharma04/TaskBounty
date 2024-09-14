@@ -52,7 +52,7 @@ const TesterDash: React.FC<TesterDashProps> = ({
 
       <StatCard
         title="Total Earnings"
-        total={`${totalEarned} SOL`}
+        total={`${Number(totalEarned)} SOL`}
         rate={rate}
         levelUp={levelUp}
         levelDown={levelDown}
@@ -101,7 +101,8 @@ const TesterDash: React.FC<TesterDashProps> = ({
           </div>
         </div>
       </StatCard>
-      <CircularProgressCountUp pendingAmount={pendingAmount/1000}>
+
+      <CircularProgressCountUp pendingAmount={parseFloat(((pendingAmount / 2) * 100).toFixed(2))}>
         <div className="flex justify-start w-full items-start">
           <div className="bg-gray-300 p-2 rounded-full">
             <svg

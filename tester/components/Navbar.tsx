@@ -89,14 +89,11 @@ const NavBar = () => {
           </span>
         </a>
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse gap-2">
-          {wallet.connected && (
+          {wallet.connected && Number(payoutAmt) >= 2 && (
             <button
               onClick={handlePayoutAmt}
               className="bg-blue-700 text-white p-3 pl-5 pr-5 rounded-3xl hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out"
             >
-              {/* {`Pay out ${
-                payoutAmt.length > 1 ? payoutAmt.substring(0, 9) : payoutAmt
-              } SOL`} */}
               {`Pay out ${payoutAmt} SOL`}
             </button>
           )}

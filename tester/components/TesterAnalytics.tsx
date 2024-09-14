@@ -1,10 +1,11 @@
-"use client"
+"use client";
 import { BACKEND_URL } from "@/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Graph from "./charts/Graph";
+import Loading from "./Loading";
 import TesterDash from "./TesterDash";
 
 interface Submission {
@@ -49,7 +50,7 @@ interface TesterData {
     locked_amount: number;
   };
   submissionCountByMonthYear: SubmissionCount[];
-  withdrawn: number
+  withdrawn: number;
 }
 
 export const TesterAnalytics: React.FC = () => {
@@ -66,6 +67,28 @@ export const TesterAnalytics: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const getTesterData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(
+        `${BACKEND_URL}/v1/worker/getTesterData`,
+        {
+          params: { publicKey: wallet.publicKey?.toBase58() },
+          headers: { Authorization: localStorage.getItem("token") || "" },
+        }
+      );
+      setTesterData(response.data);
+      processData(response.data);
+      console.log(response.data)
+    } catch (error) {
+      console.error("Error fetching tester data:", error);
+      setError("Failed to fetch tester data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!wallet.connected) {
       router.push("/");
@@ -78,7 +101,7 @@ export const TesterAnalytics: React.FC = () => {
     calculateNumberOfTests(data.submissionCountByMonthYear);
     calculateTaskRate(data.submissionCountByMonthYear);
     calculateTotalEarned(data.testerData.submissions);
-    setTotalPayout(data.withdrawn)
+    setTotalPayout(data.withdrawn);
   };
 
   const calculateNumberOfTests = (submissionCounts: SubmissionCount[]) => {
@@ -118,38 +141,18 @@ export const TesterAnalytics: React.FC = () => {
   };
 
   const calculateTotalEarned = (submissions: Submission[]) => {
-    const total = submissions.reduce(
-      (sum, submission) => sum + submission.amount,
-      0
-    );
-    setTotalEarned(total / 100 / 1000);
-  };
-
-  const getTesterData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.get(
-        `${BACKEND_URL}/v1/worker/getTesterData`,
-        {
-          params: { publicKey: wallet.publicKey?.toBase58() },
-          headers: { Authorization: localStorage.getItem("token") || "" },
-        }
-      );
-      setTesterData(response.data);
-      processData(response.data);
-    } catch (error) {
-      console.error("Error fetching tester data:", error);
-      setError("Failed to fetch tester data. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    let total = 0;
+    submissions.forEach(ele=>{
+      total += Number(ele.amount)
+    })
+    setTotalEarned(total);
+    console.log(totalEarned)
   };
 
   if (loading) {
     return (
       <div className="h-screen flex justify-center items-center text-2xl">
-        Loading data...
+        <Loading/>
       </div>
     );
   }
@@ -177,15 +180,13 @@ export const TesterAnalytics: React.FC = () => {
         rate={taskRate ? taskRate.rate : "0%"}
         levelUp={taskRate ? taskRate.increase : false}
         levelDown={taskRate ? !taskRate.increase : false}
-        totalEarned={totalEarned}
+        totalEarned={Number(totalEarned)}
         totalPayout={totalPayout}
-        pendingAmount={testerData.testerData.pending_amount}
+        pendingAmount={Number(testerData.testerData.pending_amount)}
       />
       <Graph
         submissions={testerData.submissionCountByMonthYear}
-        className="mt-8 mx-auto"
       />
     </div>
   );
-
 };
