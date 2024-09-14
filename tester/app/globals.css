@@ -15,3 +15,8 @@ button.wallet-adapter-button-trigger:hover, button.loading-spinner {
   background-color: #447efa !important;
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
 }
+
+*{
+  background-color: black;
+  color: white;
+}

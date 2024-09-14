@@ -174,7 +174,7 @@ export const TesterAnalytics: React.FC = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col mt-10">
+    <div className="h-screen flex flex-col mt-10 bg-black text-white">
       <TesterDash
         doneTasks={testCount}
         rate={taskRate ? taskRate.rate : "0%"}

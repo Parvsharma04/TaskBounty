@@ -8,7 +8,11 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-const Graph = ({ submissions }: { submissions: Array<{ _count: { id: any }, postMonth: any, postYear: any }> }) => {
+const Graph = ({
+  submissions,
+}: {
+  submissions: Array<{ _count: { id: any }; postMonth: any; postYear: any }>;
+}) => {
   const [doneTasks, setDoneTasks] = useState<number[]>(Array(12).fill(0));
   const [year, setYear] = useState<number[]>([]);
   const [userSelectedCurrYear, setUserSelectedCurrYear] = useState<number>(0);
@@ -43,7 +47,9 @@ const Graph = ({ submissions }: { submissions: Array<{ _count: { id: any }, post
   ];
 
   // Dynamically generate xaxis categories for the months
-  const xaxisCategories = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('en-US', { month: 'short' }));
+  const xaxisCategories = Array.from({ length: 12 }, (_, i) =>
+    new Date(0, i).toLocaleString("en-US", { month: "short" })
+  );
 
   const options: ApexOptions = {
     legend: {
@@ -138,17 +144,22 @@ const Graph = ({ submissions }: { submissions: Array<{ _count: { id: any }, post
   };
 
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
+    <div className="col-span-12 rounded-sm border px-5 pb-5 pt-7.5 shadow-default border-strokedark bg-boxdark sm:px-7.5 xl:col-span-8 bg-black text-white">
       <div className="flex flex-wrap items-center p-4 justify-between gap-3 sm:flex-nowrap">
         <div className="flex w-full max-w-45 justify-end gap-3">
-          <div className="inline-flex items-center rounded-md bg-whiter p-1.5 bg-gray-300">
-            <label className="text-xl text-black mr-2">Year: </label>
+          <div className="inline-flex items-center rounded-md bg-whiter p-1.5 bg-black">
+            <label className="text-xl text-white mr-2">Year: </label>
             <select
+              className=" bg-black text-white"
               value={userSelectedCurrYear}
               onChange={(e) => setUserSelectedCurrYear(Number(e.target.value))}
             >
               {year.map((yr) => (
-                <option key={yr.toString()} value={yr.toString()}>
+                <option
+                  key={yr.toString()}
+                  value={yr.toString()}
+                  className=" bg-black text-white"
+                >
                   {yr.toString()}
                 </option>
               ))}
@@ -158,7 +169,7 @@ const Graph = ({ submissions }: { submissions: Array<{ _count: { id: any }, post
       </div>
 
       <div>
-        <div id="Graph" className="-ml-5">
+        <div id="Graph" className="-ml-5  bg-black text-white">
           <ReactApexChart
             options={options}
             series={series}

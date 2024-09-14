@@ -21,21 +21,21 @@ export default function CircularProgressCountUp({
   });
 
   return (
-    <div className="rounded-sm border border-stroke bg-white px-7 py-6 shadow-default dark:border-strokedark dark:bg-boxdark flex items-center justify-between">
+    <div className="rounded-sm border px-7 py-6 shadow-default border-strokedark bg-boxdark flex items-center justify-between bg-black text-white">
       <div className="flex flex-col items-start">
         <div className="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4 mb-4">
           {children}
         </div>
 
         <div>
-          <h4 className="text-title-md font-bold text-black dark:text-white">
+          <h4 className="text-title-md font-bold bg-black text-white">
             {progressValue}% {/* Display progressValue as percentage */}
           </h4>
           <span className="text-sm font-medium">Payout Progress</span>
         </div>
       </div>
 
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-0 text-white">
         <CircularProgress
           size="lg"
           determinate
