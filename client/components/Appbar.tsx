@@ -125,7 +125,7 @@ const NavBar = () => {
               <li>
                 <Link
                   href="/"
-                  className={` block border p-3  transition-all duration-300 ease-in-out py-2 px-3 rounded ${
+                  className={`block p-3  transition-all duration-300 ease-in-out py-2 px-3 rounded ${
                     activeBtn == "home"
                       ? "text-white bg-blue-700"
                       : "text-white"
@@ -139,7 +139,7 @@ const NavBar = () => {
               <li>
                 <Link
                   href="/uploadTask"
-                  className={`block transition-all duration-300  border ease-in-out py-2 px-3 p-3 rounded ${
+                  className={`block transition-all duration-300 ease-in-out py-2 px-3 p-3 rounded ${
                     activeBtn == "uploadTask"
                       ? "text-white bg-blue-700"
                       : "text-white"
@@ -152,7 +152,7 @@ const NavBar = () => {
               <li>
                 <Link
                   href="/taskAnalytics"
-                  className={`block  transition-all duration-300 border ease-in-out py-2 px-3 p-3 rounded ${
+                  className={`block  transition-all duration-300 ease-in-out py-2 px-3 p-3 rounded ${
                     activeBtn == "taskAnalytics"
                       ? "text-white bg-blue-700"
                       : "text-white"

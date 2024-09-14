@@ -114,7 +114,7 @@ export const Upload = () => {
   }
 
   return (
-    <div className="flex justify-center pt-10">
+    <div className="flex justify-center items-center h-screen w-full bg-black text-white">
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -140,31 +140,26 @@ export const Upload = () => {
           </button>
         </div>
       </Modal>
-      <div className="max-w-screen-lg w-full">
-        <div className="flex justify-center items-center mt-16 mb-10 text-3xl w-full">
-          Create a task
+      <div className="flex flex-col w-full pl-6 pr-6 md:pl-80 md:pr-80 gap-5">
+        <div className="flex justify-center items-center mt-16 mb-10 text-3xl w-full font-bold">
+          POST NEW BOUNTY
         </div>
         <div className="flex flex-col justify-center items-start gap-3">
-          <label className=" block text-md font-medium text-gray-900">
-            Task details
-          </label>
-
+          <label className="block font-medium text-xl">Task details</label>
           <input
             onChange={(e) => {
               setTitle(e.target.value);
             }}
             type="text"
             id="first_name"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            className="focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-800 rounded"
             placeholder="What is your task?"
             required
           />
         </div>
 
         <div className="flex flex-col justify-center items-start gap-3">
-          <label className=" block mt-8 mb-2 text-md font-medium text-gray-900">
-            Add Images
-          </label>
+          <label className="block font-medium text-xl">Add Images</label>
 
           {images.length > 0 && (
             <div
@@ -268,12 +263,14 @@ export const Upload = () => {
 
         <div className="flex justify-center mt-4">
           <button
-            // onClick={txSignature ? onSubmit :  makePayment}
             onClick={txSignature ? onSubmit : openModal}
             type="button"
-            className="mt-4 text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-xl px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+            className="relative rounded px-5 py-2.5 overflow-hidden group bg-blue-700 hover:bg-gradient-to-r hover:from-blue-700 hover:to-blue-600 text-white hover:ring-2 hover:ring-offset-2 hover:ring-blue-500 transition-all ease-out duration-300 text-2xl font-semibold"
           >
-            {txSignature ? "Submit Task" : "Pay"}
+            <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
+            <span className="relative">
+              {txSignature ? "Submit Task" : "Pay"}
+            </span>
           </button>
         </div>
       </div>

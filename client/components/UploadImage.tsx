@@ -81,7 +81,7 @@ export function UploadImage({
     return (
       <div
         id="toast-warning"
-        className="flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
+        className="flex items-center w-full max-w-xs p-4 rounded-lg shadow "
         role="alert"
       >
         <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-orange-500 bg-orange-100 rounded-lg dark:bg-orange-700 dark:text-orange-200">
@@ -148,7 +148,7 @@ export function UploadImage({
               <div className="flex items-center justify-center w-full">
                 <label
                   htmlFor="dropzone-file"
-                  className="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 "
+                  className="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer"
                 >
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
                     <svg

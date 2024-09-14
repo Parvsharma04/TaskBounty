@@ -69,35 +69,64 @@ function TaskAnalytics() {
   }, [wallet.connected, Router]);
 
   const customStyles = {
+    body: {
+      style: {
+        backgroundColor: "#000",
+        color: "#fff",
+      },
+    },
     header: {
       style: {
-        fontFamily: "Sans-serif",
+        backgroundColor: "#000",
+        color: "#fff",
+        textAlign: "center" as "center",
+        fontSize: "2rem",
+        padding: "1rem",
       },
     },
     headRow: {
       style: {
-        backgroundColor: "#f2f2f2",
-        fontFamily: "Sans-serif",
+        backgroundColor: "#000",
+        color: "#fff",
       },
     },
     headCells: {
       style: {
-        fontSize: "16px",
-        fontFamily: "Sans-serif",
+        color: "#fff",
+        border: "1px solid #fff",
+        fontSize: "1.2rem",
       },
     },
     rows: {
       style: {
         fontFamily: "baloo-bhai-2",
+        backgroundColor: "#000",
+        color: "#fff",
         fontSize: "20px",
+      },
+      highlightOnHoverStyle: {
+        backgroundColor: "#1A56DB",
+        color: "#fff",
+      },
+    },
+    cells: {
+      style: {
+        border: "1px solid #fff",
       },
     },
     pagination: {
       style: {
-        fontFamily: "Sans-serif",
+        backgroundColor: "#000",
+        color: "#fff",
+      },
+      pageButton: {
+        style: {
+          border: "1px solid #fff",
+        },
       },
     },
   };
+
   const DataManipulation = (data: any) => {
     let total = 0;
     let done = 0;
@@ -127,38 +156,38 @@ function TaskAnalytics() {
 
   const columns = [
     {
-      name: "id",
+      name: "Id",
       selector: (row: Task) => row.id,
       sortable: true,
     },
     {
-      name: "title",
+      name: "Title",
       selector: (row: Task) => row.title,
       sortable: true,
     },
     {
-      name: "amount",
+      name: "Amount",
       selector: (row: Task) => row.amount,
       sortable: true,
     },
     {
-      name: "done",
+      name: "Done",
       selector: (row: Task) => (row.done == false ? "Not Done" : "Done"),
       sortable: true,
     },
     {
-      name: "options",
+      name: "Options",
       selector: (row: Task) => row.options[0].image_url,
       sortable: true,
     },
     {
-      name: "actions",
+      name: "Actions",
       cell: (row: Task) => <Link href={`/task/${row.id}`}>View Details</Link>,
     },
   ];
 
   return (
-    <div className=" pt-28">
+    <div className="pt-28 h-screen bg-black text-white">
       <ToastContainer
         position="top-left"
         autoClose={1100}
@@ -181,12 +210,12 @@ function TaskAnalytics() {
         prevDoneTasks={3}
         prevPendingTasks={3}
       />
-      <div className="p-6 pb-0 bg-black text-white">
+      <section className="p-6 pb-0 bg-black text-white">
         {AllTasks.length > 0 && <ChartAnalytics userTasks={AllTasks} />}
-      </div>
-      <div>
-        {AllTasks ? (
-          <div className="p-12 pt-0 flex flex-col justify-center items-center">
+      </section>
+      <section>
+        {AllTasks.length > 0 ? (
+          <div className="pt-0 flex flex-col justify-center items-center bg-black text-white border ml-6 mr-6 mt-10">
             <DataTable
               customStyles={customStyles}
               className="dataTables_wrapper"
@@ -201,13 +230,11 @@ function TaskAnalytics() {
             />
           </div>
         ) : (
-          <div className="flex justify-center items-center h-screen">
-            <div className="text-3xl font-bold text-gray-500">
-              No Data Found
-            </div>
+          <div className="flex justify-center items-center text-3xl font-bold bg-black text-white md:h-1/2 w-full pb-10">
+            No Data Found
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }

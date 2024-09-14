@@ -108,6 +108,12 @@ const options: ApexOptions = {
     },
     axisTicks: {
       show: false,
+      color: "white",
+    },
+    labels: {
+      style: {
+        colors: "white",
+      },
     },
   },
   yaxis: {
@@ -118,6 +124,11 @@ const options: ApexOptions = {
     },
     min: 0,
     max: 100,
+    labels: {
+      style: {
+        colors: "white",
+      },
+    },
   },
 };
 
@@ -190,7 +201,7 @@ const ChartAnalytics: React.FC<ChartAnalyticsProps> = ({ userTasks }) => {
   ];
 
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
+    <div className="col-span-12 rounded-sm border border-stroke px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
       <div className="flex flex-wrap items-center p-4 justify-between gap-3 sm:flex-nowrap">
         <div className="flex w-full flex-wrap gap-3 sm:gap-5">
           <div className="flex w-1/3">
@@ -211,14 +222,19 @@ const ChartAnalytics: React.FC<ChartAnalyticsProps> = ({ userTasks }) => {
           </div>
         </div>
         <div className="flex w-full max-w-45 justify-end gap-3">
-          <div className="inline-flex items-center rounded-md bg-whiter p-1.5 bg-gray-300">
-            <label className="text-xl text-black mr-2">Year: </label>
+          <div className="inline-flex items-center rounded-md bg-whiter p-1.5 border">
+            <label className="text-xl mr-2 ml-2">Year: </label>
             <select
+              className="bg-transparent border-none"
               value={userSelectedCurrYear}
               onChange={(e) => setUserSelectedCurrYear(Number(e.target.value))}
             >
               {year.map((yr) => (
-                <option key={yr.toString()} value={yr.toString()}>
+                <option
+                  className="bg-black border-none focus:outline-none focus:border-none"
+                  key={yr.toString()}
+                  value={yr.toString()}
+                >
                   {yr.toString()}
                 </option>
               ))}

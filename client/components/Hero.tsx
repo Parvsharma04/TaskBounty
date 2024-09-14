@@ -4,14 +4,14 @@ import bannerImg from "@/utils/image.png";
 
 export const Hero = () => {
   return (
-    <section className="bg-black text-white h-screen flex justify-center items-center  flex-wrap">
-      <div className="flex flex-col-reverse md:flex-row flex-wrap justify-evenly items-center px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16">
-        <div className="place-self-center">
+    <section className="bg-black text-white h-screen flex justify-center items-center">
+      <div className="flex flex-col-reverse md:flex-row justify-evenly items-center px-4 py-8 mx-auto lg:py-16 gap-8 md:gap-0">
+        <div className="flex flex-col justify-center items-center text-center">
           <h1 className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
             Empower Your Data with{" "}
             <span className="text-blue-600">TaskBounty</span>
           </h1>
-          <p className="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+          <p className="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400 text-justify">
             Elevate your AI projects with TaskBounty's expert labeling services.
             We're more than just a platform; we're your partner in success
           </p>
@@ -34,7 +34,7 @@ export const Hero = () => {
             </svg>
           </Link>
         </div>
-        <div>
+        <div className="w-full h-full md:w-auto md:h-auto">
           <Image
             src={bannerImg}
             width={400}

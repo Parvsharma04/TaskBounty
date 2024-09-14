@@ -27,10 +27,10 @@ const TaskSummary = ({
   };
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5 p-6">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5 p-6 bg-black text-white">
       <CardDataStats
         title="Amount Spent"
-        total={`$ ${amtSpent}`}
+        total={`$ ${0}`}
         rate={`${calculateRate(amtSpent, prevAmtSpent)} %`}
         {...(calculateRate(amtSpent, prevAmtSpent) > 0
           ? { levelUp: true }
