@@ -3,6 +3,7 @@
 import { BACKEND_URL } from "@/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
+import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation"; // Import usePathname from next/navigation
@@ -66,7 +67,7 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="w-full bg-black">
+    <nav className="w-full bg-black shadow-[0_4px_8px_rgba(255,255,255,0.2)]">
       <ToastContainer
         position="top-left"
         autoClose={2000}
@@ -82,7 +83,7 @@ const NavBar = () => {
       <div className="mx-auto flex flex-wrap items-center justify-between p-4 w-[100%]">
         <a
           href="/"
-          className="flex items-center space-x-3 rtl:space-x-reverse "
+          className="flex items-center space-x-3 rtl:space-x-reverse"
         >
           <img
             src="https://flowbite.com/docs/images/logo.svg"
@@ -95,24 +96,35 @@ const NavBar = () => {
         </a>
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse gap-2">
           {wallet.connected && Number(payoutAmt) >= 2 && (
-            <button
+            <motion.button
               onClick={handlePayoutAmt}
-              className="bg-blue-700 text-white p-3 pl-5 pr-5 rounded-3xl hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ease-in-out"
+              className="bg-blue-700 text-white p-3 pl-5 pr-5 rounded-3xl"
+              whileHover={{ scale: 1.05, backgroundColor: "#3b82f6" }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.3 }}
             >
               {`Pay out ${payoutAmt} SOL`}
-            </button>
+            </motion.button>
           )}
-          <WalletMultiButtonDynamic onClick={() => getToken()}>
-            {wallet.connected
-              ? `${wallet.publicKey?.toBase58().substring(0, 7)}...`
-              : "Connect Wallet"}
-          </WalletMultiButtonDynamic>
-          <button
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+          >
+            <WalletMultiButtonDynamic onClick={() => getToken()}>
+              {wallet.connected
+                ? `${wallet.publicKey?.toBase58().substring(0, 7)}...`
+                : "Connect Wallet"}
+            </WalletMultiButtonDynamic>
+          </motion.div>
+          <motion.button
             data-collapse-toggle="navbar-cta"
             type="button"
             className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
             aria-controls="navbar-cta"
             aria-expanded="false"
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.3 }}
           >
             <span className="sr-only">Open main menu</span>
             <svg
@@ -130,7 +142,7 @@ const NavBar = () => {
                 d="M1 1h15M1 7h15M1 13h15"
               />
             </svg>
-          </button>
+          </motion.button>
         </div>
         {wallet.connected && (
           <div
@@ -141,7 +153,7 @@ const NavBar = () => {
               <li>
                 <Link
                   href="/"
-                  className={`block py-2 px-3 md:p-0 rounded ${
+                  className={`block py-2 px-3 md:p-0 rounded transition-colors duration-300 ${
                     pathname === "/"
                       ? "text-blue-700"
                       : "text-white hover:text-blue-700"
@@ -153,7 +165,7 @@ const NavBar = () => {
               <li>
                 <Link
                   href="/bounty"
-                  className={`block py-2 px-3 md:p-0 rounded ${
+                  className={`block py-2 px-3 md:p-0 rounded transition-colors duration-300 ${
                     pathname === "/bounty"
                       ? "text-blue-700"
                       : "text-white hover:text-blue-700"
@@ -165,7 +177,7 @@ const NavBar = () => {
               <li>
                 <Link
                   href="/tester-analytics"
-                  className={`block py-2 px-3 md:p-0 rounded ${
+                  className={`block py-2 px-3 md:p-0 rounded transition-colors duration-300 ${
                     pathname === "/tester-analytics"
                       ? "text-blue-700"
                       : "text-white hover:text-blue-700"
