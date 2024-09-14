@@ -15,3 +15,15 @@ button.wallet-adapter-button-trigger:hover, button.loading-spinner {
   background-color: #447efa !important;
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
 }
+
+::-webkit-scrollbar {
+  background-color: black;
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #091e4a;
+  /* background-color: #1a56db; */
+  opacity: 0.5;
+  border-radius: 20px;
+}
