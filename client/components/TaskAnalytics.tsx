@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ChartAnalytics from "./ChartAnalytics";
 import TaskSummary from "./TaskSummary";
 import LoadingPage from "./Loading";
+import * as motion from "framer-motion/client";
 
 function TaskAnalytics() {
   const [AllTasks, setAllTasks] = useState([]);
@@ -34,16 +35,16 @@ function TaskAnalytics() {
         });
 
         if (res.status === 200) {
-          toast.success(res.data.message, {
-            position: "top-left",
-            autoClose: 1100,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-          });
+          // toast.success(res.data.message, {
+          //   position: "top-left",
+          //   autoClose: 1100,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined,
+          //   theme: "colored",
+          // });
         }
         // console.log(res.data.tasksDetails);
         setAllTasks(res.data.tasksDetails);
@@ -221,33 +222,47 @@ function TaskAnalytics() {
         />
       )}
       {!Loading && (
-        <section className="p-6 pb-0 bg-black text-white">
-          {AllTasks.length > 0 && <ChartAnalytics userTasks={AllTasks} />}
-        </section>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          transition={{ duration: 1 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+        >
+          <section className="p-6 pb-0 bg-black text-white">
+            {AllTasks.length > 0 && <ChartAnalytics userTasks={AllTasks} />}
+          </section>
+        </motion.div>
       )}
       {!Loading && (
-        <section className="bg-black text-white pt-10 pb-10">
-          {AllTasks.length > 0 ? (
-            <div className="flex flex-col justify-center items-center bg-black text-white border ml-6 mr-6">
-              <DataTable
-                customStyles={customStyles}
-                className="dataTables_wrapper"
-                title="Client Task Analytics"
-                columns={columns}
-                data={AllTasks}
-                fixedHeader
-                pagination
-                responsive
-                highlightOnHover
-                pointerOnHover
-              />
-            </div>
-          ) : (
-            <div className="flex justify-center items-center text-3xl font-bold bg-black text-white md:h-1/2 w-full pb-10">
-              No Data Found
-            </div>
-          )}
-        </section>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          transition={{ duration: 1 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+        >
+          <section className="bg-black text-white pt-10 pb-10">
+            {AllTasks.length > 0 ? (
+              <div className="flex flex-col justify-center items-center bg-black text-white border ml-6 mr-6">
+                <DataTable
+                  customStyles={customStyles}
+                  className="dataTables_wrapper"
+                  title="Client Task Analytics"
+                  columns={columns}
+                  data={AllTasks}
+                  fixedHeader
+                  pagination
+                  responsive
+                  highlightOnHover
+                  pointerOnHover
+                />
+              </div>
+            ) : (
+              <div className="flex justify-center items-center text-3xl font-bold bg-black text-white md:h-1/2 w-full pb-10">
+                No Data Found
+              </div>
+            )}
+          </section>
+        </motion.div>
       )}
     </div>
   );
