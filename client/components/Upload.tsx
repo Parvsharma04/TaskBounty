@@ -118,6 +118,9 @@ export const Upload = () => {
   };
 
   const customStyles = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.25)",
+    },
     content: {
       top: "50%",
       left: "50%",
@@ -125,16 +128,21 @@ export const Upload = () => {
       bottom: "auto",
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
+      backgroundColor: "#1F2937",
+      color: "white",
     },
   };
   const imageCustomStyles = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.25)",
+    },
     content: {
       top: "50%",
       left: "50%",
       right: "auto",
       bottom: "auto",
       transform: "translate(-50%, -50%)",
-      backgroundColor: "black",
+      padding: 0,
     },
   };
   function openModal() {
@@ -158,16 +166,16 @@ export const Upload = () => {
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         style={customStyles}
-        contentLabel="Example Modal"
+        contentLabel="Amount Modal"
       >
-        <div className="flex flex-col gap-3 mt-5">
+        <div className="flex flex-col gap-3">
           <h1 className="text-lg font-semibold">
             How much would you like to pay?
           </h1>
           <input
             type="number"
             placeholder="Enter some decimal solana amount"
-            className="w-full p-2 rounded border border-gray-300"
+            className="w-full p-2 rounded border border-gray-300 bg-gray-800"
             value={tasksAmt}
             onChange={(e) => setTasksAmt(Number(e.target.value))}
           />
@@ -185,7 +193,7 @@ export const Upload = () => {
         style={imageCustomStyles}
         contentLabel="Image Courasel"
       >
-        <div className="flex flex-col gap-3 mt-5 ">
+        <div className="flex flex-col gap-3">
           <div
             id="default-carousel"
             className="relative w-full border-2 rounded-lg"

@@ -10,7 +10,7 @@ const TaskSummary = ({
   prevDoneTasks,
   prevPendingTasks,
 }: {
-  amtSpent: number;
+  amtSpent: string;
   totalTasks: number;
   doneTasks: number;
   pendingTasks: number;
@@ -25,19 +25,20 @@ const TaskSummary = ({
     // console.log(parseFloat(`${rate.toFixed(2)})`));
     return parseFloat(`${rate.toFixed(2)}`);
   };
+  console.log(amtSpent);
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5 p-6 bg-black text-white">
       <CardDataStats
         title="Amount Spent"
-        total={`$ ${0}`}
-        rate={`${calculateRate(amtSpent, prevAmtSpent)} %`}
-        {...(calculateRate(amtSpent, prevAmtSpent) > 0
+        total={`${amtSpent} SOL`}
+        rate={`${calculateRate(parseFloat(amtSpent), prevAmtSpent)} %`}
+        {...(calculateRate(parseFloat(amtSpent), prevAmtSpent) > 0
           ? { levelUp: true }
           : { levelDown: true })}
       >
         <div className="flex justify-start w-full items-start">
-          <div className="bg-gray-300 p-2 rounded-full">
+          <div className="border-2 p-2 rounded-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -64,7 +65,7 @@ const TaskSummary = ({
           : { levelDown: true })}
       >
         <div className="flex justify-start w-full items-start">
-          <div className="bg-gray-300 p-2 rounded-full">
+          <div className="border-2 p-2 rounded-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -91,7 +92,7 @@ const TaskSummary = ({
           : { levelDown: true })}
       >
         <div className="flex justify-start w-full items-start">
-          <div className="bg-gray-300 p-2 rounded-full">
+          <div className="border-2 p-2 rounded-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -118,7 +119,7 @@ const TaskSummary = ({
           : { levelDown: true })}
       >
         <div className="flex justify-start w-full items-start">
-          <div className="bg-gray-300 p-2 rounded-full">
+          <div className="border-2 p-2 rounded-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

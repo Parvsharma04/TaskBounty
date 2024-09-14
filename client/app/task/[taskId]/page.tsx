@@ -67,8 +67,8 @@ export default function Page({
   }, [taskId]);
 
   return (
-    <div>
-      <div className="capitalize font-semibold text-3xl pt-32 flex justify-center">
+    <div className="bg-black text-white h-screen w-full flex flex-col justify-center items-center">
+      <div className="capitalize font-semibold text-3xl flex justify-center">
         {taskDetails.title}
       </div>
       <div className="flex flex-wrap justify-center pt-8 gap-5">

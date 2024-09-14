@@ -5,18 +5,17 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ChartAnalytics from "./ChartAnalytics";
 import TaskSummary from "./TaskSummary";
 import LoadingPage from "./Loading";
-import DashboardSkeleton from "./Skeletons";
 
 function TaskAnalytics() {
   const [AllTasks, setAllTasks] = useState([]);
-  const [amtSpent, setAmtSpent] = useState(0);
+  const [amtSpent, setAmtSpent] = useState("0.0");
   const [totalTasks, setTotalTasks] = useState(0);
   const [doneTasks, setDoneTasks] = useState(0);
   const [pendingTasks, setPendingTasks] = useState(0);
@@ -133,19 +132,22 @@ function TaskAnalytics() {
   };
 
   const DataManipulation = (data: any) => {
-    let total = 0;
+    let total = 0.0;
     let done = 0;
     let pending = 0;
-    data.map((task: any) => {
-      total += task.amount;
-      if (task.done == true) {
+
+    data.forEach((task: any) => {
+      const taskAmount = Number(task.amount);
+      total += taskAmount / 1000000000;
+
+      if (task.done === true) {
         done += 1;
       } else {
         pending += 1;
       }
     });
 
-    setAmtSpent(total);
+    setAmtSpent(total.toFixed(6));
     setTotalTasks(data.length);
     setDoneTasks(done);
     setPendingTasks(pending);
@@ -206,41 +208,47 @@ function TaskAnalytics() {
         pauseOnHover
         theme="colored"
       />
-      <TaskSummary
-        amtSpent={amtSpent}
-        totalTasks={totalTasks}
-        doneTasks={doneTasks}
-        pendingTasks={pendingTasks}
-        prevAmtSpent={10}
-        prevTotalTasks={1}
-        prevDoneTasks={3}
-        prevPendingTasks={3}
-      />
-      <section className="p-6 pb-0 bg-black text-white">
-        {AllTasks.length > 0 && <ChartAnalytics userTasks={AllTasks} />}
-      </section>
-      <section className="bg-black text-white pt-10 pb-10">
-        {AllTasks.length > 0 ? (
-          <div className="flex flex-col justify-center items-center bg-black text-white border ml-6 mr-6">
-            <DataTable
-              customStyles={customStyles}
-              className="dataTables_wrapper"
-              title="Client Task Analytics"
-              columns={columns}
-              data={AllTasks}
-              fixedHeader
-              pagination
-              responsive
-              highlightOnHover
-              pointerOnHover
-            />
-          </div>
-        ) : (
-          <div className="flex justify-center items-center text-3xl font-bold bg-black text-white md:h-1/2 w-full pb-10">
-            No Data Found
-          </div>
-        )}
-      </section>
+      {!Loading && (
+        <TaskSummary
+          amtSpent={amtSpent}
+          totalTasks={totalTasks}
+          doneTasks={doneTasks}
+          pendingTasks={pendingTasks}
+          prevAmtSpent={10}
+          prevTotalTasks={1}
+          prevDoneTasks={3}
+          prevPendingTasks={3}
+        />
+      )}
+      {!Loading && (
+        <section className="p-6 pb-0 bg-black text-white">
+          {AllTasks.length > 0 && <ChartAnalytics userTasks={AllTasks} />}
+        </section>
+      )}
+      {!Loading && (
+        <section className="bg-black text-white pt-10 pb-10">
+          {AllTasks.length > 0 ? (
+            <div className="flex flex-col justify-center items-center bg-black text-white border ml-6 mr-6">
+              <DataTable
+                customStyles={customStyles}
+                className="dataTables_wrapper"
+                title="Client Task Analytics"
+                columns={columns}
+                data={AllTasks}
+                fixedHeader
+                pagination
+                responsive
+                highlightOnHover
+                pointerOnHover
+              />
+            </div>
+          ) : (
+            <div className="flex justify-center items-center text-3xl font-bold bg-black text-white md:h-1/2 w-full pb-10">
+              No Data Found
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 }
