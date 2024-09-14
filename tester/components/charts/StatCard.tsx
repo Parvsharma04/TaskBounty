@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import React, { ReactNode } from "react";
 
 interface StatCardProps {
@@ -9,6 +10,17 @@ interface StatCardProps {
   children: ReactNode;
 }
 
+const containerVariants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.95
+  },
+  visible: {
+    opacity: 1,
+    scale: 1
+  }
+};
+
 const StatCard: React.FC<StatCardProps> = ({
   title,
   total,
@@ -18,26 +30,29 @@ const StatCard: React.FC<StatCardProps> = ({
   children,
 }) => {
   return (
-    <div className="rounded-sm border border-stroke px-7 py-6 shadow-default border-strokedark bg-boxdark bg-black text-white">
+    <motion.div
+      className="relative w-full max-w-sm rounded-[20px] bg-gray-900 shadow-[0_25px_50px_rgba(0,0,0,0.55)] cursor-pointer transition-transform duration-300 hover:scale-90 text-white p-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      transition={{ duration: 0.6, ease: "easeInOut" }}
+    >
       <div className="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
         {children}
       </div>
 
       <div className="mt-4 flex items-end justify-between">
         <div>
-          <h4 className="text-title-md font-bold text-white">
-            {total}
-          </h4>
+          <h4 className="text-title-md font-bold text-white">{total}</h4>
           <span className="text-sm font-medium">{title}</span>
         </div>
 
         <span
           className={`flex items-center gap-1 text-sm font-medium ${
-            levelUp && "text-green-600"
-          } ${levelDown && "text-red-600"} `}
+            levelUp ? "text-green-600" : ""
+          } ${levelDown ? "text-red-600" : ""}`}
         >
           {rate}
-
           {levelUp && (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +60,7 @@ const StatCard: React.FC<StatCardProps> = ({
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
-              className="size-6 text-green-600"
+              className="w-6 h-6 text-green-600"
             >
               <path
                 strokeLinecap="round"
@@ -61,7 +76,7 @@ const StatCard: React.FC<StatCardProps> = ({
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
-              className="size-6 text-red-600"
+              className="w-6 h-6 text-red-600"
             >
               <path
                 strokeLinecap="round"
@@ -72,7 +87,7 @@ const StatCard: React.FC<StatCardProps> = ({
           )}
         </span>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -2,6 +2,7 @@
 import { BACKEND_URL } from "@/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -25,6 +26,26 @@ interface NextTaskProps {
   noMoreTasks: boolean;
   setNoMoreTasks: Dispatch<SetStateAction<boolean>>;
 }
+
+const containerVariants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.9
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      delayChildren: 0.3,
+      staggerChildren: 0.2
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1 }
+};
 
 export const NextTask: React.FC<NextTaskProps> = ({
   noMoreTasks,
@@ -87,7 +108,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
           </div>
         </div>
       ) : loading ? (
-        <div className="h-screen flex justify-center flex-col bg-black text-white" >
+        <div className="h-screen flex justify-center flex-col bg-black text-white">
           <div className="w-full flex justify-center text-2xl">
             <Loading />
           </div>
@@ -104,64 +125,79 @@ export const NextTask: React.FC<NextTaskProps> = ({
         ))
       ) : (
         <div className="flex justify-center h-screen items-center bg-black text-white">
-          <div className="bg-gray-900 border-1px border-gray-100 p-10 w-fit rounded-2xl h-fit">
+          <motion.div
+            className="bg-gray-900 border-1px border-gray-100 p-10 w-fit rounded-2xl h-fit"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 1, ease: "easeInOut" }}
+          >
             <div className="flex justify-center">
               <TaskStatement taskTitle={currentTask.title} />
             </div>
-            <div className="flex justify-center  gap-5 pt-8">
+            <motion.ul
+              className="flex justify-center gap-5 pt-8"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
               {currentTask?.options.map((option) => (
-                <TaskImage
-                  onSelect={async () => {
-                    let d = new Date();
-                    let currDate = d.getUTCDate();
-                    let currMonth = d.getUTCMonth();
-                    let currYear = d.getUTCFullYear();
-                    setLoading(true);
-                    try {
-                      const response = await axios.post(
-                        `${BACKEND_URL}/v1/worker/submission`,
-                        {
-                          taskId: currentTask.id.toString(),
-                          selection: option.id.toString(),
-                          postDate: currDate,
-                          postMonth: currMonth,
-                          postYear: currYear,
-                        },
-                        {
-                          headers: {
-                            Authorization: token,
-                          },
-                        }
-                      );
-                      if (response.status === 200) {
-                        toast.success("task completed successfully");
-                      }
-                      const nextTask = response.data.nextTask;
-                      if (nextTask) {
-                        setCurrentTask(nextTask);
-                      } else {
-                        setCurrentTask(null);
-                        setNoMoreTasks(true);
-                      }
-                    } catch (err) {
-                      if (axios.isAxiosError(err)) {
-                        console.error(
-                          "Error fetching next task:",
-                          err.response?.data || err.message
-                        );
-                      } else {
-                        console.error("Unexpected error:", err);
-                      }
-                      setCurrentTask(null);
-                    }
-                    setLoading(false);
-                  }}
+                <motion.li
                   key={option.id}
-                  imageUrl={option.image_url}
-                />
+                  variants={itemVariants}
+                >
+                  <TaskImage
+                    onSelect={async () => {
+                      let d = new Date();
+                      let currDate = d.getUTCDate();
+                      let currMonth = d.getUTCMonth();
+                      let currYear = d.getUTCFullYear();
+                      setLoading(true);
+                      try {
+                        const response = await axios.post(
+                          `${BACKEND_URL}/v1/worker/submission`,
+                          {
+                            taskId: currentTask.id.toString(),
+                            selection: option.id.toString(),
+                            postDate: currDate,
+                            postMonth: currMonth,
+                            postYear: currYear,
+                          },
+                          {
+                            headers: {
+                              Authorization: token,
+                            },
+                          }
+                        );
+                        if (response.status === 200) {
+                          toast.success("task completed successfully");
+                        }
+                        const nextTask = response.data.nextTask;
+                        if (nextTask) {
+                          setCurrentTask(nextTask);
+                        } else {
+                          setCurrentTask(null);
+                          setNoMoreTasks(true);
+                        }
+                      } catch (err) {
+                        if (axios.isAxiosError(err)) {
+                          console.error(
+                            "Error fetching next task:",
+                            err.response?.data || err.message
+                          );
+                        } else {
+                          console.error("Unexpected error:", err);
+                        }
+                        setCurrentTask(null);
+                      }
+                      setLoading(false);
+                    }}
+                    imageUrl={option.image_url}
+                  />
+                </motion.li>
               ))}
-            </div>
-          </div>
+            </motion.ul>
+          </motion.div>
         </div>
       )}
     </>

@@ -1,6 +1,5 @@
-"use client";
-
 import { ApexOptions } from "apexcharts";
+import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
 
@@ -8,10 +7,21 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
+const containerVariants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.95,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+  },
+};
+
 const Graph = ({
   submissions,
 }: {
-  submissions: Array<{ _count: { id: any }; postMonth: any; postYear: any }>;
+  submissions: Array<{ _count: { id: any }; postMonth: any; postYear: any }>[];
 }) => {
   const [doneTasks, setDoneTasks] = useState<number[]>(Array(12).fill(0));
   const [year, setYear] = useState<number[]>([]);
@@ -41,7 +51,7 @@ const Graph = ({
 
   const series = [
     {
-      name: "Tasks Done",
+      name: "Bounties",
       data: doneTasks,
     },
   ];
@@ -57,7 +67,7 @@ const Graph = ({
       position: "top",
       horizontalAlign: "left",
     },
-    colors: ["#3C50E0", "#80CAEE"],
+    colors: ["#3C50E0", "#80CAEE"], // Ensure these colors are visible in dark mode
     chart: {
       fontFamily: "Satoshi, sans-serif",
       height: 335,
@@ -73,7 +83,7 @@ const Graph = ({
       toolbar: {
         show: false,
       },
-      // background: '#121212', // Dark background
+      background: "#111827", // Dark background for the chart
     },
     responsive: [
       {
@@ -94,18 +104,21 @@ const Graph = ({
       },
     ],
     stroke: {
-      width: [2],
+      width: [2, 2],
       curve: "smooth",
     },
     grid: {
+      borderColor: "#333", // Grid lines color
       xaxis: {
         lines: {
           show: true,
+          color: "#444", // Color for x-axis lines
         },
       },
       yaxis: {
         lines: {
           show: true,
+          color: "#444", // Color for y-axis lines
         },
       },
     },
@@ -115,33 +128,13 @@ const Graph = ({
     markers: {
       size: 4,
       colors: "#fff",
-      strokeColors: ["#3C50E0", "#80CAEE"], // Keep existing marker stroke colors
+      strokeColors: ["#3056D3", "#80CAEE"],
       strokeWidth: 3,
       strokeOpacity: 0.9,
       fillOpacity: 1,
       hover: {
         size: undefined,
         sizeOffset: 5,
-      },
-    },
-    tooltip: {
-      theme: 'dark', // Dark theme for tooltips
-      style: {
-        fontSize: '12px',
-        colors: '#FFFFFF', // Tooltip text color
-      },
-      marker: {
-        show: false, // Hide markers in tooltips
-      },
-      x: {
-        show: true,
-        format: 'MMM yyyy', // Customize date format if needed
-      },
-      y: {
-        formatter: (val) => val.toString(),
-        title: {
-          formatter: (seriesName) => seriesName,
-        },
       },
     },
     xaxis: {
@@ -155,56 +148,74 @@ const Graph = ({
       },
       labels: {
         style: {
-          colors: '#B0BEC5', // Slightly lighter color for the labels to contrast against the dark background
-          fontSize: '12px', // Adjust font size as needed
+          colors: "#fff", // Color for x-axis labels
+          fontSize: "12px",
         },
-      },
-      tooltip: {
-        enabled: true, // Hide tooltip on xaxis labels
       },
     },
     yaxis: {
       title: {
         style: {
-          fontSize: "0px",
+          fontSize: "14px",
+          color: "#fff", // Color for y-axis title
+        },
+      },
+      labels: {
+        style: {
+          colors: "#fff", // Color for y-axis labels
+          fontSize: "12px",
         },
       },
       min: 0,
-      labels: {
-        style: {
-          colors: '#FFF', // Light-colored labels
-        },
+    },
+    tooltip: {
+      theme: "dark", // Ensure tooltips use dark theme
+      style: {
+        fontSize: "12px",
+        color: "#fff", // Color for tooltip text
+      },
+      y: {
+        formatter: (value) => value.toString(),
       },
     },
   };
 
   return (
-    <div className="col-span-12 rounded-sm border px-5 pb-5 pt-7.5 shadow-default border-strokedark bg-boxdark sm:px-7.5 xl:col-span-8 bg-black text-white m-10">
-      <div className="flex flex-wrap items-center p-4 justify-between gap-3 sm:flex-nowrap">
-        <div className="flex w-full max-w-45 justify-end gap-3">
-          <div className="inline-flex items-center rounded-md bg-whiter p-1.5 bg-black">
-            <label className="text-xl text-white mr-2">Year: </label>
-            <select
-              className="bg-black text-white border border-gray-700"
-              value={userSelectedCurrYear}
-              onChange={(e) => setUserSelectedCurrYear(Number(e.target.value))}
-            >
-              {year.map((yr) => (
-                <option
-                  key={yr.toString()}
-                  value={yr.toString()}
-                  className="bg-black text-white"
-                >
-                  {yr.toString()}
-                </option>
-              ))}
-            </select>
-          </div>
+    <motion.div
+      className="relative rounded-[20px] bg-gray-900 shadow-[0_25px_50px_rgba(0,0,0,0.55)] text-white p-6 m-10"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      transition={{ duration: 0.6, ease: "easeInOut" }}
+    >
+      <div className="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+        {/* Optional icon or content */}
+      </div>
+
+      <div className="mt-4 flex items-start justify-between">
+        <h4 className="text-title-md font-bold text-white">Bounty Chart</h4>
+        <div className="ml-auto flex items-center">
+          <label className="text-sm font-medium text-white mr-2">Year: </label>
+          <select
+            className="bg-gray-900 text-white border-white border-[1px] rounded-md p-1.5"
+            value={userSelectedCurrYear}
+            onChange={(e) => setUserSelectedCurrYear(Number(e.target.value))}
+          >
+            {year.map((yr) => (
+              <option
+                key={yr.toString()}
+                value={yr.toString()}
+                className="bg-[rgba(58,56,56,0.623)] text-white"
+              >
+                {yr.toString()}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      <div>
-        <div id="Graph" className="-ml-5 bg-black text-white">
+      <div className="mt-6 bg-inherit">
+        <div id="Graph" className="bg-inherit text-white">
           <ReactApexChart
             options={options}
             series={series}
@@ -214,7 +225,7 @@ const Graph = ({
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
