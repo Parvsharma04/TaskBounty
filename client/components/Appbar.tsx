@@ -17,6 +17,8 @@ const WalletMultiButtonDynamic = dynamic(
 const NavBar = () => {
   const { publicKey, disconnect, signMessage, connected } = useWallet();
   const [hasToken, setHasToken] = useState(false);
+  const [activeBtn, setActiveBtn] = useState("home");
+  const [hamburger, setHamburger] = useState(false);
 
   useEffect(() => {
     async function getToken() {
@@ -49,8 +51,8 @@ const NavBar = () => {
   }, [publicKey]);
 
   return (
-    <nav className="bg-white border-gray-200 dark:bg-gray-900 fixed w-full shadow-md z-50">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <nav className="border-gray-200 bg-gray-800 text-white fixed w-full shadow-md z-50">
+      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
         <Link
           href="/"
           className="flex items-center space-x-3 rtl:space-x-reverse"
@@ -67,63 +69,82 @@ const NavBar = () => {
           </span>
         </Link>
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-          <WalletMultiButtonDynamic>
-            {publicKey
-              ? `${publicKey.toBase58().substring(0, 7)}...`
-              : "Connect Wallet"}
-          </WalletMultiButtonDynamic>
-          <button
-            data-collapse-toggle="navbar-cta"
-            type="button"
-            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-            aria-controls="navbar-cta"
-            aria-expanded="false"
-          >
-            <span className="sr-only">Open main menu</span>
-            <svg
-              className="w-5 h-5"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 17 14"
+          <div className="hidden md:block">
+            <WalletMultiButtonDynamic>
+              {publicKey
+                ? `${publicKey.toBase58().substring(0, 7)}...`
+                : "Connect Wallet"}
+            </WalletMultiButtonDynamic>
+          </div>
+          {connected ? (
+            <button
+              data-collapse-toggle="navbar-cta"
+              type="button"
+              onClick={() => setHamburger(!hamburger)}
+              className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-white rounded-lg md:hidden hover:bg-blue-700 focus:outline-none"
+              aria-controls="navbar-cta"
+              aria-expanded="false"
             >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M1 1h15M1 7h15M1 13h15"
-              />
-            </svg>
-          </button>
+              <span className="sr-only">Open main menu</span>
+              <svg
+                className="w-5 h-5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 17 14"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M1 1h15M1 7h15M1 13h15"
+                />
+              </svg>
+            </button>
+          ) : (
+            <div className="md:hidden">
+              <WalletMultiButtonDynamic>
+                {publicKey
+                  ? `${publicKey.toBase58().substring(0, 7)}...`
+                  : "Connect Wallet"}
+              </WalletMultiButtonDynamic>
+            </div>
+          )}
         </div>
         <div
-          className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
+          className={`items-center transition-all duration-300 ease-in-out justify-between md:opacity-100 md:translate-y-0 md:h-auto ${
+            hamburger
+              ? "opacity-0 -translate-y-10 pointer-events-none h-0"
+              : "opacity-100 translate-y-0 h-auto"
+          } w-full md:flex md:w-auto md:order-1`}
           id="navbar-cta"
         >
           {connected && (
-            <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <ul className="flex flex-col font-medium p-3 mt-4 text-white border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 bg-gray-800">
               <li>
                 <Link
                   href="/"
-                  className="block py-2 px-3 md:p-0 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:dark:text-blue-500"
+                  className={` block border p-3  transition-all duration-300 ease-in-out py-2 px-3 rounded ${
+                    activeBtn == "home"
+                      ? "text-white bg-blue-700"
+                      : "text-white"
+                  } hover:text-white hover:bg-blue-700`}
                   aria-current="page"
+                  onClick={() => setActiveBtn("home")}
                 >
                   Home
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/about"
-                  className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/uploadTask"
-                  className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  className={`block transition-all duration-300  border ease-in-out py-2 px-3 p-3 rounded ${
+                    activeBtn == "uploadTask"
+                      ? "text-white bg-blue-700"
+                      : "text-white"
+                  } hover:text-white hover:bg-blue-700`}
+                  onClick={() => setActiveBtn("uploadTask")}
                 >
                   Upload Task
                 </Link>
@@ -131,10 +152,22 @@ const NavBar = () => {
               <li>
                 <Link
                   href="/taskAnalytics"
-                  className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  className={`block  transition-all duration-300 border ease-in-out py-2 px-3 p-3 rounded ${
+                    activeBtn == "taskAnalytics"
+                      ? "text-white bg-blue-700"
+                      : "text-white"
+                  } hover:text-white hover:bg-blue-700`}
+                  onClick={() => setActiveBtn("taskAnalytics")}
                 >
                   Task Analytics
                 </Link>
+              </li>
+              <li className="mt-4 md:hidden">
+                <WalletMultiButtonDynamic>
+                  {publicKey
+                    ? `${publicKey.toBase58().substring(0, 7)}...`
+                    : "Connect Wallet"}
+                </WalletMultiButtonDynamic>
               </li>
             </ul>
           )}
