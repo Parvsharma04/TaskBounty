@@ -16,6 +16,7 @@ const config: Config = {
       },
       animation: {
         shimmer: "shimmer 2s linear infinite",
+        "slide-left": "slide-left 13s linear infinite",
       },
       keyframes: {
         shimmer: {
@@ -25,6 +26,10 @@ const config: Config = {
           to: {
             backgroundPosition: "-200% 0",
           },
+        },
+        "slide-left": {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-100%)" },
         },
       },
     },
