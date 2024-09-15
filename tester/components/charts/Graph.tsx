@@ -27,11 +27,10 @@ const Graph = ({
   const [year, setYear] = useState<number[]>([]);
   const [userSelectedCurrYear, setUserSelectedCurrYear] = useState<number>(0);
 
-  // Initialize years for selection and for xaxis
   useEffect(() => {
     const currentYear = new Date().getUTCFullYear();
     const pastTenYears = Array.from({ length: 10 }, (_, i) => currentYear - i);
-    setYear([currentYear, ...pastTenYears.slice(1)]); // Ensure current year is not duplicated
+    setYear([currentYear, ...pastTenYears.slice(1)]);
     setUserSelectedCurrYear(currentYear);
   }, []);
 
@@ -56,7 +55,6 @@ const Graph = ({
     },
   ];
 
-  // Dynamically generate xaxis categories for the months
   const xaxisCategories = Array.from({ length: 12 }, (_, i) =>
     new Date(0, i).toLocaleString("en-US", { month: "short" })
   );
@@ -64,10 +62,8 @@ const Graph = ({
   const options: ApexOptions = {
     legend: {
       show: false,
-      position: "top",
-      horizontalAlign: "left",
     },
-    colors: ["#3C50E0", "#80CAEE"], // Ensure these colors are visible in dark mode
+    colors: ["#3C50E0", "#80CAEE"],
     chart: {
       fontFamily: "Satoshi, sans-serif",
       height: 335,
@@ -83,7 +79,7 @@ const Graph = ({
       toolbar: {
         show: false,
       },
-      background: "#111827", // Dark background for the chart
+      background: "#111827",
     },
     responsive: [
       {
@@ -108,17 +104,17 @@ const Graph = ({
       curve: "smooth",
     },
     grid: {
-      borderColor: "#333", // Grid lines color
+      borderColor: "#333",
       xaxis: {
         lines: {
           show: true,
-          color: "#444", // Color for x-axis lines
+          color: "#444",
         },
       },
       yaxis: {
         lines: {
           show: true,
-          color: "#444", // Color for y-axis lines
+          color: "#444",
         },
       },
     },
@@ -148,7 +144,7 @@ const Graph = ({
       },
       labels: {
         style: {
-          colors: "#fff", // Color for x-axis labels
+          colors: "#fff",
           fontSize: "12px",
         },
       },
@@ -157,22 +153,22 @@ const Graph = ({
       title: {
         style: {
           fontSize: "14px",
-          color: "#fff", // Color for y-axis title
+          color: "#fff",
         },
       },
       labels: {
         style: {
-          colors: "#fff", // Color for y-axis labels
+          colors: "#fff",
           fontSize: "12px",
         },
       },
       min: 0,
     },
     tooltip: {
-      theme: "dark", // Ensure tooltips use dark theme
+      theme: "dark",
       style: {
         fontSize: "12px",
-        color: "#fff", // Color for tooltip text
+        color: "#fff",
       },
       y: {
         formatter: (value) => value.toString(),

@@ -3,7 +3,7 @@
 import { NextTask } from "@/components/NextTask";
 import { useState } from "react";
 
-const EarnByTask = () => {
+const Bounty = () => {
   const [noMoreTasks, setNoMoreTasks] = useState(false);
 
   return (
@@ -13,4 +13,4 @@ const EarnByTask = () => {
   );
 };
 
-export default EarnByTask;
+export default Bounty;

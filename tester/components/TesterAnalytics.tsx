@@ -4,7 +4,9 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useIsMobile } from "../hooks/useIsMobile";
 import Graph from "./charts/Graph";
+import MobileChart from "./charts/MobileChart";
 import Loading from "./Loading";
 import TesterDash from "./TesterDash";
 
@@ -56,6 +58,7 @@ interface TesterData {
 export const TesterAnalytics: React.FC = () => {
   const wallet = useWallet();
   const router = useRouter();
+  const isMobile = useIsMobile();
   const [testerData, setTesterData] = useState<TesterData | null>(null);
   const [testCount, setTestCount] = useState(0);
   const [taskRate, setTaskRate] = useState<{
@@ -63,7 +66,7 @@ export const TesterAnalytics: React.FC = () => {
     increase: boolean;
   } | null>(null);
   const [totalEarned, setTotalEarned] = useState(0);
-  const [totalPayout, setTotalPayout] = useState(0); // New state for total payout
+  const [totalPayout, setTotalPayout] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -151,7 +154,7 @@ export const TesterAnalytics: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-screen flex justify-center items-center text-2xl bg-black text-white">
+      <div className="min-h-screen flex justify-center items-center text-xl sm:text-2xl bg-black text-white">
         <Loading />
       </div>
     );
@@ -159,7 +162,7 @@ export const TesterAnalytics: React.FC = () => {
 
   if (error) {
     return (
-      <div className="h-screen flex justify-center items-center text-2xl text-red-500 bg-black ">
+      <div className="min-h-screen flex justify-center items-center text-xl sm:text-2xl text-red-500 bg-black px-4">
         {error}
       </div>
     );
@@ -167,15 +170,15 @@ export const TesterAnalytics: React.FC = () => {
 
   if (!testerData) {
     return (
-      <div className="h-screen flex justify-center items-center text-2xl bg-black text-white">
+      <div className="min-h-screen flex justify-center items-center text-xl sm:text-2xl bg-black text-white px-4">
         No data available.
       </div>
     );
   }
 
   return (
-    <div className="bg-black">
-      <div className="h-screen flex flex-col bg-black text-white mt-20" >
+    <div className="bg-black min-h-screen">
+      <div className="flex flex-col bg-black text-white pt-16 sm:pt-20 px-4 sm:px-6 lg:px-6">
         <TesterDash
           doneTasks={testCount}
           rate={taskRate ? taskRate.rate : "0%"}
@@ -185,7 +188,13 @@ export const TesterAnalytics: React.FC = () => {
           totalPayout={totalPayout}
           pendingAmount={Number(testerData.testerData.pending_amount)}
         />
-        <Graph submissions={testerData.submissionCountByMonthYear} />
+        <div className="mt-8 sm:mt-12">
+          {isMobile ? (
+            <MobileChart submissions={testerData.submissionCountByMonthYear} />
+          ) : (
+            <Graph submissions={testerData.submissionCountByMonthYear} />
+          )}
+        </div>
       </div>
     </div>
   );

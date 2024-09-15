@@ -101,105 +101,106 @@ export const NextTask: React.FC<NextTaskProps> = ({
         pauseOnHover
         theme="colored"
       />
-      {!wallet.connected ? (
-        <div className="h-screen flex justify-center flex-col bg-black text-white">
-          <div className="w-full flex justify-center text-2xl">
-            Please connect your wallet
+      <div className="min-h-screen bg-black text-white p-4 mt-16 sm:mt-0">
+        {!wallet.connected ? (
+          <div className="h-screen flex justify-center items-center px-4">
+            <div className="text-center text-lg sm:text-xl md:text-2xl">
+              Please connect your wallet
+            </div>
           </div>
-        </div>
-      ) : loading ? (
-        <div className="h-screen flex justify-center flex-col bg-black text-white">
-          <div className="w-full flex justify-center text-2xl">
+        ) : loading ? (
+          <div className="h-screen flex justify-center items-center">
             <Loading />
           </div>
-        </div>
-      ) : currentTask === null ? (
-        (!noMoreTasks && getTask(),
-        (
-          <div className="h-screen flex justify-center flex-col bg-black text-white">
-            <div className="w-full flex justify-center text-2xl">
-              Please check back in some time, there are no pending bounties at
-              the moment.
+        ) : currentTask === null ? (
+          (!noMoreTasks && getTask(),
+          (
+            <div className="h-screen flex justify-center items-center px-4">
+              <div className="text-center text-lg sm:text-xl md:text-2xl">
+                Please check back in some time, there are no pending bounties at
+                the moment.
+              </div>
             </div>
-          </div>
-        ))
-      ) : (
-        <div className="flex justify-center h-screen items-center bg-black text-white">
-          <motion.div
-            className="bg-gray-900 border-1px border-gray-100 p-10 w-fit rounded-2xl h-fit"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 1, ease: "easeInOut" }}
-          >
-            <div className="flex justify-center">
-              <TaskStatement taskTitle={currentTask.title} />
-            </div>
-            <motion.ul
-              className="flex justify-center gap-5 pt-8"
+          ))
+        ) : (
+          <div className="flex justify-center items-center min-h-screen">
+            <motion.div
+              className="bg-gray-900 border border-gray-100 p-4 sm:p-6 md:p-10 w-fit max-w-5xl rounded-2xl"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
+              transition={{ duration: 1, ease: "easeInOut" }}
             >
-              {currentTask?.options.map((option) => (
-                <motion.li
-                  key={option.id}
-                  variants={itemVariants}
-                >
-                  <TaskImage
-                    onSelect={async () => {
-                      let d = new Date();
-                      let currDate = d.getUTCDate();
-                      let currMonth = d.getUTCMonth();
-                      let currYear = d.getUTCFullYear();
-                      setLoading(true);
-                      try {
-                        const response = await axios.post(
-                          `${BACKEND_URL}/v1/worker/submission`,
-                          {
-                            taskId: currentTask.id.toString(),
-                            selection: option.id.toString(),
-                            postDate: currDate,
-                            postMonth: currMonth,
-                            postYear: currYear,
-                          },
-                          {
-                            headers: {
-                              Authorization: token,
+              <div className="flex justify-center mb-4 sm:mb-6">
+                <TaskStatement taskTitle={currentTask.title} />
+              </div>
+              <motion.ul
+                className="flex flex-wrap gap-4 sm:gap-5"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                {currentTask?.options.map((option) => (
+                  <motion.li
+                    key={option.id}
+                    variants={itemVariants}
+                    className="flex justify-center"
+                  >
+                    <TaskImage
+                      onSelect={async () => {
+                        let d = new Date();
+                        let currDate = d.getUTCDate();
+                        let currMonth = d.getUTCMonth();
+                        let currYear = d.getUTCFullYear();
+                        setLoading(true);
+                        try {
+                          const response = await axios.post(
+                            `${BACKEND_URL}/v1/worker/submission`,
+                            {
+                              taskId: currentTask.id.toString(),
+                              selection: option.id.toString(),
+                              postDate: currDate,
+                              postMonth: currMonth,
+                              postYear: currYear,
                             },
-                          }
-                        );
-                        if (response.status === 200) {
-                          toast.success("task completed successfully");
-                        }
-                        const nextTask = response.data.nextTask;
-                        if (nextTask) {
-                          setCurrentTask(nextTask);
-                        } else {
-                          setCurrentTask(null);
-                          setNoMoreTasks(true);
-                        }
-                      } catch (err) {
-                        if (axios.isAxiosError(err)) {
-                          console.error(
-                            "Error fetching next task:",
-                            err.response?.data || err.message
+                            {
+                              headers: {
+                                Authorization: token,
+                              },
+                            }
                           );
-                        } else {
-                          console.error("Unexpected error:", err);
+                          if (response.status === 200) {
+                            toast.success("task completed successfully");
+                          }
+                          const nextTask = response.data.nextTask;
+                          if (nextTask) {
+                            setCurrentTask(nextTask);
+                          } else {
+                            setCurrentTask(null);
+                            setNoMoreTasks(true);
+                          }
+                        } catch (err) {
+                          if (axios.isAxiosError(err)) {
+                            console.error(
+                              "Error fetching next task:",
+                              err.response?.data || err.message
+                            );
+                          } else {
+                            console.error("Unexpected error:", err);
+                          }
+                          setCurrentTask(null);
                         }
-                        setCurrentTask(null);
-                      }
-                      setLoading(false);
-                    }}
-                    imageUrl={option.image_url}
-                  />
-                </motion.li>
-              ))}
-            </motion.ul>
-          </motion.div>
-        </div>
-      )}
+                        setLoading(false);
+                      }}
+                      imageUrl={option.image_url}
+                    />
+                  </motion.li>
+                ))}
+              </motion.ul>
+            </motion.div>
+          </div>
+        )}
+      </div>
     </>
   );
 };
