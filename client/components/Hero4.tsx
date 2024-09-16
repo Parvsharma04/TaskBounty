@@ -3,10 +3,10 @@ import Link from "next/link";
 
 const Hero4 = () => {
   return (
-    <div className="flex justify-between items-center">
-      <div className="left flex flex-col justify-start items-start gap-8 w-full">
-        <h1 className="text-6xl w-96">Unlock Your Earning Potential</h1>
-        <p className="text-lg w-96">
+    <div className="flex flex-wrap md:flex-nowrap justify-between items-center">
+      <div className="left flex flex-col justify-start items-center md:items-start gap-8 w-full mb-8 md:mb-0">
+        <h1 className="text-6xl md:w-96 w-80">Unlock Your Earning Potential</h1>
+        <p className="text-lg md:w-96 w-80">
           Join a decentralized platform where your skills can earn you Solana
           while contributing to data labeling.
         </p>
@@ -26,7 +26,7 @@ const Hero4 = () => {
             height={500}
           />
           <Image
-            className="absolute top-3 right-[6rem]"
+            className="absolute top-3 md:right-[6rem] right-[5.5rem] w-[13.5rem] md:w-[15.5rem]"
             src="/Hero4_Moble_Banner.png"
             alt="mobile Banner"
             width={250}

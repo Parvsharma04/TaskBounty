@@ -22,13 +22,13 @@ export default function Home() {
         <section className="bg-black h-screen flex justify-center items-center ">
           <GoalPage />
         </section>
-        <section className="bg-black ">
+        <section className="bg-black mb-32">
           <ImageCarousel />
         </section>
-        <section className="bg-black h-screen ">
+        <section className="bg-black md:h-screen ">
           <Hero2Page />
         </section>
-        <section className="bg-black h-screen ">
+        <section className="bg-black md:h-screen ">
           <Hero3Page />
         </section>
         <section className="bg-black h-screen  flex justify-center items-center">

@@ -1,7 +1,7 @@
 const Table = () => {
   return (
-    <div className="bg-black text-white flex justify-center items-center h-screen">
-      <table className="border-collapse text-center">
+    <div className="bg-black text-white flex justify-center items-center md:h-screen">
+      <table className="border-collapse text-center mx-6 md:mx-0">
         <thead>
           <tr>
             <th className="border p-5 bg-blue-700 text-lg">Amount ($)</th>

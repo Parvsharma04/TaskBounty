@@ -113,7 +113,7 @@ export const Hero = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col justify-center items-center text-center absolute top-[35%] left-[28%]">
+      <div className="flex flex-col justify-center items-center text-center absolute md:top-[35%] md:left-[28%] top-1/3 left-8 w-80 md:w-auto">
         <h1 className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl text-white">
           Empower Your Data with{" "}
           <span className="text-blue-600">TaskBounty</span>
@@ -122,10 +122,10 @@ export const Hero = () => {
           Elevate your AI projects with TaskBounty's expert labeling services.
           We're more than just a platform; we're your partner in success
         </p>
-        <div>
+        <div className="flex">
           <Link
             href="/uploadTask"
-            className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900"
+            className="inline-flex items-center justify-center px-5 py-3 mr-3 md:text-base text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900"
           >
             Get started
             <svg
@@ -143,7 +143,7 @@ export const Hero = () => {
           </Link>
           <Link
             href="/uploadTask"
-            className="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-medium text-center text-white rounded-lg bg-transparent border hover:bg-white hover:text-black focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900"
+            className="inline-flex items-center justify-center px-5 py-3 mr-3 md:text-base text-sm font-medium text-center text-white rounded-lg bg-transparent border hover:bg-white hover:text-black focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900"
           >
             Learn More
             <svg
