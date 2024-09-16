@@ -4,7 +4,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { useIsMobile } from "../hooks/useIsMobile";
+import { useIsMobile } from "../libs/useIsMobile";
 import Graph from "./charts/Graph";
 import MobileChart from "./charts/MobileChart";
 import Loading from "./Loading";
@@ -83,7 +83,6 @@ export const TesterAnalytics: React.FC = () => {
       );
       setTesterData(response.data);
       processData(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error("Error fetching tester data:", error);
       setError("Failed to fetch tester data. Please try again.");
@@ -149,7 +148,6 @@ export const TesterAnalytics: React.FC = () => {
       total += Number(ele.amount);
     });
     setTotalEarned(total);
-    console.log(totalEarned);
   };
 
   if (loading) {
