@@ -1,5 +1,5 @@
-'use client';
-import { wrap } from '@motionone/utils';
+"use client";
+import { wrap } from "@motionone/utils";
 import {
   motion,
   useAnimationFrame,
@@ -8,8 +8,8 @@ import {
   useSpring,
   useTransform,
   useVelocity,
-} from 'framer-motion';
-import { useRef } from 'react';
+} from "framer-motion";
+import { useRef } from "react";
 
 interface ParallaxProps {
   children: React.ReactNode;
@@ -47,11 +47,12 @@ function ParallaxText({ children, baseVelocity = 100 }: ParallaxProps) {
   return (
     <div className="parallax overflow-hidden">
       <motion.div className="scroller flex" style={{ x }}>
-        <span className='flex gap-16'>
+        <div className="flex gap-16">
           {children} {children} {children} {children}
           {children} {children} {children} {children}
           {children} {children} {children} {children}
-        </span>
+          {children} {children} {children} {children}
+        </div>
       </motion.div>
     </div>
   );

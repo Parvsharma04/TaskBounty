@@ -33,7 +33,7 @@ export const Inner = styled.div`
 `;
 
 export const ImageContainer = styled.div`
-  max-width: 100%;
+  max-width: 85rem;
   margin: 0 auto;
   position: relative;
   width: 100%;
@@ -42,8 +42,7 @@ export const ImageContainer = styled.div`
 
   img {
     object-fit: cover;
-    width: 100%;
-    height: auto;
+    border-radius: 0.75rem;
   }
 
   @media (max-width: 768px) {
