@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import Image from "next/image";
 import { useIsMobile } from "../../libs/useIsMobile";
 import big_banner from "../../public/images/big_banner.png";
@@ -22,16 +22,61 @@ const imageVariants = {
   },
 };
 
+// const Featured = () => {
+//   const isMobile = useIsMobile();
+
+//   return (
+//     <Wrapper>
+//       <Inner>
+//         <ImageContainer>
+//           <RevealCover />
+//           <Div
+//             className="relative"
+//             variants={imageVariants}
+//             initial="hidden"
+//             whileInView="visible"
+//             viewport={{ amount: 0.25, once: true }}
+//           >
+//             {isMobile ? (
+//               <Image
+//                 src={featured_mobile_banner}
+//                 alt="featured_mobile_banner"
+//                 layout="responsive"
+//                 width={1600}
+//                 height={900}
+//                 className="object-cover"
+//               />
+//             ) : (
+//               <Image
+//                 src={big_banner}
+//                 alt="big_banner"
+//                 layout="responsive"
+//                 width={1600}
+//                 height={900}
+//                 className="object-cover"
+//               />
+//             )}
+//           </Div>
+//         </ImageContainer>
+//         <h2>Featured</h2>
+//         <ParallaxImages>
+//           <ParallaxText baseVelocity={-4}>
+//             <Image src={companies_image} alt="companies" layout="responsive" width={1600} height={900} />
+//           </ParallaxText>
+//         </ParallaxImages>
+//       </Inner>
+//     </Wrapper>
+//   );
+// };
+
 const Featured = () => {
   const isMobile = useIsMobile();
-
   return (
     <Wrapper>
       <Inner>
         <ImageContainer>
           <RevealCover />
           <Div
-            className="relative"
             variants={imageVariants}
             initial="hidden"
             whileInView="visible"
@@ -41,27 +86,17 @@ const Featured = () => {
               <Image
                 src={featured_mobile_banner}
                 alt="featured_mobile_banner"
-                layout="responsive"
-                width={1600}
-                height={900}
-                className="object-cover"
+                fill
               />
             ) : (
-              <Image
-                src={big_banner}
-                alt="big_banner"
-                layout="responsive"
-                width={1600}
-                height={900}
-                className="object-cover"
-              />
+              <Image src={big_banner} alt="big_banner" fill />
             )}
           </Div>
         </ImageContainer>
-        <h2>Featured</h2>
+        <h2>Featured and Seen in</h2>
         <ParallaxImages>
           <ParallaxText baseVelocity={-4}>
-            <Image src={companies_image} alt="companies" layout="responsive" width={1600} height={900} />
+            <Image src={companies_image} alt="comapanies" />
           </ParallaxText>
         </ParallaxImages>
       </Inner>

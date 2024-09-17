@@ -30,21 +30,21 @@ interface NextTaskProps {
 const containerVariants = {
   hidden: {
     opacity: 0,
-    scale: 0.9
+    scale: 0.9,
   },
   visible: {
     opacity: 1,
     scale: 1,
     transition: {
       delayChildren: 0.3,
-      staggerChildren: 0.2
-    }
-  }
+      staggerChildren: 0.2,
+    },
+  },
 };
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1 }
+  visible: { y: 0, opacity: 1 },
 };
 
 export const NextTask: React.FC<NextTaskProps> = ({
@@ -116,6 +116,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
           (!noMoreTasks && getTask(),
           (
             <div className="h-screen flex justify-center items-center px-4">
+
               <div className="text-center text-lg sm:text-xl md:text-2xl">
                 Please check back in some time, there are no pending bounties at
                 the moment.
@@ -135,7 +136,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
                 <TaskStatement taskTitle={currentTask.title} />
               </div>
               <motion.ul
-                className="flex flex-wrap gap-4 sm:gap-5 md:flex-col md: pl-12"
+                className="flex flex-wrap gap-4 sm:gap-5 md: pl-12"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
