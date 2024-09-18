@@ -284,7 +284,7 @@ export const Upload = () => {
         </div>
       </Modal>
       <div className="flex flex-col w-full pl-6 pr-6 md:pl-80 md:pr-80 gap-5">
-        <div className="flex justify-center items-center mt-16 mb-10 text-3xl w-full font-bold">
+        <div className="flex justify-center items-center mb-10 text-3xl w-full font-bold">
           POST NEW BOUNTY
         </div>
         <div className="flex flex-col justify-center items-start gap-3">

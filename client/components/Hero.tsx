@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const Hero = () => {
   return (
-    <div className="relative pt-16">
+    <div className="relative">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 overflow-hidden opacity-35 h-screen">
         <div className="grid gap-4">
           <div>
