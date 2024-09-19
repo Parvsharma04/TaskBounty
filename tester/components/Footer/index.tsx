@@ -4,7 +4,6 @@ import ic_chevron_down from '../../public/svgs/ic_chevron_down.svg';
 import ic_copyright from '../../public/svgs/ic_copyright.svg';
 import ic_google_playstore from '../../public/svgs/ic_google_playstore.svg';
 import qr_code from '../../public/svgs/qr_code.svg';
-import raft_footer_logo from '../../public/svgs/raft_footer_logo.svg';
 
 const linksArr = [
   {
@@ -43,8 +42,8 @@ const Footer = () => {
   return (
     <Wrapper>
       <Inner>
-        <FooterLogo>
-          <Image src={raft_footer_logo} alt="raft_footer_logo" />
+        <FooterLogo className='border-sky-100 border-solid border-spacing-6'>
+          <Image src="/images/Task Bounty.png" alt="raft_footer_logo" width={363} height={164}/>
         </FooterLogo>
         <FooterMainContent>
           <FooterMiddle>

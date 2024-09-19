@@ -135,7 +135,8 @@ const NavBar = () => {
           <motion.img
             src="images/icon-removebg-preview.png"
             alt="TaskBounty Logo"
-            className="h-8"
+            width={50}
+            className="h-fit"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeInOut" }}

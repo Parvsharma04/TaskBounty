@@ -81,7 +81,6 @@ const AnimatedLink = ({
   const [isHovered, setIsHovered] = useState(false);
   const pathname = usePathname();
   const isActive = pathname === href || pathname.startsWith(href);
-  console.log(pathname);
   return (
     <Div
       onMouseEnter={() => setIsHovered(true)}
