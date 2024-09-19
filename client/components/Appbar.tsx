@@ -4,9 +4,31 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import "../styles/home.css";
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  Button,
+  DropdownItem,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
+} from "@nextui-org/react";
+import {
+  ChevronDown,
+  Lock,
+  Activity,
+  Flash,
+  Server,
+  TagUser,
+  Scale,
+} from "@/utils/icons";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import AnimatedLink from "./AnimatedLink";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -19,6 +41,8 @@ const NavBar = () => {
   const [hasToken, setHasToken] = useState(false);
   const [activeBtn, setActiveBtn] = useState("home");
   const [hamburger, setHamburger] = useState(false);
+  const navigate = useRouter();
+  const wallet = useWallet();
 
   useEffect(() => {
     async function getToken() {
@@ -50,9 +74,22 @@ const NavBar = () => {
     }
   }, [publicKey]);
 
+  const icons = {
+    chevron: <ChevronDown fill="currentColor" size={16} />,
+    scale: <Scale fill="currentColor" size={30} />,
+    lock: <Lock fill="currentColor" size={30} />,
+    activity: <Activity fill="currentColor" size={30} />,
+    flash: <Flash fill="currentColor" size={30} />,
+    server: <Server fill="currentColor" size={30} />,
+    user: <TagUser fill="currentColor" size={30} />,
+  };
+
   return (
-    <nav className="border-gray-200 bg-gray-800 text-white fixed w-full shadow-md z-50">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2">
+    <Navbar
+      className="flex justify-center items-center w-full bg-gray-800 text-white "
+      maxWidth="full"
+    >
+      <NavbarBrand>
         <Link
           href="/"
           className="flex items-center space-x-3 rtl:space-x-reverse"
@@ -68,112 +105,90 @@ const NavBar = () => {
             TaskBounty
           </span>
         </Link>
-        <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-          <div className="hidden md:block">
-            <WalletMultiButtonDynamic>
-              {publicKey
-                ? `${publicKey.toBase58().substring(0, 7)}...`
-                : "Connect Wallet"}
-            </WalletMultiButtonDynamic>
-          </div>
-          {connected ? (
-            <button
-              data-collapse-toggle="navbar-cta"
-              type="button"
-              onClick={() => setHamburger(!hamburger)}
-              className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-white rounded-lg md:hidden hover:bg-blue-700 focus:outline-none"
-              aria-controls="navbar-cta"
-              aria-expanded="false"
+      </NavbarBrand>
+      {wallet.connected && (
+        <NavbarContent className="hidden sm:flex gap-4" justify="center">
+          <NavbarItem>
+            <AnimatedLink title="Home" href="/" key="home" />
+          </NavbarItem>
+          <Dropdown>
+            <NavbarItem>
+              <DropdownTrigger>
+                <Button
+                  disableRipple
+                  className="p-0 bg-transparent data-[hover=true]:bg-transparent text-white text-md"
+                  endContent={icons.chevron}
+                  radius="sm"
+                  variant="light"
+                >
+                  Features
+                </Button>
+              </DropdownTrigger>
+            </NavbarItem>
+            <DropdownMenu
+              aria-label="Features"
+              className="w-[340px] bg-gray-800 border-none outline-none p-0"
+              itemClasses={{
+                base: "gap-4",
+              }}
             >
-              <span className="sr-only">Open main menu</span>
-              <svg
-                className="w-5 h-5"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 17 14"
+              <DropdownItem
+                key="UI/UX Design"
+                description="label your tasks and get them done by the best designers in the world."
+                startContent={icons.scale}
               >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M1 1h15M1 7h15M1 13h15"
-                />
-              </svg>
-            </button>
-          ) : (
-            <div className="md:hidden">
-              <WalletMultiButtonDynamic>
-                {publicKey
-                  ? `${publicKey.toBase58().substring(0, 7)}...`
-                  : "Connect Wallet"}
-              </WalletMultiButtonDynamic>
-            </div>
-          )}
-        </div>
-        <div
-          className={`items-center transition-all duration-300 ease-in-out justify-between md:opacity-100 md:translate-y-0 md:h-auto ${
-            hamburger
-              ? "opacity-0 -translate-y-10 pointer-events-none h-0"
-              : "opacity-100 translate-y-0 h-auto"
-          } w-full md:flex md:w-auto md:order-1`}
-          id="navbar-cta"
-        >
-          {connected && (
-            <ul className="flex flex-col font-medium p-3 mt-4 text-white border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 bg-gray-800">
-              <li>
-                <Link
-                  href="/"
-                  className={`block p-3  transition-all duration-300 ease-in-out py-2 px-3 rounded ${
-                    activeBtn == "home"
-                      ? "text-white bg-blue-700"
-                      : "text-white"
-                  } hover:text-white hover:bg-blue-700`}
-                  aria-current="page"
-                  onClick={() => setActiveBtn("home")}
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/uploadTask"
-                  className={`block transition-all duration-300 ease-in-out py-2 px-3 p-3 rounded ${
-                    activeBtn == "uploadTask"
-                      ? "text-white bg-blue-700"
-                      : "text-white"
-                  } hover:text-white hover:bg-blue-700`}
-                  onClick={() => setActiveBtn("uploadTask")}
-                >
-                  Upload Task
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/taskAnalytics"
-                  className={`block  transition-all duration-300 ease-in-out py-2 px-3 p-3 rounded ${
-                    activeBtn == "taskAnalytics"
-                      ? "text-white bg-blue-700"
-                      : "text-white"
-                  } hover:text-white hover:bg-blue-700`}
-                  onClick={() => setActiveBtn("taskAnalytics")}
-                >
-                  Task Analytics
-                </Link>
-              </li>
-              <li className="mt-4 md:hidden">
-                <WalletMultiButtonDynamic>
-                  {publicKey
-                    ? `${publicKey.toBase58().substring(0, 7)}...`
-                    : "Connect Wallet"}
-                </WalletMultiButtonDynamic>
-              </li>
-            </ul>
-          )}
-        </div>
-      </div>
-    </nav>
+                UI/UX Design
+              </DropdownItem>
+              <DropdownItem
+                key="idea / product"
+                description="Get your ideas and products to the market faster with our platform."
+                startContent={icons.activity}
+              >
+                Idea / Product
+              </DropdownItem>
+              <DropdownItem
+                onClick={() => navigate.push("/uploadTask")}
+                key="Youtube thumbnail"
+                description="Get your youtube thumbnails rated by the best designers in the world."
+                startContent={icons.flash}
+              >
+                <Link href="/uploadTask">Youtube Thumbnail</Link>
+              </DropdownItem>
+              <DropdownItem
+                key="miscellaneous"
+                description="rate your miscellaneous tasks and get them done by the humans of the world."
+                startContent={icons.server}
+              >
+                Miscellaneous
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <NavbarItem>
+            <AnimatedLink
+              title="Task Analytics"
+              href="/taskAnalytics"
+              key="task-analytics"
+            />
+          </NavbarItem>
+          <NavbarItem>
+            <AnimatedLink
+              title="Transaction History"
+              href="/transactionHistory"
+              key="transaction-history"
+            />
+          </NavbarItem>
+        </NavbarContent>
+      )}
+      <NavbarContent justify="end">
+        <NavbarItem>
+          <WalletMultiButtonDynamic>
+            {publicKey
+              ? `${publicKey.toBase58().substring(0, 7)}...`
+              : "Connect Wallet"}
+          </WalletMultiButtonDynamic>
+        </NavbarItem>
+      </NavbarContent>
+    </Navbar>
   );
 };
 

@@ -195,7 +195,7 @@ function TaskAnalytics() {
   ];
 
   return (
-    <div className="pt-28 h-screen bg-black text-white">
+    <div className="h-screen bg-black text-white">
       {Loading && <LoadingPage />}
       <ToastContainer
         position="top-left"

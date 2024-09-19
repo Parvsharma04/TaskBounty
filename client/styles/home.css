@@ -1,5 +1,5 @@
 button.wallet-adapter-button-trigger {
-  background: purple;
+  background: #234eb9;
   border-radius: 20px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   font-size: 16px;
@@ -7,6 +7,6 @@ button.wallet-adapter-button-trigger {
 }
 
 button.wallet-adapter-button-trigger:hover {
-  background-color: plum !important;
+  background-color: #3d70f1 !important;
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
 }
