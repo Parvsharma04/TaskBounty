@@ -1,8 +1,8 @@
-import "dotenv/config";
 import { S3Client } from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { PrismaClient } from "@prisma/client";
-import { Connection, PublicKey, Transaction } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
+import "dotenv/config";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import nacl from "tweetnacl";
@@ -279,8 +279,8 @@ router.post("/transactions", authMiddleware, async (req, res) => {
 //! sigining with wallet
 router.post("/signin", async (req, res) => {
   const { publicKey, signature } = req.body;
-  const message = new TextEncoder().encode("verify this to authenticate");
-  const signedString = "verify this to authenticate";
+  const message = new TextEncoder().encode("Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged.");
+  const signedString = "Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged.";
 
   const result = nacl.sign.detached.verify(
     message,

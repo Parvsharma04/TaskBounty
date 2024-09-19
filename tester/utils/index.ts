@@ -4,7 +4,7 @@ export const CLOUDFRONT_URL = "https://d2evdzd5kkyi1f.cloudfront.net";
 export default async function getToken() {
   if (wallet.connected) {
     try {
-      const message = new TextEncoder().encode("verify this to authenticate");
+      const message = new TextEncoder().encode("Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged.");
       const signature = await wallet.signMessage?.(message);
       let response = await axios.post(`${BACKEND_URL}/v0/worker/signin`, {
         signature,

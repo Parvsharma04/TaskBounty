@@ -1,33 +1,33 @@
 "use client";
 import { BACKEND_URL } from "@/utils";
+import {
+    Activity,
+    ChevronDown,
+    Flash,
+    Lock,
+    Scale,
+    Server,
+    TagUser,
+} from "@/utils/icons";
+import {
+    Button,
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownTrigger,
+    Navbar,
+    NavbarBrand,
+    NavbarContent,
+    NavbarItem,
+} from "@nextui-org/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import "../styles/home.css";
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  Button,
-  DropdownItem,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-} from "@nextui-org/react";
-import {
-  ChevronDown,
-  Lock,
-  Activity,
-  Flash,
-  Server,
-  TagUser,
-  Scale,
-} from "@/utils/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import "../styles/home.css";
 import AnimatedLink from "./AnimatedLink";
 
 const WalletMultiButtonDynamic = dynamic(
@@ -49,7 +49,7 @@ const NavBar = () => {
       try {
         if (!publicKey) return;
         //! make the message unique which makes it more secure
-        const message = new TextEncoder().encode("verify this to authenticate");
+        const message = new TextEncoder().encode("Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged.");
         const signature = await signMessage?.(message);
         let response = await axios.post(`${BACKEND_URL}/v1/user/signin`, {
           signature,

@@ -8,6 +8,9 @@ import { GlobalStyles } from "./GlobalStyles";
 export const metadata: Metadata = {
   title: "Tester-TaskBounty",
   description: "",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

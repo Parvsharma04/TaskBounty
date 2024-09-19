@@ -1,19 +1,19 @@
 import { PrismaClient } from "@prisma/client";
 import {
-  Connection,
-  Keypair,
-  PublicKey,
-  sendAndConfirmTransaction,
-  SystemProgram,
-  Transaction,
+    Connection,
+    Keypair,
+    PublicKey,
+    sendAndConfirmTransaction,
+    SystemProgram,
+    Transaction,
 } from "@solana/web3.js";
+import { decode } from "bs58";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import nacl from "tweetnacl";
 import { getNextTask } from "../db";
 import { workerMiddleware } from "../middlewares/middleware";
 import { createSubmissionInput } from "../types";
-import { decode } from "bs58";
 
 const router = Router();
 const prismaClient = new PrismaClient();
@@ -276,8 +276,8 @@ router.post("/signin", async (req, res) => {
     return res.status(400).json({ message: "Missing publicKey or signature" });
   }
 
-  const message = new TextEncoder().encode("verify this to authenticate");
-  const signedString = "verify this to authenticate";
+  const message = new TextEncoder().encode("Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged.");
+  const signedString = "Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged.";
   const result = nacl.sign.detached.verify(
     message,
     new Uint8Array(signature.data),
