@@ -11,7 +11,6 @@ import { slide as Menu } from "react-burger-menu";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AnimatedLink from "./AnimatedLink";
-
 const WalletMultiButtonDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
@@ -133,14 +132,22 @@ const NavBar = () => {
       />
       <div className="mx-auto flex items-center justify-between p-4 w-[100%]">
         <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-          <img
-            src="https://flowbite.com/docs/images/logo.svg"
+          <motion.img
+            src="images/icon-removebg-preview.png"
+            alt="TaskBounty Logo"
             className="h-8"
-            alt="Flowbite Logo"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeInOut" }}
           />
-          <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
+          <motion.span
+            className="self-center text-2xl font-semibold whitespace-nowrap text-white"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeInOut" }}
+          >
             TaskBounty
-          </span>
+          </motion.span>
         </a>
         <div className="hidden md:flex md:items-center md:space-x-8">
           {wallet.connected && (
@@ -164,7 +171,6 @@ const NavBar = () => {
             className="bm-menu"
             ref={menuRef}
           >
-
             <Link
               href="/"
               className="block py-4 px-6 hover:text-blue-700"

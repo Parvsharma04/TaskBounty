@@ -8,9 +8,9 @@ const FooterPage = () => {
             className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse"
           >
             <img
-              src="https://flowbite.com/docs/images/logo.svg"
+              src="/icon-removebg-preview.png"
               className="h-8"
-              alt="Flowbite Logo"
+              alt="TaskBounty Logo"
             />
             <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
               Flowbite
@@ -42,8 +42,8 @@ const FooterPage = () => {
         <hr className="my-6  sm:mx-auto border-gray-700 lg:my-8" />
         <span className="block text-sm  sm:text-center text-gray-400">
           © 2023{" "}
-          <a href="https://flowbite.com/" className="hover:underline">
-            Flowbite™
+          <a href="/" className="hover:underline">
+            TaskBounty™
           </a>
           . All Rights Reserved.
         </span>

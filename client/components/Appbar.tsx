@@ -58,11 +58,11 @@ const NavBar = () => {
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
           <Image
-            src="https://flowbite.com/docs/images/logo.svg"
+            src="/icon-removebg-preview.png"
             className="h-8"
-            alt="Flowbite Logo"
-            width={32}
-            height={32}
+            alt="TaskBounty Logo"
+            height={40}
+            width={40}
           />
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
             TaskBounty
