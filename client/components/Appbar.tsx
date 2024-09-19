@@ -28,6 +28,7 @@ import {
 } from "@/utils/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import AnimatedLink from "./AnimatedLink";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -41,6 +42,7 @@ const NavBar = () => {
   const [activeBtn, setActiveBtn] = useState("home");
   const [hamburger, setHamburger] = useState(false);
   const navigate = useRouter();
+  const wallet = useWallet();
 
   useEffect(() => {
     async function getToken() {
@@ -104,80 +106,79 @@ const NavBar = () => {
           </span>
         </Link>
       </NavbarBrand>
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        <NavbarItem isActive>
-          <Link href="/" aria-current="page" className="text-white">
-            Home
-          </Link>
-        </NavbarItem>
-        <Dropdown>
+      {wallet.connected && (
+        <NavbarContent className="hidden sm:flex gap-4" justify="center">
           <NavbarItem>
-            <DropdownTrigger>
-              <Button
-                disableRipple
-                className={`block transition-all duration-300 ease-in-out py-2 px-3 rounded text-md ${
-                  activeBtn == "uploadTask"
-                    ? "text-white bg-blue-700"
-                    : "text-white"
-                } hover:text-white hover:bg-blue-700`}
-                radius="sm"
-                variant="light"
-              >
-                Features
-              </Button>
-            </DropdownTrigger>
+            <AnimatedLink title="Home" href="/" key="home" />
           </NavbarItem>
-          <DropdownMenu
-            aria-label="Features"
-            className="w-[340px] bg-gray-800 border-none outline-none p-0"
-            itemClasses={{
-              base: "gap-4",
-            }}
-          >
-            <DropdownItem
-              key="UI/UX Design"
-              description="label your tasks and get them done by the best designers in the world."
-              startContent={icons.scale}
+          <Dropdown>
+            <NavbarItem>
+              <DropdownTrigger>
+                <Button
+                  disableRipple
+                  className="p-0 bg-transparent data-[hover=true]:bg-transparent text-white text-md"
+                  endContent={icons.chevron}
+                  radius="sm"
+                  variant="light"
+                >
+                  Features
+                </Button>
+              </DropdownTrigger>
+            </NavbarItem>
+            <DropdownMenu
+              aria-label="Features"
+              className="w-[340px] bg-gray-800 border-none outline-none p-0"
+              itemClasses={{
+                base: "gap-4",
+              }}
             >
-              UI/UX Design
-            </DropdownItem>
-            <DropdownItem
-              key="idea / product"
-              description="Get your ideas and products to the market faster with our platform."
-              startContent={icons.activity}
-            >
-              Idea / Product
-            </DropdownItem>
-            <DropdownItem
-              onClick={() => navigate.push("/uploadTask")}
-              key="Youtube thumbnail"
-              description="Get your youtube thumbnails rated by the best designers in the world."
-              startContent={icons.flash}
-            >
-              <Link href="/uploadTask">Youtube Thumbnail</Link>
-            </DropdownItem>
-            <DropdownItem
-              key="miscellaneous"
-              description="rate your miscellaneous tasks and get them done by the humans of the world."
-              startContent={icons.server}
-            >
-              Miscellaneous
-            </DropdownItem>
-            {/* <DropdownItem
-                      key="supreme_support"
-                      description="Overcome any challenge with a supporting team ready to respond."
-                      startContent={icons.user}
-                    >
-                      +Supreme Support
-                    </DropdownItem> */}
-          </DropdownMenu>
-        </Dropdown>
-        <NavbarItem>
-          <Link className="text-white" href="/taskAnalytics">
-            Task Analytics
-          </Link>
-        </NavbarItem>
-      </NavbarContent>
+              <DropdownItem
+                key="UI/UX Design"
+                description="label your tasks and get them done by the best designers in the world."
+                startContent={icons.scale}
+              >
+                UI/UX Design
+              </DropdownItem>
+              <DropdownItem
+                key="idea / product"
+                description="Get your ideas and products to the market faster with our platform."
+                startContent={icons.activity}
+              >
+                Idea / Product
+              </DropdownItem>
+              <DropdownItem
+                onClick={() => navigate.push("/uploadTask")}
+                key="Youtube thumbnail"
+                description="Get your youtube thumbnails rated by the best designers in the world."
+                startContent={icons.flash}
+              >
+                <Link href="/uploadTask">Youtube Thumbnail</Link>
+              </DropdownItem>
+              <DropdownItem
+                key="miscellaneous"
+                description="rate your miscellaneous tasks and get them done by the humans of the world."
+                startContent={icons.server}
+              >
+                Miscellaneous
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <NavbarItem>
+            <AnimatedLink
+              title="Task Analytics"
+              href="/taskAnalytics"
+              key="task-analytics"
+            />
+          </NavbarItem>
+          <NavbarItem>
+            <AnimatedLink
+              title="Transaction History"
+              href="/transactionHistory"
+              key="transaction-history"
+            />
+          </NavbarItem>
+        </NavbarContent>
+      )}
       <NavbarContent justify="end">
         <NavbarItem>
           <WalletMultiButtonDynamic>

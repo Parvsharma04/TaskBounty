@@ -254,6 +254,27 @@ router.get("/presignedUrl", authMiddleware, async (req, res) => {
     fields,
   });
 });
+router.post("/transactions", authMiddleware, async (req, res) => {
+  //@ts-ignore
+  const id = req.userId;
+
+  const transaction = await prismaClient.task.findMany({
+    where: {
+      user_id: Number(id),
+    },
+    select: {
+      amount: true,
+      postDate: true,
+      postMonth: true,
+      postYear: true,
+      title: true,
+    },
+  });
+
+  res.json({
+    transaction,
+  });
+});
 
 //! sigining with wallet
 router.post("/signin", async (req, res) => {
