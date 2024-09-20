@@ -1,24 +1,27 @@
 "use client";
 import { BACKEND_URL } from "@/utils";
 import {
-    Activity,
-    ChevronDown,
-    Flash,
-    Lock,
-    Scale,
-    Server,
-    TagUser,
+  Activity,
+  ChevronDown,
+  Flash,
+  Lock,
+  Scale,
+  Server,
+  TagUser,
 } from "@/utils/icons";
 import {
-    Button,
-    Dropdown,
-    DropdownItem,
-    DropdownMenu,
-    DropdownTrigger,
-    Navbar,
-    NavbarBrand,
-    NavbarContent,
-    NavbarItem,
+  Navbar,
+  NavbarBrand,
+  NavbarMenuToggle,
+  NavbarMenuItem,
+  NavbarMenu,
+  NavbarContent,
+  NavbarItem,
+  Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
 } from "@nextui-org/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
@@ -40,16 +43,18 @@ const NavBar = () => {
   const { publicKey, disconnect, signMessage, connected } = useWallet();
   const [hasToken, setHasToken] = useState(false);
   const [activeBtn, setActiveBtn] = useState("home");
-  const [hamburger, setHamburger] = useState(false);
   const navigate = useRouter();
   const wallet = useWallet();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     async function getToken() {
       try {
         if (!publicKey) return;
         //! make the message unique which makes it more secure
-        const message = new TextEncoder().encode("Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged.");
+        const message = new TextEncoder().encode(
+          "Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged."
+        );
         const signature = await signMessage?.(message);
         let response = await axios.post(`${BACKEND_URL}/v1/user/signin`, {
           signature,
@@ -86,19 +91,46 @@ const NavBar = () => {
 
   return (
     <Navbar
-      className="flex justify-center items-center w-full bg-gray-800 text-white "
+      className="flex justify-center items-center w-full bg-gray-900 text-white pt-1 pb-1 my-auto shadow-lg"
       maxWidth="full"
+      isBordered
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
     >
+      <NavbarContent className="sm:hidden" justify="start">
+        {wallet.connected && (
+          <NavbarMenuToggle
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          />
+        )}
+        <NavbarBrand>
+          <Link
+            href="/"
+            className="flex items-center space-x-1 rtl:space-x-reverse -mt-1"
+          >
+            <Image
+              src="/icon-removebg-preview.png"
+              className="h-10"
+              alt="TaskBounty Logo"
+              height={60}
+              width={40}
+            />
+            <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+              TaskBounty
+            </span>
+          </Link>
+        </NavbarBrand>
+      </NavbarContent>
       <NavbarBrand>
         <Link
           href="/"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
+          className="hidden md:flex items-center space-x-1 rtl:space-x-reverse -mt-1"
         >
           <Image
             src="/icon-removebg-preview.png"
-            className="h-8"
+            className="h-10"
             alt="TaskBounty Logo"
-            height={40}
+            height={60}
             width={40}
           />
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
@@ -107,7 +139,7 @@ const NavBar = () => {
         </Link>
       </NavbarBrand>
       {wallet.connected && (
-        <NavbarContent className="hidden sm:flex gap-4" justify="center">
+        <NavbarContent className="hidden sm:flex gap-5" justify="center">
           <NavbarItem>
             <AnimatedLink title="Home" href="/" key="home" />
           </NavbarItem>
@@ -121,7 +153,7 @@ const NavBar = () => {
                   radius="sm"
                   variant="light"
                 >
-                  Features
+                  <AnimatedLink title="Features" key="features" />
                 </Button>
               </DropdownTrigger>
             </NavbarItem>
@@ -188,6 +220,78 @@ const NavBar = () => {
           </WalletMultiButtonDynamic>
         </NavbarItem>
       </NavbarContent>
+
+      <NavbarMenu className="bg-gray-800 pt-5">
+        <NavbarMenuItem key="Home">
+          <Link className="w-full" href="/">
+            Home
+          </Link>
+        </NavbarMenuItem>
+        <NavbarMenuItem key="Features">
+          <Dropdown>
+            <NavbarItem>
+              <DropdownTrigger>
+                <Button
+                  disableRipple
+                  className="p-0 bg-transparent data-[hover=true]:bg-transparent text-white text-md"
+                  endContent={icons.chevron}
+                  radius="sm"
+                  variant="light"
+                >
+                  Features
+                </Button>
+              </DropdownTrigger>
+            </NavbarItem>
+            <DropdownMenu
+              aria-label="Features"
+              className="w-[340px] bg-gray-800 border-none outline-none p-0"
+              itemClasses={{
+                base: "gap-4",
+              }}
+            >
+              <DropdownItem
+                key="UI/UX Design"
+                description="label your tasks and get them done by the best designers in the world."
+                startContent={icons.scale}
+              >
+                UI/UX Design
+              </DropdownItem>
+              <DropdownItem
+                key="idea / product"
+                description="Get your ideas and products to the market faster with our platform."
+                startContent={icons.activity}
+              >
+                Idea / Product
+              </DropdownItem>
+              <DropdownItem
+                onClick={() => navigate.push("/uploadTask")}
+                key="Youtube thumbnail"
+                description="Get your youtube thumbnails rated by the best designers in the world."
+                startContent={icons.flash}
+              >
+                <Link href="/uploadTask">Youtube Thumbnail</Link>
+              </DropdownItem>
+              <DropdownItem
+                key="miscellaneous"
+                description="rate your miscellaneous tasks and get them done by the humans of the world."
+                startContent={icons.server}
+              >
+                Miscellaneous
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </NavbarMenuItem>
+        <NavbarMenuItem key="taskAnalytics" className="mb-2">
+          <Link className="w-full" href="/">
+            Task Analytics
+          </Link>
+        </NavbarMenuItem>
+        <NavbarMenuItem key="transactionHistory">
+          <Link className="w-full" href="/">
+            Transaction History
+          </Link>
+        </NavbarMenuItem>
+      </NavbarMenu>
     </Navbar>
   );
 };
