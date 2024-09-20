@@ -13,18 +13,18 @@ export default function StyledComponentsRegistry({
 
   useServerInsertedHTML(() => {
     const styles = styledComponentsStyleSheet.getStyleElement();
-    console.log("Inserting styles:", styles); // Debug log
+    // console.log("Inserting styles:", styles);
     styledComponentsStyleSheet.instance.clearTag();
     return <>{styles}</>;
   });
 
   if (typeof window !== "undefined") {
-    return <>{children}</>; // Render children directly in the browser
+    return <>{children}</>;
   }
 
   return (
     <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>
-      {children} // Render children on the server with the stylesheet manager
+      {children}
     </StyleSheetManager>
   );
 }

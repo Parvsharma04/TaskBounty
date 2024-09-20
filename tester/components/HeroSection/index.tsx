@@ -25,7 +25,7 @@ const HeroSection = () => {
     <Wrapper className="bg-black text-white">
       <Inner>
         <Pill>
-          <span>Introducing Raft cards</span>
+          <span>Introducing TaskBounty</span>
           <Image src={ic_chevron_right} alt="chevron-right" />
         </Pill>
         <HeroTextContainer>

@@ -1,13 +1,13 @@
 // For desktop
-export const phrases = ['Building the future of', 'banking.'];
+export const phrases = ['Make money in your', 'spare time.'];
 export const paragraphPhrases = [
-  "Experience the future of banking with RAFT. We're here to",
+  "Get paid for completing simple tasks and",
   'empower your financial journey.',
 ];
 
 // For mobile
-export const mobilePhrases = ['Building the future', 'of banking'];
+export const mobilePhrases = ['Make money in your', 'spare time.'];
 export const mobileParagraphPhrases = [
-  "Experience the future of banking with RAFT. We're",
-  'here to empower your financial journey.',
+  "Get paid for completing simple tasks",
+  'and empower your financial journey.',
 ];
