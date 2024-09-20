@@ -15,7 +15,7 @@ import {
 import { HeroTextContainer, Inner, Pill, Wrapper } from "./styles";
 
 const HeroSection = () => {
-  const router = useRouter()
+  const router = useRouter();
   const isMobile = useIsMobile();
   useEffect(() => {
     router.push("/");

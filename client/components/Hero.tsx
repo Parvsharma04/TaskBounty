@@ -1,9 +1,32 @@
+"use client";
+
+import gsap from "gsap";
 import Image from "next/image";
 import Link from "next/link";
+import { use, useLayoutEffect, useRef } from "react";
 
 export const Hero = () => {
+  const comp = useRef(null);
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      const t1 = gsap.timeline();
+      t1.from("#hero-slider", {
+        opacity: 0,
+        y: "+=10",
+        stagger: 0.5,
+      }).from(["#hero-title", "#hero-description", "#hero-btn"], {
+        opacity: 0,
+        y: "+=30",
+        stagger: 0.5,
+      });
+    }, comp);
+
+    return () => ctx.revert();
+  }, [comp]);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={comp}>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 overflow-hidden opacity-35 h-screen">
         <div className="grid gap-4">
           <div>
@@ -113,16 +136,25 @@ export const Hero = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col justify-center items-center text-center absolute md:top-[35%] md:left-[28%] top-1/3 left-8 w-80 md:w-auto">
-        <h1 className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl text-white">
+      <div
+        className="flex flex-col justify-center items-center text-center absolute md:top-44 md:left-[27%] top-1/3 left-8 w-80 md:w-auto"
+        id="hero-slider"
+      >
+        <h1
+          id="hero-title"
+          className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl text-white"
+        >
           Empower Your Data with{" "}
           <span className="text-blue-600">TaskBounty</span>
         </h1>
-        <p className="max-w-2xl mb-6 font-light text-white lg:mb-8 md:text-lg lg:text-xl text-justify">
+        <p
+          id="hero-description"
+          className="max-w-2xl mb-6 font-light text-white lg:mb-8 md:text-lg lg:text-xl text-justify"
+        >
           Elevate your AI projects with TaskBounty's expert labeling services.
           We're more than just a platform; we're your partner in success
         </p>
-        <div className="flex">
+        <div className="flex" id="hero-btn">
           <Link
             href="/uploadTask"
             className="inline-flex items-center justify-center px-5 py-3 mr-3 md:text-base text-sm font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900"
