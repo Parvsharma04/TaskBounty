@@ -2,7 +2,7 @@ import "@/styles/Loading.css";
 
 const LoadingPage = () => {
   return (
-    <div className="containerLoading absolute flex justify-center items-center w-1/2 h-[60%] left-96 top-48 z-50">
+    <div className="containerLoading bg-gray-950 absolute flex justify-center items-center w-1/2 h-[60%] left-96 top-48 z-50">
       <svg
         version="1.1"
         id="Layer_1"

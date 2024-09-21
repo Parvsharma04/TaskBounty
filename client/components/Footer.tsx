@@ -1,6 +1,6 @@
 const FooterPage = () => {
   return (
-    <footer className="rounded-lg shadow bg-gray-900">
+    <footer className="rounded-lg shadow bg-gray-950">
       <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <a
@@ -39,9 +39,9 @@ const FooterPage = () => {
             </li>
           </ul>
         </div>
-        <hr className="my-6  sm:mx-auto border-gray-700 lg:my-8" />
+        <hr className="my-6 sm:mx-auto bg-gray-950 lg:my-8" />
         <span className="block text-sm  sm:text-center text-gray-400">
-          © 2023{" "}
+          © 2024{" "}
           <a href="/" className="hover:underline">
             TaskBounty™
           </a>

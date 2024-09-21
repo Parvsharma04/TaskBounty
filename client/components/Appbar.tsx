@@ -76,6 +76,7 @@ const NavBar = () => {
     if (!publicKey) {
       localStorage.removeItem("token");
       setHasToken(false);
+      navigate.replace("/");
     }
   }, [publicKey]);
 
@@ -153,7 +154,7 @@ const NavBar = () => {
                   radius="sm"
                   variant="light"
                 >
-                  <AnimatedLink title="Features" key="features" />
+                  <AnimatedLink title="Features" key="features" href="#" />
                 </Button>
               </DropdownTrigger>
             </NavbarItem>

@@ -54,10 +54,6 @@ const options: ApexOptions = {
     width: [2, 2],
     curve: "straight",
   },
-  // labels: {
-  //   show: false,
-  //   position: "top",
-  // },
   grid: {
     xaxis: {
       lines: {
@@ -128,6 +124,16 @@ const options: ApexOptions = {
       style: {
         colors: "white",
       },
+    },
+  },
+  tooltip: {
+    theme: "dark",
+    style: {
+      fontSize: "12px",
+      color: "#fff",
+    },
+    y: {
+      formatter: (value) => value.toString(),
     },
   },
 };

@@ -28,7 +28,7 @@ function TaskAnalytics() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${BACKEND_URL}/v1/user/getAllTask`, {
+        let res = await axios.get(`${BACKEND_URL}/v1/user/getAllTask`, {
           headers: {
             Authorization: localStorage.getItem("token"),
           },
@@ -46,7 +46,10 @@ function TaskAnalytics() {
           //   theme: "colored",
           // });
         }
-        // console.log(res.data.tasksDetails);
+        res.data.tasksDetails.forEach((task: any) => {
+          task.amount = (parseFloat(task.amount) / 1000000000).toString();
+        });
+
         setAllTasks(res.data.tasksDetails);
         DataManipulation(res.data.tasksDetails);
       } catch (err: any) {
@@ -195,7 +198,7 @@ function TaskAnalytics() {
   ];
 
   return (
-    <div className="h-screen bg-black text-white">
+    <div className="bg-gray-950 text-white min-h-screen">
       {Loading && <LoadingPage />}
       <ToastContainer
         position="top-left"
@@ -228,7 +231,7 @@ function TaskAnalytics() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
         >
-          <section className="p-6 pb-0 bg-black text-white">
+          <section className="p-6 pb-0 bg-gray-950 text-white">
             {AllTasks.length > 0 && <ChartAnalytics userTasks={AllTasks} />}
           </section>
         </motion.div>
@@ -240,9 +243,9 @@ function TaskAnalytics() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
         >
-          <section className="bg-black text-white pt-10 pb-10">
+          <section className="bg-gray-950 text-white pt-10 pb-10">
             {AllTasks.length > 0 ? (
-              <div className="flex flex-col justify-center items-center bg-black text-white border ml-6 mr-6">
+              <div className="flex flex-col justify-center items-center bg-gray-950 text-white border ml-6 mr-6 h-screen">
                 <DataTable
                   customStyles={customStyles}
                   className="dataTables_wrapper"
@@ -257,7 +260,7 @@ function TaskAnalytics() {
                 />
               </div>
             ) : (
-              <div className="flex justify-center items-center text-3xl font-bold bg-black text-white md:h-1/2 w-full pb-10">
+              <div className="flex justify-center items-center text-3xl font-bold bg-gray-950 text-white md:h-1/2 w-full pb-10">
                 No Data Found
               </div>
             )}

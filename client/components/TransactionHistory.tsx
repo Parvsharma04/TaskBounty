@@ -1,7 +1,7 @@
 "use client";
 import { BACKEND_URL } from "@/utils";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LoadingPage from "./Loading";
 import {
   Table,
@@ -12,6 +12,8 @@ import {
   TableCell,
   getKeyValue,
 } from "@nextui-org/react";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const TransactionHistory = () => {
   interface Transaction {
@@ -24,6 +26,7 @@ const TransactionHistory = () => {
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(false);
+  const tableRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -63,6 +66,39 @@ const TransactionHistory = () => {
     { key: "amount", label: "Amount" },
     { key: "status", label: "Status" },
   ];
+  const handlePdfDownload = async () => {
+    const doc = new jsPDF();
+
+    doc.text("Transaction History", 80, 15);
+
+    const headers = columns.map((column) => column.label);
+    const data = transactions.map((transaction) => [
+      getDate(
+        transaction.postYear,
+        transaction.postMonth,
+        transaction.postDate
+      ),
+      (Number(transaction.amount) / 1000_000_000).toFixed(3) + " SOL",
+      transaction.status ? "Success" : "Pending",
+    ]);
+
+    autoTable(doc, {
+      head: [headers],
+      body: data,
+      startY: 20,
+      theme: "grid",
+      styles: { halign: "center", cellPadding: 3 },
+      columnStyles: {
+        0: { cellWidth: "auto" },
+        1: { cellWidth: "auto" },
+        2: { cellWidth: "auto" },
+      },
+      tableWidth: doc.internal.pageSize.getWidth() - 20,
+      margin: { left: 10 },
+    });
+
+    doc.save(`${localStorage.getItem("token")}-transaction-history.pdf`);
+  };
 
   return (
     <div className="h-screen">
@@ -91,6 +127,7 @@ const TransactionHistory = () => {
               <button
                 type="button"
                 className="flex justify-center items-center bg-gray-700 p-2 rounded-md hover:bg-gray-600"
+                onClick={handlePdfDownload}
               >
                 <svg
                   className="mr-1 h-4 w-4"
@@ -123,6 +160,7 @@ const TransactionHistory = () => {
               th: "bg-gray-700 text-white text-md",
               wrapper: "p-0.5",
             }}
+            ref={tableRef}
           >
             <TableHeader className="bg-blue-500">
               {columns.map((column) => (

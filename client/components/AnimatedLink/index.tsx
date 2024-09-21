@@ -89,22 +89,41 @@ const AnimatedLink = ({
         isActive ? "text-blue-700" : "text-white"
       }`}
     >
-      <Link href={href}>
-        <AnimatedWord
-          title={title}
-          animations={letterAnimation}
-          isHovered={isHovered}
-          isActive={isActive}
-        />
-        <AbsoluteContainer>
+      {href != "#" ? (
+        <Link href={href}>
           <AnimatedWord
             title={title}
-            animations={letterAnimationTwo}
+            animations={letterAnimation}
             isHovered={isHovered}
             isActive={isActive}
           />
-        </AbsoluteContainer>
-      </Link>
+          <AbsoluteContainer>
+            <AnimatedWord
+              title={title}
+              animations={letterAnimationTwo}
+              isHovered={isHovered}
+              isActive={isActive}
+            />
+          </AbsoluteContainer>
+        </Link>
+      ) : (
+        <button>
+          <AnimatedWord
+            title={title}
+            animations={letterAnimation}
+            isHovered={isHovered}
+            isActive={isActive}
+          />
+          <AbsoluteContainer>
+            <AnimatedWord
+              title={title}
+              animations={letterAnimationTwo}
+              isHovered={isHovered}
+              isActive={isActive}
+            />
+          </AbsoluteContainer>
+        </button>
+      )}
     </Div>
   );
 };
