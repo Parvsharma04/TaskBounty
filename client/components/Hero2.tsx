@@ -1,4 +1,37 @@
-const Hero2Page = () => {
+"use client";
+
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/all";
+import { useRef } from "react";
+
+const Hero2Page = ({ bodyRef }: { bodyRef: any }) => {
+  gsap.registerPlugin(ScrollTrigger);
+
+  useGSAP(
+    () => {
+      const triggerElement = bodyRef.current;
+
+      const t1 = gsap.timeline({
+        scrollTrigger: {
+          trigger: triggerElement, // Use the section's reference
+          start: "top bottom", // Start animation when the top of the section hits the bottom of the viewport
+          end: "top top", // End when the top of the section reaches the top of the viewport
+          scrub: 1, // Smooth scrubbing effect
+          markers: true, // For debugging; can be removed
+        },
+      });
+
+      t1.from("#features", {
+        xPercent: -100, // Move from left to right
+        duration: 1,
+        opacity: 0, // Fade in effect
+        ease: "power2.inOut",
+      });
+    },
+    { scope: bodyRef }
+  );
+
   return (
     <div className="bg-black">
       <section
@@ -6,10 +39,10 @@ const Hero2Page = () => {
         className="relative block px-6 py-10 md:py-20 md:px-10  border-t border-b border-neutral-900 bg-neutral-900/30"
       >
         <div className="relative mx-auto max-w-5xl text-center">
-          <h2 className="block w-full bg-gradient-to-b from-white to-gray-400 bg-clip-text font-bold text-transparent text-3xl sm:text-4xl">
+          <h2 className="block w-full bg-gradient-to-b from-white to-gray-400 bg-clip-text font-bold text-transparent text-3xl sm:text-4xl animate">
             Why Choose Us?
           </h2>
-          <p className="mx-auto my-4 w-full max-w-xl bg-transparent text-center font-medium leading-relaxed tracking-wide text-gray-400 text-xl">
+          <p className="mx-auto my-4 w-full max-w-xl bg-transparent text-center font-medium leading-relaxed tracking-wide text-gray-400 text-xl animate">
             Decentralized, Secure, and Efficient
           </p>
         </div>

@@ -4,7 +4,7 @@ const GoalPage = () => {
       <h1 className="text-blue-400 font-bold md:text-4xl text-3xl mb-5 text-center">
         Our Mission
       </h1>
-      <p className="text-white md:text-xl text-lg text-justify text-center">
+      <p className="text-white md:text-xl text-lg text-justify">
         To revolutionize data labeling by creating a decentralized platform that
         connects clients and workers efficiently and transparently.
       </p>
