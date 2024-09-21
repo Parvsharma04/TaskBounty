@@ -276,8 +276,8 @@ router.post("/signin", async (req, res) => {
     return res.status(400).json({ message: "Missing publicKey or signature" });
   }
 
-  const message = new TextEncoder().encode("Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged.");
-  const signedString = "Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged.";
+  const message = new TextEncoder().encode("Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged.");
+  const signedString = "Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged.";
   const result = nacl.sign.detached.verify(
     message,
     new Uint8Array(signature.data),

@@ -279,8 +279,8 @@ router.post("/transactions", authMiddleware, async (req, res) => {
 //! sigining with wallet
 router.post("/signin", async (req, res) => {
   const { publicKey, signature } = req.body;
-  const message = new TextEncoder().encode("Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged.");
-  const signedString = "Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged.";
+  const message = new TextEncoder().encode("Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged.");
+  const signedString = "Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged.";
 
   const result = nacl.sign.detached.verify(
     message,
