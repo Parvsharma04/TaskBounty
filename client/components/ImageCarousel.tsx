@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const ImageCarousel = () => {
   return (
-    <div className="bg-black text-white">
+    <div className="bg-gray-950 text-white">
       <h2 className="text-center text-4xl mb-2 font-bold leading-8">
         Featured
       </h2>

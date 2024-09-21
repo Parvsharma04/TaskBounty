@@ -5,7 +5,7 @@ const Hero3Page = () => {
   return (
     <div className="flex justify-evenly items-center flex-wrap">
       <div className="left flex flex-col justify-center items-center gap-12 h-screen md:w-1/2">
-        <div className="upper text-white text-center text-4xl">
+        <div className="upper text-white text-center text-4xl font-myFont">
           <h1>How It Works</h1>
         </div>
         <div className="lower flex justify-center items-center gap-5 flex-wrap">

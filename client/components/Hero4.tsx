@@ -5,8 +5,10 @@ const Hero4 = () => {
   return (
     <div className="flex flex-wrap md:flex-nowrap justify-between items-center">
       <div className="left flex flex-col justify-start items-center md:items-start gap-8 w-full mb-8 md:mb-0">
-        <h1 className="text-6xl md:w-96 w-80">Unlock Your Earning Potential</h1>
-        <p className="text-lg md:w-96 w-80">
+        <h1 className="text-6xl md:w-96 w-80 font-myFont">
+          Unlock Your Earning Potential
+        </h1>
+        <p className="text-xl md:w-96 w-80 font-myFont3">
           Join a decentralized platform where your skills can earn you Solana
           while contributing to data labeling.
         </p>

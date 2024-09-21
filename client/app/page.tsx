@@ -2,20 +2,16 @@
 
 import { Hero } from "@/components/Hero";
 import ImageCarousel from "@/components/ImageCarousel";
-import LoadingPage from "@/components/Loading";
-import GoalPage from "@/components/Goal";
-import { Suspense, useEffect, useLayoutEffect } from "react";
-import Hero2Page from "@/components/Hero2";
+import { useEffect } from "react";
 import Hero3Page from "@/components/Hero3";
 import Hero4 from "@/components/Hero4";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import Image from "next/image";
-import { ScrollSmoother, ScrollTrigger } from "gsap/all";
-import FooterPage from "@/components/Footer";
+import { ScrollTrigger } from "gsap/all";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollSmoother);
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 export default function Home() {
   const bodyRef = useRef(null);
@@ -175,7 +171,10 @@ export default function Home() {
       id="body smooth-wrapper"
       className="overflow-hidden scroll-smooth"
     >
-      <div className="bg-black h-screen overflow-hidden" id="preload-container">
+      <div
+        className="bg-gray-950 h-screen overflow-hidden"
+        id="preload-container"
+      >
         <Image
           id="preload-image"
           className="absolute top-24 left-96"
@@ -194,26 +193,26 @@ export default function Home() {
         ></div>
       </div>
       <div id="smooth-content">
-        <section className="bg-black" id="section1">
+        <section className="bg-gray-950" id="section1">
           <Hero />
         </section>
         <section
-          className="bg-black h-screen flex justify-center items-center"
+          className="bg-gray-950 h-screen flex justify-center items-center"
           id="section2"
         >
           <div
             id="section2Div"
-            className="bg-gray-500 flex flex-col justify-center items-center w-2/3 rounded p-7"
+            className="bg-gray-800 flex flex-col justify-center items-center w-2/3 rounded-xl p-7"
           >
             <h1
               id="section2Title"
-              className="text-blue-400 font-bold md:text-4xl text-3xl mb-5 text-center"
+              className="text-pink-600 md:text-5xl text-4xl mb-5 text-center font-myFont"
             >
               Our Mission
             </h1>
             <p
               id="section2Desc"
-              className="text-white md:text-xl text-lg text-justify"
+              className="text-white md:text-2xl text-lg text-justify font-myFont3"
             >
               To revolutionize data labeling by creating a decentralized
               platform that connects clients and workers efficiently and
@@ -221,19 +220,19 @@ export default function Home() {
             </p>
           </div>
         </section>
-        <section className="bg-black mb-32" id="section3">
+        <section className="bg-gray-950 mb-32" id="section3">
           <ImageCarousel />
         </section>
-        <section className="bg-black md:h-screen" id="section4">
+        <section className="bg-gray-950 md:h-screen" id="section4">
           <section
             id="features"
             className="relative block px-6 py-10 md:py-20 md:px-10  border-t border-b border-neutral-900 bg-neutral-900/30"
           >
             <div className="relative mx-auto max-w-5xl text-center">
-              <h2 className="block w-full bg-gradient-to-b from-white to-gray-400 bg-clip-text font-bold text-transparent text-3xl sm:text-4xl animate">
+              <h2 className="block w-full bg-gradient-to-b from-white to-gray-400 bg-clip-text font-bold text-transparent text-3xl sm:text-4xl animate font-myFont2">
                 Why Choose Us?
               </h2>
-              <p className="mx-auto my-4 w-full max-w-xl bg-transparent text-center font-medium leading-relaxed tracking-wide text-gray-400 text-xl animate">
+              <p className="mx-auto my-4 w-full max-w-xl bg-transparent text-center font-medium leading-relaxed tracking-wide text-gray-400 text-2xl animate font-myFont3">
                 Decentralized, Secure, and Efficient
               </p>
             </div>
@@ -266,8 +265,10 @@ export default function Home() {
                     <line x1={17} y1={17} x2={17} y2="17.01" />
                   </svg>
                 </div>
-                <h3 className="mt-6 text-gray-400">Earn While You Work</h3>
-                <p className="my-4 mb-0 font-normal leading-relaxed tracking-wide text-gray-400">
+                <h3 className="mt-6 text-gray-400 font-myFont3 font-bold">
+                  Earn While You Work
+                </h3>
+                <p className="my-4 mb-0 font-normal leading-relaxed tracking-wide text-gray-400 font-myFont3 text-base">
                   Complete tasks and earn 0.0002 Solana for every job you
                   finish, ensuring fair compensation for your efforts.
                 </p>
@@ -297,10 +298,10 @@ export default function Home() {
                     <polyline points="13 3 13 10 19 10 11 21 11 14 5 14 13 3" />
                   </svg>
                 </div>
-                <h3 className="mt-6 text-gray-400">
-                  Client-Friendly Interface
+                <h3 className="mt-6 text-gray-400 font-myFont2 font-bold">
+                  Client Friendly Interface
                 </h3>
-                <p className="my-4 mb-0 font-normal leading-relaxed tracking-wide text-gray-400">
+                <p className="my-4 mb-0 font-normal leading-relaxed tracking-wide text-gray-400 font-myFont3 text-base">
                   Easily post tasks and manage projects with our intuitive
                   dashboard designed for seamless client experience.
                 </p>
@@ -335,8 +336,10 @@ export default function Home() {
                     <line x1={16} y1={17} x2="14.5" y2="18.5" />
                   </svg>
                 </div>
-                <h3 className="mt-6 text-gray-400">Transparent Payments</h3>
-                <p className="my-4 mb-0 font-normal leading-relaxed tracking-wide text-gray-400">
+                <h3 className="mt-6 text-gray-400 font-myFont2 font-bold">
+                  Transparent Payments
+                </h3>
+                <p className="my-4 mb-0 font-normal leading-relaxed tracking-wide text-gray-400 font-myFont3 text-base">
                   Track your earnings and payouts in real-time, ensuring
                   transparency and trust in every transaction.
                 </p>
@@ -360,11 +363,11 @@ export default function Home() {
             ></div>
           </section>
         </section>
-        <section className="bg-black md:h-screen" id="section5">
+        <section className="bg-gray-950 md:h-screen" id="section5">
           <Hero3Page />
         </section>
         <section
-          className="bg-black h-screen  flex justify-center items-center"
+          className="bg-gray-950 h-screen  flex justify-center items-center"
           id="section6"
         >
           <Hero4 />
