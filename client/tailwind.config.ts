@@ -34,6 +34,11 @@ const config: Config = {
           to: { transform: "translateX(-100%)" },
         },
       },
+      fontFamily: {
+        myFont: ["var(--myFont)", "sans-serif"],
+        myFont2: ["var(--myFont2)", "sans-serif"],
+        myFont3: ["var(--myFont3)", "sans-serif"],
+      },
     },
   },
   darkMode: "class",

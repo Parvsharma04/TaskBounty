@@ -142,14 +142,14 @@ export const Hero = () => {
       >
         <h1
           id="hero-title"
-          className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl text-white"
+          className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-6xl xl:text-7xl text-white font-myFont2"
         >
           Empower Your Data with{" "}
           <span className="text-blue-600">TaskBounty</span>
         </h1>
         <p
           id="hero-description"
-          className="max-w-2xl mb-6 font-light text-white lg:mb-8 md:text-lg lg:text-xl text-justify"
+          className="max-w-2xl mb-6 font-light text-white lg:mb-8 md:text-xl lg:text-2xl text-justify font-myFont3"
         >
           Elevate your AI projects with TaskBounty's expert labeling services.
           We're more than just a platform; we're your partner in success

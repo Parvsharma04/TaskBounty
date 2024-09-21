@@ -1,11 +1,24 @@
 import { Wallet } from "@/components/Wallet";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Baloo_Bhai_2, Inter } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/Appbar";
 import FooterPage from "@/components/Footer";
+import localFont from "next/font/local";
 
 const inter = Inter({ subsets: ["latin"] });
+export const myFont = localFont({
+  src: "../fonts/GiuliaDEMO-Bold.otf",
+  variable: "--myFont",
+});
+export const myFont2 = localFont({
+  src: "../fonts/GiuliaPlainDEMO-Bold.otf",
+  variable: "--myFont2",
+});
+export const myFont3 = Baloo_Bhai_2({
+  subsets: ["latin"],
+  variable: "--myFont3",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,12 +32,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-black text-white`}>
+      <body
+        className={`${inter.className} ${myFont.variable} ${myFont2.variable} ${myFont3.variable} bg-black text-white`}
+      >
         <Wallet>
           <NavBar />
           {children}
+          <FooterPage />
         </Wallet>
-        <FooterPage />
       </body>
     </html>
   );
