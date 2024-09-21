@@ -28,7 +28,7 @@ const NavBar = () => {
     if (wallet.connected) {
       try {
         const message = new TextEncoder().encode(
-          "Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged."
+          "Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged."
         );
 
         const signature = await wallet.signMessage?.(message);

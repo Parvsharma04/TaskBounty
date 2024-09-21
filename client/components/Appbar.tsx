@@ -53,7 +53,7 @@ const NavBar = () => {
         if (!publicKey) return;
         //! make the message unique which makes it more secure
         const message = new TextEncoder().encode(
-          "Wallet confirmation 🌓🚀\nI have read and agreed to the Terms and Conditions.\nNo amount will be charged."
+          "Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged."
         );
         const signature = await signMessage?.(message);
         let response = await axios.post(`${BACKEND_URL}/v1/user/signin`, {
