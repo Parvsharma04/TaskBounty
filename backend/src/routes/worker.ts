@@ -435,7 +435,7 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
   }
 });
 
-router.get("/transactions/", workerMiddleware, async (req, res) => {
+router.get("/transactions", workerMiddleware, async (req, res) => {
   const { publicKey } = req.query;
   if (!publicKey) {
     return res.status(400).json({ error: "Public key is required" });

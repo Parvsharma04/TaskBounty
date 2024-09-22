@@ -178,24 +178,31 @@ const NavBar = () => {
           >
             <Link
               href="/"
-              className="block py-4 px-6 hover:text-blue-700"
+              className="block mt-20 hover:text-blue-700"
               onClick={handleLinkClick}
             >
               Home
             </Link>
             <Link
               href="/bounty"
-              className="block py-4 px-6 hover:text-blue-700"
+              className="block hover:text-blue-700"
               onClick={handleLinkClick}
             >
               Hunt Bounties
             </Link>
             <Link
               href="/tester-analytics"
-              className="block py-4 px-6 hover:text-blue-700"
+              className="block hover:text-blue-700"
               onClick={handleLinkClick}
             >
               Tester Analytics
+            </Link>
+            <Link
+              href="/transactions"
+              className="block hover:text-blue-700"
+              onClick={handleLinkClick}
+            >
+              Transactions
             </Link>
             <div className="px-6 mt-4">
               <WalletAndPayoutButtons />
