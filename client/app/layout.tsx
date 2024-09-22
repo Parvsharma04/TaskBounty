@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} ${myFont.variable} ${myFont2.variable} ${myFont3.variable} bg-black text-white`}
+        className={`${inter.className} ${myFont.variable} ${myFont2.variable} ${myFont3.variable} bg-gray-950 text-white`}
       >
         <Wallet>
           <NavBar />

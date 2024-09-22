@@ -23,3 +23,10 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #fff;
 }
+
+#pagination-first-page,
+#pagination-previous-page,
+#pagination-next-page,
+#pagination-last-page {
+  background-color: #4c82f7;
+}

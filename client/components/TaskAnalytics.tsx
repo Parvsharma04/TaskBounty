@@ -128,9 +128,10 @@ function TaskAnalytics() {
         color: "#fff",
       },
       pageButton: {
-        style: {
-          border: "1px solid #fff",
-        },
+        color: "#fff",
+      },
+      pageButtonGroup: {
+        color: "white",
       },
     },
   };
@@ -151,7 +152,7 @@ function TaskAnalytics() {
       }
     });
 
-    setAmtSpent(total.toFixed(6));
+    setAmtSpent(total.toString().substring(0, 8));
     setTotalTasks(data.length);
     setDoneTasks(done);
     setPendingTasks(pending);
