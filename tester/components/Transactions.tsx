@@ -6,16 +6,16 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loading from "./Loading";
+import TransactionCard from "./TransactionCard";
 
 const Transactions = () => {
   const wallet = useWallet();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [error, setError] = useState<null | String>(null);
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
 
-
-  async function getTranscations() {
+  async function getTransactions() {
     try {
       setLoading(true);
       const response = await axios.get(
@@ -25,11 +25,9 @@ const Transactions = () => {
           headers: { Authorization: localStorage.getItem("token") || "" },
         }
       );
-      console.log(response.data);
-      setData(response.data)
+      setData(response.data);
     } catch (error) {
-      console.error("Error fetching tester data:", error);
-      setError("Failed to fetch tester data. Please try again.");
+      setError("Failed to fetch transactions. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -37,7 +35,7 @@ const Transactions = () => {
 
   useEffect(() => {
     if (wallet.connected) {
-      getTranscations();
+      getTransactions();
     } else router.push("/");
   }, [wallet]);
 
@@ -56,7 +54,8 @@ const Transactions = () => {
       </div>
     );
   }
-  if (data.length == 0) {
+
+  if (data.length === 0) {
     return (
       <div className="min-h-screen flex justify-center items-center text-xl sm:text-2xl bg-black px-4">
         No Transactions Yet.
@@ -64,11 +63,18 @@ const Transactions = () => {
     );
   }
 
-
-
-  // data.forEach(ele=>{
-
-  // })
+  return (
+    <div className="min-h-screen bg-black text-white p-10 mt-16">
+      {data.map((transaction) => (
+        <TransactionCard
+          key={transaction.id}
+          amount={transaction.amount}
+          status={transaction.status}
+          date={transaction.date}
+        />
+      ))}
+    </div>
+  );
 };
 
 export default Transactions;
