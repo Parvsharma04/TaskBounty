@@ -1,7 +1,7 @@
 "use client";
 
 import { ApexOptions } from "apexcharts";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -130,7 +130,7 @@ const options: ApexOptions = {
     theme: "dark",
     style: {
       fontSize: "12px",
-      color: "#fff",
+      // color: "#fff",
     },
     y: {
       formatter: (value) => value.toString(),
@@ -152,7 +152,7 @@ const ChartAnalytics: React.FC<ChartAnalyticsProps> = ({ userTasks }) => {
   const [DoneTasks, setDoneTasks] = useState(Array(12).fill(0));
   const [PendingTasks, setPendingTasks] = useState(Array(12).fill(0));
   const [Period, setPeriod] = useState("day");
-  const d = new Date();
+  const d = useMemo(() => new Date(), []);
   const [year, setYear] = useState<Number[]>([]);
   const [userSelectedCurrYear, setUserSelectedCurrYear] = useState(0);
 
@@ -165,7 +165,7 @@ const ChartAnalytics: React.FC<ChartAnalyticsProps> = ({ userTasks }) => {
     arr.reverse();
     setYear(arr);
     setUserSelectedCurrYear(arr[0]);
-  }, []);
+  }, [d]);
 
   // Memoize 'configureGraph' to prevent re-creation in each render
   const configureGraph = useCallback(() => {

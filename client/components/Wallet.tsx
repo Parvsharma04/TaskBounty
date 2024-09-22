@@ -35,7 +35,7 @@ export const Wallet: FC<Props> = ({ children }) => {
       // new AlphaWalletAdapter(),
       // new LedgerWalletAdapter(),
     ],
-    [network]
+    []
   );
 
   return (

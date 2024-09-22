@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const FooterPage = () => {
   return (
     <footer className="rounded-lg shadow bg-gray-950">
@@ -7,10 +9,12 @@ const FooterPage = () => {
             href="https://flowbite.com/"
             className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse"
           >
-            <img
+            <Image
               src="/icon-removebg-preview.png"
               className="h-8"
               alt="TaskBounty Logo"
+              width={32}
+              height={32}
             />
             <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
               Flowbite

@@ -78,7 +78,7 @@ const NavBar = () => {
       setHasToken(false);
       navigate.replace("/");
     }
-  }, [publicKey]);
+  }, [publicKey, navigate]);
 
   const icons = {
     chevron: <ChevronDown fill="currentColor" size={16} />,

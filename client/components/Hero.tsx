@@ -3,7 +3,7 @@
 import gsap from "gsap";
 import Image from "next/image";
 import Link from "next/link";
-import { use, useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 export const Hero = () => {
   const comp = useRef(null);
@@ -151,8 +151,9 @@ export const Hero = () => {
           id="hero-description"
           className="max-w-2xl mb-6 font-light text-white lg:mb-8 md:text-xl lg:text-2xl text-justify font-myFont3"
         >
-          Elevate your AI projects with TaskBounty's expert labeling services.
-          We're more than just a platform; we're your partner in success
+          Elevate your AI projects with TaskBounty&apos;s expert labeling
+          services. We&apos;re more than just a platform, we&apos;re your
+          partner in success.
         </p>
         <div className="flex" id="hero-btn">
           <Link
