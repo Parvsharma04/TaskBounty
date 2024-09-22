@@ -327,7 +327,6 @@ router.post("/payout", workerMiddleware, async (req, res) => {
   }
 });
 
-
 router.post("/signin", async (req, res) => {
   // console.log(req.body);
   const { publicKey, signature } = req.body;
@@ -454,8 +453,6 @@ router.get("/transactions", workerMiddleware, async (req, res) => {
     if (!worker) {
       return res.status(404).json({ error: "Worker not found" });
     }
-
-    console.log("Payouts data sent");
     res.json(worker.payouts);
   } catch (error) {
     console.error("Error fetching worker payouts:", error);

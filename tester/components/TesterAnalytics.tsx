@@ -83,7 +83,6 @@ export const TesterAnalytics: React.FC = () => {
       );
       setTesterData(response.data);
       processData(response.data);
-      console.log(response.data)
     } catch (error) {
       console.error("Error fetching tester data:", error);
       setError("Failed to fetch tester data. Please try again.");
