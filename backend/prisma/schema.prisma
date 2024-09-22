@@ -70,11 +70,16 @@ model Submission {
 
 model Payouts {
   id        Int       @id @default(autoincrement())
-  user_id   Int
-  worker    Worker    @relation(fields: [user_id], references: [id])
+  worker_id   Int
+  worker    Worker    @relation(fields: [worker_id], references: [id])
   amount    String
-  signature String
+  signature String?
   status    TxnStatus
+  date      DateTime  @default(now())
+  month     Int
+  year      Int
+
+  @@index([worker_id])
 }
 
 enum TxnStatus {

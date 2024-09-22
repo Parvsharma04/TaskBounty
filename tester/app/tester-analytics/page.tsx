@@ -1,5 +1,5 @@
 import { TesterAnalytics } from "@/components/TesterAnalytics";
-const taskHistory = () => {
+const Analytics = () => {
   return (
     <div>
       <TesterAnalytics />
@@ -7,4 +7,4 @@ const taskHistory = () => {
   );
 };
 
-export default taskHistory;
+export default Analytics;

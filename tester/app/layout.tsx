@@ -4,6 +4,7 @@ import StyledComponentsRegistry from "@/libs/registry";
 import type { Metadata } from "next";
 import "./globals.css";
 import { GlobalStyles } from "./GlobalStyles";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Tester-TaskBounty",
@@ -25,7 +26,9 @@ export default function RootLayout({
         <StyledComponentsRegistry>
           <Wallet>
             <NavBar />
+            <Providers>
             {children}
+            </Providers>
           </Wallet>
         </StyledComponentsRegistry>
       </body>

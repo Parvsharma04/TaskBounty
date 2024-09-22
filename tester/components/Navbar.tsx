@@ -159,6 +159,7 @@ const NavBar = () => {
               <AnimatedLink title="Home" href="/" />
               <AnimatedLink title="Hunt Bounties" href="/bounty" />
               <AnimatedLink title="Tester Analytics" href="/tester-analytics" />
+              <AnimatedLink title="Transactions" href="/transactions" />
             </>
           )}
         </div>

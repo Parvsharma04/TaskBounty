@@ -55,7 +55,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
   const [loading, setLoading] = useState(false);
   const wallet = useWallet();
   const router = useRouter();
-  const token = localStorage.getItem("token");
+  const token: String | null = localStorage.getItem("token");
 
   useEffect(() => {
     if (!wallet.connected) {
@@ -116,7 +116,6 @@ export const NextTask: React.FC<NextTaskProps> = ({
           (!noMoreTasks && getTask(),
           (
             <div className="h-screen flex justify-center items-center px-4">
-
               <div className="text-center text-lg sm:text-xl md:text-2xl">
                 Please check back in some time, there are no pending bounties at
                 the moment.
