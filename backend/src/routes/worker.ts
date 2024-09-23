@@ -7,7 +7,6 @@ import {
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
-import { decode } from "bs58";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import nacl from "tweetnacl";
@@ -124,16 +123,14 @@ router.get("/balance", workerMiddleware, async (req, res) => {
 });
 
 router.post("/payout", workerMiddleware, async (req, res) => {
-  //@ts-ignore
-  const userId: string = req.userId;
+  // @ts-ignore
+  const userId: string = req.userId; // Ensure this is a string
 
-  // Minimum amount required for a payout
   const MIN_AMOUNT_FOR_PAYOUT = 2;
 
-  // Fetch worker details
   const worker = await prismaClient.worker.findFirst({
     where: {
-      id: Number(userId),
+      id: Number(userId), // Cast userId to a number here
     },
   });
 
@@ -145,7 +142,7 @@ router.post("/payout", workerMiddleware, async (req, res) => {
 
   if (parseFloat(worker.pending_amount) < MIN_AMOUNT_FOR_PAYOUT) {
     return res.status(400).json({
-      message: `Pending amount must be at least ${MIN_AMOUNT_FOR_PAYOUT} sol for payout`,
+      message: `Pending amount must be at least ${MIN_AMOUNT_FOR_PAYOUT} SOL for payout`,
     });
   }
 
@@ -153,13 +150,21 @@ router.post("/payout", workerMiddleware, async (req, res) => {
     SystemProgram.transfer({
       fromPubkey: new PublicKey("12AvcKeKRFCn1Gh1qVCzNgumHhXtqnMUpT3xtvoE4fzG"),
       toPubkey: new PublicKey(worker.address),
-      lamports: 1000_000_000 * parseFloat(worker.pending_amount),
+      lamports: Math.floor(1_000_000_000 * parseFloat(worker.pending_amount)),
     })
   );
 
-  const keypair = Keypair.fromSecretKey(
-    decode(process.env.PRIVATE_KEY as string)
-  );
+  let keypair;
+  try {
+    const secretKey = Uint8Array.from(
+      JSON.parse(process.env.PRIVATE_KEY as string)
+    );
+    keypair = Keypair.fromSecretKey(secretKey);
+  } catch (e) {
+    return res.status(500).json({
+      message: "Invalid private key configuration.",
+    });
+  }
 
   let signature = "";
   let txnStatus: TxnStatus = "Processing";
@@ -169,9 +174,14 @@ router.post("/payout", workerMiddleware, async (req, res) => {
       keypair,
     ]);
     txnStatus = "Success";
-  } catch (e) {
+  } catch (e: unknown) {
     console.error("Transaction failed:", e);
     txnStatus = "Failure";
+    return res.status(400).json({
+      message:
+        "Transaction failed. Error: " +
+        (e instanceof Error ? e.message : String(e)),
+    });
   }
 
   try {
@@ -201,13 +211,13 @@ router.post("/payout", workerMiddleware, async (req, res) => {
           status: txnStatus,
           signature: signature,
           date: now,
-          month: now.getMonth() + 1, // getMonth() returns 0-11, so we add 1
+          month: now.getMonth() + 1,
           year: now.getFullYear(),
         },
       });
     });
 
-    if (txnStatus === "Failure") {
+    if (txnStatus.includes("Failure")) {
       return res.status(400).json({
         message: "Transaction failed. Please try again later.",
       });
@@ -218,111 +228,9 @@ router.post("/payout", workerMiddleware, async (req, res) => {
       amount: worker.pending_amount,
     });
   } catch (error) {
-    console.error("Error processing payout:", error);
-    res.status(500).json({
-      message: "Internal Server Error",
-    });
-  }
-});
-
-router.post("/payout", workerMiddleware, async (req, res) => {
-  //@ts-ignore
-  const userId: string = req.userId;
-
-  // Minimum amount required for a payout
-  const MIN_AMOUNT_FOR_PAYOUT = 2;
-
-  // Fetch worker details
-  const worker = await prismaClient.worker.findFirst({
-    where: {
-      id: Number(userId),
-    },
-  });
-
-  if (!worker) {
-    return res.status(403).json({
-      message: "Worker not found",
-    });
-  }
-
-  if (parseFloat(worker.pending_amount) < MIN_AMOUNT_FOR_PAYOUT) {
-    return res.status(400).json({
-      message: `Pending amount must be at least ${MIN_AMOUNT_FOR_PAYOUT} sol for payout`,
-    });
-  }
-
-  const transaction = new Transaction().add(
-    SystemProgram.transfer({
-      fromPubkey: new PublicKey("12AvcKeKRFCn1Gh1qVCzNgumHhXtqnMUpT3xtvoE4fzG"),
-      toPubkey: new PublicKey(worker.address),
-      lamports: 1000_000_000 * parseFloat(worker.pending_amount),
-    })
-  );
-
-  const keypair = Keypair.fromSecretKey(
-    decode(process.env.PRIVATE_KEY as string)
-  );
-
-  let signature = "";
-  let txnStatus: TxnStatus = TxnStatus.Processing;
-
-  try {
-    signature = await sendAndConfirmTransaction(connection, transaction, [
-      keypair,
-    ]);
-    txnStatus = TxnStatus.Success;
-  } catch (e) {
-    console.error("Transaction failed:", e);
-    txnStatus = TxnStatus.Failure;
-  }
-
-  try {
-    const now = new Date();
-    await prismaClient.$transaction(async (tx) => {
-      if (txnStatus === TxnStatus.Success) {
-        await tx.worker.update({
-          where: {
-            id: Number(userId),
-          },
-          data: {
-            pending_amount: "0",
-            locked_amount: (
-              BigInt(worker.locked_amount) + BigInt(worker.pending_amount)
-            ).toString(),
-            withdrawn: (
-              BigInt(worker.withdrawn) + BigInt(worker.pending_amount)
-            ).toString(),
-          },
-        });
-      }
-
-      await tx.payouts.create({
-        data: {
-          worker_id: Number(userId),
-          amount: worker.pending_amount,
-          status: txnStatus,
-          signature: signature,
-          date: now,
-          month: now.getMonth() + 1, // getMonth() returns 0-11, so we add 1
-          year: now.getFullYear(),
-        },
-      });
-    });
-
-    if (txnStatus === TxnStatus.Failure) {
-      return res.status(400).json({
-        message: "Transaction failed. Please try again later.",
-      });
-    }
-
-    res.status(200).json({
-      message: "Payout completed successfully",
-      amount: worker.pending_amount,
-    });
-  } catch (error) {
-    console.error("Error processing payout:", error);
-    res.status(500).json({
-      message: "Internal Server Error",
+    console.error("Error processing payout:", error); // Log the error for debugging
+    return res.status(500).json({
+      message: "An error occurred while processing your request.",
     });
   }
 });
@@ -398,6 +306,7 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
         address: String(publicKey), // Ensure that 'address' is the correct field in your database schema
       },
       include: {
+        payouts: true,
         submissions: {
           include: {
             task: true, // Includes task details
@@ -421,12 +330,9 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
         id: true, // Count number of submissions
       },
     });
-
-    // Respond with both tester data and the monthly submission counts
     res.json({
       testerData,
       submissionCountByMonthYear,
-      withdrawn: testerData.withdrawn, // Include withdrawn field
     });
   } catch (error) {
     console.error("Error fetching tester data:", error);

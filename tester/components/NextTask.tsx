@@ -125,7 +125,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
         ) : (
           <div className="flex justify-center items-center min-h-screen md:p-5">
             <motion.div
-              className="bg-gray-900 border p-4 sm:p-6 md:p-10 w-fit max-w-5xl rounded-2xl "
+              className="bg-gray-900 border p-4 sm:p-6 md:p-10 w-fit max-w-5xl rounded-2xl lg:mt-20"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
