@@ -166,18 +166,20 @@ const NavBar = () => {
               }}
             >
               <DropdownItem
+                onClick={() => navigate.push("/uploadUiUx")}
                 key="UI/UX Design"
                 description="label your tasks and get them done by the best designers in the world."
                 startContent={icons.scale}
               >
-                UI/UX Design
+                <Link href="/uploadUiUx">UI/UX Design</Link>
               </DropdownItem>
               <DropdownItem
+                onClick={() => navigate.push("/uploadIdea")}
                 key="idea / product"
                 description="Get your ideas and products to the market faster with our platform."
                 startContent={icons.activity}
               >
-                Idea / Product
+                <Link href="/uploadIdea">Idea / Product</Link>
               </DropdownItem>
               <DropdownItem
                 onClick={() => navigate.push("/uploadTask")}
@@ -188,11 +190,12 @@ const NavBar = () => {
                 <Link href="/uploadTask">Youtube Thumbnail</Link>
               </DropdownItem>
               <DropdownItem
+                onClick={() => navigate.push("/miscellaneousUpload")}
                 key="miscellaneous"
                 description="rate your miscellaneous tasks and get them done by the humans of the world."
                 startContent={icons.server}
               >
-                Miscellaneous
+                <Link href="/miscellaneousUpload">Miscellaneous</Link>
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
@@ -251,18 +254,20 @@ const NavBar = () => {
               }}
             >
               <DropdownItem
+                onClick={() => navigate.push("/uploadUiUx")}
                 key="UI/UX Design"
                 description="label your tasks and get them done by the best designers in the world."
                 startContent={icons.scale}
               >
-                UI/UX Design
+                <Link href="/uploadUiUx">UI/UX Design</Link>
               </DropdownItem>
               <DropdownItem
+                onClick={() => navigate.push("/uploadIdea")}
                 key="idea / product"
                 description="Get your ideas and products to the market faster with our platform."
                 startContent={icons.activity}
               >
-                Idea / Product
+                <Link href="/uploadIdea">Idea / Product</Link>
               </DropdownItem>
               <DropdownItem
                 onClick={() => navigate.push("/uploadTask")}
@@ -273,11 +278,12 @@ const NavBar = () => {
                 <Link href="/uploadTask">Youtube Thumbnail</Link>
               </DropdownItem>
               <DropdownItem
+                onClick={() => navigate.push("/miscellaneousUpload")}
                 key="miscellaneous"
                 description="rate your miscellaneous tasks and get them done by the humans of the world."
                 startContent={icons.server}
               >
-                Miscellaneous
+                <Link href="/miscellaneousUpload">Miscellaneous</Link>
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
