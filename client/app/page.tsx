@@ -10,6 +10,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import Image from "next/image";
 import { ScrollTrigger } from "gsap/all";
+import FAQ from "@/components/FAQ";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -154,6 +155,24 @@ export default function Home() {
       });
 
       t5.from("#section6", {
+        xPercent: -100, // Move from left to right
+        duration: 2,
+        opacity: 0, // Optional: fade in effect
+        ease: "power2.inOut",
+        scrub: true,
+        stagger: 0.5,
+      });
+
+      const t6 = gsap.timeline({
+        scrollTrigger: {
+          trigger: "#section6",
+          start: "top 70%",
+          end: "top 30%",
+          scrub: true,
+        },
+      });
+
+      t6.from("#section7", {
         xPercent: -100, // Move from left to right
         duration: 2,
         opacity: 0, // Optional: fade in effect
@@ -371,6 +390,9 @@ export default function Home() {
           id="section6"
         >
           <Hero4 />
+        </section>
+        <section className="bg-gray-950" id="section7">
+          <FAQ />
         </section>
       </div>
     </main>
