@@ -28,6 +28,9 @@ export default function Page({
     Design_Title: string;
     Design_Description: string;
     Design_Url: string[];
+    Idea_Images: string[];
+    Youtube_Thumbnail_Images: string[];
+    Images: string[];
   }
   interface TaskDetailsProps {
     amount: String;
@@ -86,15 +89,56 @@ export default function Page({
         {" " + taskDetails?.category ?? ""}
       </div>
       <div className="flex flex-wrap justify-center pt-8 gap-5">
-        {categoryDetails?.Design_Url.map((url, idx) => (
-          <Task
-            key={idx}
-            imageUrl={url ?? ""}
-            description={categoryDetails?.Design_Description ?? ""}
-            votes={0}
-            category={taskDetails?.category ?? ""}
-          />
-        ))}
+        {taskDetails.category === "UI_UX_Design" &&
+          categoryDetails?.Design_Url.map((url, idx) => (
+            <Task
+              key={idx}
+              imageUrl={url ?? ""}
+              description={categoryDetails?.Design_Description ?? ""}
+              votes={0}
+              category={taskDetails?.category ?? ""}
+            />
+          ))}
+        {taskDetails.category === "Idea_Product" &&
+          categoryDetails?.Idea_Images.map((url, idx) => (
+            <Task
+              key={idx}
+              imageUrl={url ?? ""}
+              description={categoryDetails?.Design_Description ?? ""}
+              votes={0}
+              category={taskDetails?.category ?? ""}
+            />
+          ))}
+        {taskDetails.category === "Youtube_Thumbnail" &&
+          categoryDetails?.Youtube_Thumbnail_Images.map((url, idx) => (
+            <Task
+              key={idx}
+              imageUrl={url ?? ""}
+              description={categoryDetails?.Design_Description ?? ""}
+              votes={0}
+              category={taskDetails?.category ?? ""}
+            />
+          ))}
+        {taskDetails.category === "Miscellaneous" &&
+          categoryDetails?.Images.map((url, idx) => (
+            <Task
+              key={idx}
+              imageUrl={url ?? ""}
+              description={categoryDetails?.Design_Description ?? ""}
+              votes={0}
+              category={taskDetails?.category ?? ""}
+            />
+          ))}
+        {taskDetails.category === "Miscellaneous" &&
+          categoryDetails?.Design_Url.map((url, idx) => (
+            <Task
+              key={idx}
+              imageUrl={url ?? ""}
+              description={categoryDetails?.Design_Description ?? ""}
+              votes={0}
+              category={taskDetails?.category ?? ""}
+            />
+          ))}
       </div>
     </div>
   );

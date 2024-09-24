@@ -105,37 +105,27 @@ router.get("/task", authMiddleware, async (req, res) => {
     categoryDetails,
   });
 });
-// router.get("/getAllTask", authMiddleware, async (req, res) => {
-//   // @ts-ignore
-//   const userId = req.userId;
+router.get("/getAllTask", authMiddleware, async (req, res) => {
+  // @ts-ignore
+  const userId = req.userId;
 
-//   const tasksDetails = await prismaClient.task.findMany({
-//     where: {
-//       user_id: Number(userId),
-//     },
-//     select: {
-//       id: true,
-//       title: true,
-//       amount: true,
-//       done: true,
-//       options: true,
-//       postDate: true,
-//       postMonth: true,
-//       postYear: true,
-//     },
-//   });
+  const tasksDetails = await prismaClient.task.findMany({
+    where: {
+      user_id: Number(userId),
+    },
+  });
 
-//   if (!tasksDetails) {
-//     return res.status(411).json({
-//       message: "You dont have access to this task",
-//     });
-//   }
+  if (!tasksDetails) {
+    return res.status(411).json({
+      message: "You dont have access to this task",
+    });
+  }
 
-//   res.json({
-//     tasksDetails,
-//     message: "All tasks fetched successfully",
-//   });
-// });
+  res.json({
+    tasksDetails,
+    message: "All tasks fetched successfully",
+  });
+});
 router.post("/task", authMiddleware, async (req, res) => {
   //@ts-ignore
   const userId = req.userId;
@@ -417,27 +407,20 @@ router.get("/presignedUrl", authMiddleware, async (req, res) => {
     fields,
   });
 });
-// router.post("/transactions", authMiddleware, async (req, res) => {
-//   //@ts-ignore
-//   const id = req.userId;
+router.post("/transactions", authMiddleware, async (req, res) => {
+  //@ts-ignore
+  const id = req.userId;
 
-//   const transaction = await prismaClient.task.findMany({
-//     where: {
-//       user_id: Number(id),
-//     },
-//     select: {
-//       amount: true,
-//       postDate: true,
-//       postMonth: true,
-//       postYear: true,
-//       title: true,
-//     },
-//   });
+  const transaction = await prismaClient.task.findMany({
+    where: {
+      user_id: Number(id),
+    },
+  });
 
-//   res.json({
-//     transaction,
-//   });
-// });
+  res.json({
+    transaction,
+  });
+});
 
 //! sigining with wallet
 router.post("/signin", async (req, res) => {

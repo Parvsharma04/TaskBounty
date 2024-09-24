@@ -169,7 +169,7 @@ const MiscellaneousComponent = () => {
 
       console.log(response);
 
-      //   router.push(`/task/${response.data.id}`);
+      router.push(`/task/${response.data.id}`);
     } catch (err) {
       toast.error("Task submission failed");
     }

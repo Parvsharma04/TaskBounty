@@ -34,6 +34,8 @@ function TaskAnalytics() {
           },
         });
 
+        console.log(res);
+
         if (res.status === 200) {
           // toast.success(res.data.message, {
           //   position: "top-left",
@@ -163,7 +165,7 @@ function TaskAnalytics() {
     title: string;
     amount: string;
     done: boolean;
-    options: { image_url: string }[];
+    category: string;
   }
 
   const columns = [
@@ -188,8 +190,8 @@ function TaskAnalytics() {
       sortable: true,
     },
     {
-      name: "Options",
-      selector: (row: Task) => row.options[0].image_url,
+      name: "Category",
+      selector: (row: Task) => row.category,
       sortable: true,
     },
     {
