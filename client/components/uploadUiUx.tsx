@@ -4,7 +4,8 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useState } from "react";
 import Modal from "react-modal";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import { BACKEND_URL, PARENT_WALLET_ADDRESS } from "@/utils";
 import TaskSubmittingLoader from "./TaskSubmittingLoader";
@@ -32,52 +33,11 @@ export const UploadUiUxPageComponent = () => {
   function closeModal() {
     setWebsiteModal(false);
   }
-  const UrlCustomStyles = {
-    overlay: {
-      backgroundColor: "rgba(0, 0, 0, 0.25)",
-    },
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      transform: "translate(-50%, -50%)",
-      padding: 0,
-    },
-  };
-  async function onSubmit() {
-    setTaskSubmitLoader(true);
-
-    try {
-      let d = new Date();
-      let currDate = d.getUTCDate();
-      let currMonth = d.getUTCMonth();
-      let currYear = d.getUTCFullYear();
-
-      //   const response = await axios.post(
-      //     `${BACKEND_URL}/v1/user/task`,
-      //     {
-      //       options: images.map((image) => ({
-      //         imageUrl: image,
-      //       })),
-      //       title,
-      //       signature: txSignature,
-      //       postDate: currDate,
-      //       postMonth: currMonth,
-      //       postYear: currYear,
-      //     },
-      //     {
-      //       headers: {
-      //         Authorization: localStorage.getItem("token"),
-      //       },
-      //     }
-      //   );
-
-      //   router.push(`/task/${response.data.id}`);
-    } catch (err) {
-      toast.error("Task submission failed");
-    }
-    setTaskSubmitLoader(false);
+  function openConfimationModal() {
+    setModalIsOpen(true);
+  }
+  function closeConfirmationModal() {
+    setModalIsOpen(false);
   }
   const customStyles = {
     overlay: {
@@ -94,9 +54,22 @@ export const UploadUiUxPageComponent = () => {
       color: "white",
     },
   };
+  const UrlCustomStyles = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.25)",
+    },
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      transform: "translate(-50%, -50%)",
+      padding: 0,
+    },
+  };
   async function makePayment() {
     setTransactionLoader(true);
-    closeModal();
+    closeConfirmationModal();
     try {
       const transaction = new Transaction().add(
         SystemProgram.transfer({
@@ -128,15 +101,55 @@ export const UploadUiUxPageComponent = () => {
     setTransactionLoader(false);
     toast.success("Transaction successful");
   }
-  function openConfimationModal() {
-    setModalIsOpen(true);
-  }
-  function closeConfirmationModal() {
-    setModalIsOpen(false);
+  async function onSubmit() {
+    setTaskSubmitLoader(true);
+
+    try {
+      let d = new Date();
+      let currDate = d.getUTCDate();
+      let currMonth = d.getUTCMonth();
+      let currYear = d.getUTCFullYear();
+
+      const response = await axios.post(
+        `${BACKEND_URL}/v1/user/task`,
+        {
+          category: "UI_UX_Design",
+          title,
+          url: urlPreview,
+          description: description,
+          signature: txSignature,
+          postDate: currDate,
+          postMonth: currMonth,
+          postYear: currYear,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+
+      router.push(`/task/${response.data.id}`);
+    } catch (err) {
+      toast.error("Task submission failed");
+    }
+    setTaskSubmitLoader(false);
   }
 
   return (
     <div className="h-screen flex flex-col justify-center items-center gap-5 md:px-80">
+      <ToastContainer
+        position="top-left"
+        autoClose={1100}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       {transactionLoader && <TransactionLoadingPage />}
       {TaskSubmitLoader && <TaskSubmittingLoader />}
       <Modal

@@ -1,6 +1,6 @@
 import { S3Client } from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
-import { PrismaClient } from "@prisma/client";
+import { Category, PrismaClient } from "@prisma/client";
 import { Connection, PublicKey } from "@solana/web3.js";
 import "dotenv/config";
 import { Router } from "express";
@@ -24,16 +24,6 @@ const connection = new Connection(
     ""
 );
 
-// prismaClient.$transaction(
-//   async (prisma) => {
-//     // code running in a transaction...
-//   },
-//   {
-//     maxWait: 5000,
-//     timeout: 10000,
-//   }
-// );
-
 router.get("/task", authMiddleware, async (req, res) => {
   // @ts-ignore
   const taskId: string = req.query.taskId;
@@ -45,14 +35,58 @@ router.get("/task", authMiddleware, async (req, res) => {
       user_id: Number(userId),
       id: Number(taskId),
     },
-    include: {
-      options: true,
-    },
   });
-
   if (!taskDetails) {
     return res.status(411).json({
       message: "You dont have access to this task",
+    });
+  }
+
+  let categoryDetails;
+  let category = taskDetails?.category;
+  if (category == Category.UI_UX_Design) {
+    if (!taskDetails?.uiUxDesign_id) {
+      return res.status(411).json({
+        message: "You dont have access to this task",
+      });
+    }
+    categoryDetails = await prismaClient.uI_UX_Design.findFirst({
+      where: {
+        id: taskDetails?.uiUxDesign_id,
+      },
+    });
+  } else if (category == Category.Idea_Product) {
+    if (!taskDetails?.ideaProduct_id) {
+      return res.status(411).json({
+        message: "You dont have access to this task",
+      });
+    }
+    categoryDetails = await prismaClient.idea_Product.findFirst({
+      where: {
+        id: taskDetails?.ideaProduct_id,
+      },
+    });
+  } else if (category == Category.Youtube_Thumbnail) {
+    if (!taskDetails?.youtubeThumbnail_id) {
+      return res.status(411).json({
+        message: "You dont have access to this task",
+      });
+    }
+    categoryDetails = await prismaClient.youtube_Thumbnail.findFirst({
+      where: {
+        id: taskDetails?.youtubeThumbnail_id,
+      },
+    });
+  } else if (category == Category.Miscellaneous) {
+    if (!taskDetails?.miscellaneous_id) {
+      return res.status(411).json({
+        message: "You dont have access to this task",
+      });
+    }
+    categoryDetails = await prismaClient.miscellaneous.findFirst({
+      where: {
+        id: taskDetails?.miscellaneous_id,
+      },
     });
   }
 
@@ -61,70 +95,47 @@ router.get("/task", authMiddleware, async (req, res) => {
     where: {
       task_id: Number(taskId),
     },
-    include: {
-      option: true,
-    },
   });
 
-  const result: Record<
-    string,
-    {
-      count: number;
-      option: {
-        imageUrl: string;
-      };
-    }
-  > = {};
-
-  taskDetails.options.forEach((option) => {
-    result[option.id] = {
-      count: 0,
-      option: {
-        imageUrl: option.image_url,
-      },
-    };
-  });
-
-  responses.forEach((r) => {
-    result[r.option_id].count++;
-  });
+  console.log(responses, taskDetails);
 
   res.json({
-    result,
     taskDetails,
+    responses,
+    categoryDetails,
   });
 });
-router.get("/getAllTask", authMiddleware, async (req, res) => {
-  // @ts-ignore
-  const userId = req.userId;
+// router.get("/getAllTask", authMiddleware, async (req, res) => {
+//   // @ts-ignore
+//   const userId = req.userId;
 
-  const tasksDetails = await prismaClient.task.findMany({
-    where: {
-      user_id: Number(userId),
-    },
-    select: {
-      id: true,
-      title: true,
-      amount: true,
-      done: true,
-      options: true,
-      postDate: true,
-      postMonth: true,
-      postYear: true,
-    },
-  });
+//   const tasksDetails = await prismaClient.task.findMany({
+//     where: {
+//       user_id: Number(userId),
+//     },
+//     select: {
+//       id: true,
+//       title: true,
+//       amount: true,
+//       done: true,
+//       options: true,
+//       postDate: true,
+//       postMonth: true,
+//       postYear: true,
+//     },
+//   });
 
-  if (!tasksDetails) {
-    return res.status(411).json({
-      message: "You dont have access to this task",
-    });
-  }
+//   if (!tasksDetails) {
+//     return res.status(411).json({
+//       message: "You dont have access to this task",
+//     });
+//   }
 
-  res.json({
-    tasksDetails,
-    message: "All tasks fetched successfully",
-  });
-});
+//   res.json({
+//     tasksDetails,
+//     message: "All tasks fetched successfully",
+//   });
+// });
 router.post("/task", authMiddleware, async (req, res) => {
   //@ts-ignore
   const userId = req.userId;
@@ -198,26 +209,178 @@ router.post("/task", authMiddleware, async (req, res) => {
     try {
       const response = await prismaClient.$transaction(
         async (tx) => {
-          const task = await tx.task.create({
-            data: {
-              title: parseData.data.title ?? DEFAULT_TITLE,
-              amount: amountTransferred,
-              signature: parseData.data.signature,
-              user_id: userId,
-              postDate: body.postDate,
-              postMonth: body.postMonth,
-              postYear: body.postYear,
-            },
-          });
+          let category: Category = parseData.data.category as Category;
 
-          await tx.option.createMany({
-            data: parseData.data.options.map((x) => ({
-              image_url: x.imageUrl,
-              task_id: task.id,
-            })),
-          });
+          let categoryModel:
+            | {
+                id: number;
+                Design_Title: string;
+                Design_Description: string | null;
+                Design_Url: string[];
+              }
+            | {
+                id: number;
+                Idea_Title: string;
+                Idea_Description: string | null;
+                Idea_Images: string[] | null;
+                Voting_Type_id: number;
+              }
+            | {
+                id: number;
+                Youtube_Thumbnail_Title: String;
+                // Youtube_Thumbnail_Images: string[];
+              }
+            | {
+                id: number;
+                title: string;
+                Images: string[];
+                Description: string;
+                Design_Url: string[];
+                Voting_Type_id: number;
+              };
+          if (category == Category.UI_UX_Design) {
+            categoryModel = await tx.uI_UX_Design.create({
+              data: {
+                Design_Title: parseData.data.title,
+                Design_Url: parseData.data.url ?? [],
+                Design_Description: parseData.data.description ?? "",
+              },
+            });
+            const task = await tx.task.create({
+              data: {
+                category: category,
+                amount: amountTransferred,
+                signature: parseData.data.signature,
+                user_id: userId,
+                postDate: body.postDate,
+                postMonth: body.postMonth,
+                postYear: body.postYear,
+                uiUxDesign_id: categoryModel.id,
+              },
+            });
 
-          return task;
+            return task;
+          } else if (category == Category.Idea_Product) {
+            const votingModel = await tx.voting_Type.create({
+              data: {
+                type: parseData.data.votingType ?? "Rating_Scale",
+              },
+            });
+
+            categoryModel = await tx.idea_Product.create({
+              data: {
+                Idea_Title: parseData.data.title,
+                Idea_Description: parseData.data.description ?? "",
+                Idea_Images: parseData.data.images ?? [],
+                Voting_Type_id: votingModel.id,
+              },
+            });
+
+            await parseData.data.images?.map((image: string) => {
+              return tx.option.create({
+                data: {
+                  image_url: image ?? "",
+                  Idea_Product_id: categoryModel.id,
+                },
+              });
+            });
+
+            const task = await tx.task.create({
+              data: {
+                category: category,
+                amount: amountTransferred,
+                signature: parseData.data.signature,
+                user_id: userId,
+                postDate: body.postDate,
+                postMonth: body.postMonth,
+                postYear: body.postYear,
+                ideaProduct_id: categoryModel.id,
+              },
+            });
+
+            return task;
+          } else if (category == Category.Youtube_Thumbnail) {
+            categoryModel = await tx.youtube_Thumbnail.create({
+              data: {
+                Youtube_Thumbnail_Title: parseData.data.title,
+                Youtube_Thumbnail_Images: parseData.data.images ?? [],
+              },
+            });
+
+            await Promise.all(
+              (parseData.data.images ?? []).map(async (image: string) => {
+                await tx.option.create({
+                  data: {
+                    image_url: image ?? "",
+                    Youtube_Thumbnail_id: categoryModel.id,
+                  },
+                });
+              })
+            );
+
+            const task = await tx.task.create({
+              data: {
+                category: category,
+                amount: amountTransferred,
+                signature: parseData.data.signature,
+                user_id: userId,
+                postDate: body.postDate,
+                postMonth: body.postMonth,
+                postYear: body.postYear,
+                youtubeThumbnail_id: categoryModel.id,
+              },
+            });
+
+            return task;
+          } else if (category == Category.Miscellaneous) {
+            const votingModel = await tx.voting_Type.create({
+              data: {
+                type: parseData.data.votingType ?? "Rating_Scale",
+              },
+            });
+            categoryModel = await tx.miscellaneous.create({
+              data: {
+                title: parseData.data.title,
+                Images: parseData.data.images ?? [],
+                Description: parseData.data.description ?? "",
+                Design_Url: parseData.data.url ?? [],
+                Voting_Type_id: votingModel.id,
+              },
+            });
+            await Promise.all(
+              (parseData.data.images ?? []).map(async (image: string) => {
+                await tx.option.create({
+                  data: {
+                    image_url: image ?? "",
+                    Miscellaneous_id: categoryModel.id,
+                  },
+                });
+              })
+            );
+            await Promise.all(
+              (parseData.data.url ?? []).map(async (urlString: string) => {
+                await tx.option.create({
+                  data: {
+                    website_url: urlString ?? "",
+                    Miscellaneous_id: categoryModel.id,
+                  },
+                });
+              })
+            );
+            const task = await tx.task.create({
+              data: {
+                category: category,
+                amount: amountTransferred,
+                signature: parseData.data.signature,
+                user_id: userId,
+                postDate: body.postDate,
+                postMonth: body.postMonth,
+                postYear: body.postYear,
+                miscellaneous_id: categoryModel.id,
+              },
+            });
+            return task;
+          }
         },
         {
           maxWait: 5000,
@@ -226,7 +389,7 @@ router.post("/task", authMiddleware, async (req, res) => {
       );
 
       res.json({
-        id: response.id,
+        id: response?.id ?? -1,
       });
     } catch (error) {
       console.error("Error creating task:", error);
@@ -254,33 +417,36 @@ router.get("/presignedUrl", authMiddleware, async (req, res) => {
     fields,
   });
 });
-router.post("/transactions", authMiddleware, async (req, res) => {
-  //@ts-ignore
-  const id = req.userId;
+// router.post("/transactions", authMiddleware, async (req, res) => {
+//   //@ts-ignore
+//   const id = req.userId;
 
-  const transaction = await prismaClient.task.findMany({
-    where: {
-      user_id: Number(id),
-    },
-    select: {
-      amount: true,
-      postDate: true,
-      postMonth: true,
-      postYear: true,
-      title: true,
-    },
-  });
+//   const transaction = await prismaClient.task.findMany({
+//     where: {
+//       user_id: Number(id),
+//     },
+//     select: {
+//       amount: true,
+//       postDate: true,
+//       postMonth: true,
+//       postYear: true,
+//       title: true,
+//     },
+//   });
 
-  res.json({
-    transaction,
-  });
-});
+//   res.json({
+//     transaction,
+//   });
+// });
 
 //! sigining with wallet
 router.post("/signin", async (req, res) => {
   const { publicKey, signature } = req.body;
-  const message = new TextEncoder().encode("Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged.");
-  const signedString = "Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged.";
+  const message = new TextEncoder().encode(
+    "Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged."
+  );
+  const signedString =
+    "Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged.";
 
   const result = nacl.sign.detached.verify(
     message,

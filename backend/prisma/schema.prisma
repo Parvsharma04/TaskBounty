@@ -31,8 +31,7 @@ model Worker {
 
 model Task {
   id          Int          @id @default(autoincrement())
-  title       String?      @default("Select the most clickable thumbnail")
-  options     Option[]
+  category    Category     @default(Miscellaneous)
   user_id     Int
   signature   String
   amount      String
@@ -42,14 +41,86 @@ model Task {
   postDate    Int
   postMonth   Int
   postYear    Int
+
+  uiUxDesign_id Int? // Foreign key for UI/UX Design
+  uiUxDesign    UI_UX_Design? @relation(fields: [uiUxDesign_id], references: [id])
+
+  ideaProduct_id Int? // Foreign key for Idea/Product
+  ideaProduct    Idea_Product? @relation(fields: [ideaProduct_id], references: [id])
+
+  youtubeThumbnail_id Int? // Foreign key for Youtube Thumbnail
+  youtubeThumbnail    Youtube_Thumbnail? @relation(fields: [youtubeThumbnail_id], references: [id])
+
+  miscellaneous_id Int? // Foreign key for Miscellaneous
+  miscellaneous    Miscellaneous? @relation(fields: [miscellaneous_id], references: [id])
+}
+
+model UI_UX_Design {
+  id                 Int      @id @default(autoincrement())
+  Design_Title       String
+  Design_Description String?
+  Design_Url         String[]
+
+  Task Task[]
+}
+
+model Idea_Product {
+  id               Int         @id @default(autoincrement())
+  Idea_Title       String
+  Idea_Description String?
+  Idea_Images      String[]
+  Voting_Type_id   Int
+  Voting_Type      Voting_Type @relation(fields: [Voting_Type_id], references: [id])
+
+  Task   Task[]
+  Option Option[]
+}
+
+model Youtube_Thumbnail {
+  id                       Int      @id @default(autoincrement())
+  Youtube_Thumbnail_Title  String
+  Youtube_Thumbnail_Images String[]
+
+  Task   Task[]
+  Option Option[]
+}
+
+model Miscellaneous {
+  id          Int      @id @default(autoincrement())
+  title       String
+  Images      String[]
+  Description String
+  Design_Url  String[]
+
+  Voting_Type_id Int
+  Voting_Type    Voting_Type @relation(fields: [Voting_Type_id], references: [id])
+
+  Task   Task[]
+  Option Option[]
 }
 
 model Option {
   id          Int          @id @default(autoincrement())
-  image_url   String
-  task_id     Int
-  task        Task         @relation(fields: [task_id], references: [id])
+  image_url   String?
+  website_url String?
   submissions Submission[]
+
+  Idea_Product_id Int? // Foreign key for Idea/Product
+  Idea_Product    Idea_Product? @relation(fields: [Idea_Product_id], references: [id])
+
+  Youtube_Thumbnail_id Int? // Foreign key for Youtube Thumbnail
+  Youtube_Thumbnail    Youtube_Thumbnail? @relation(fields: [Youtube_Thumbnail_id], references: [id])
+
+  Miscellaneous_id Int? // Foreign key for Miscellaneous
+  Miscellaneous    Miscellaneous? @relation(fields: [Miscellaneous_id], references: [id])
+}
+
+model Voting_Type {
+  id   Int    @id @default(autoincrement())
+  type String
+
+  Idea_Product  Idea_Product[]
+  Miscellaneous Miscellaneous[]
 }
 
 model Submission {
@@ -70,7 +141,7 @@ model Submission {
 
 model Payouts {
   id        Int       @id @default(autoincrement())
-  worker_id   Int
+  worker_id Int
   worker    Worker    @relation(fields: [worker_id], references: [id])
   amount    String
   signature String?
@@ -86,4 +157,11 @@ enum TxnStatus {
   Processing
   Success
   Failure
+}
+
+enum Category {
+  UI_UX_Design
+  Idea_Product
+  Youtube_Thumbnail
+  Miscellaneous
 }

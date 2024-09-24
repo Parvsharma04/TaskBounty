@@ -47,10 +47,9 @@ export const Upload = () => {
       const response = await axios.post(
         `${BACKEND_URL}/v1/user/task`,
         {
-          options: images.map((image) => ({
-            imageUrl: image,
-          })),
+          category: "Youtube_Thumbnail",
           title,
+          images,
           signature: txSignature,
           postDate: currDate,
           postMonth: currMonth,
@@ -63,7 +62,9 @@ export const Upload = () => {
         }
       );
 
-      router.push(`/task/${response.data.id}`);
+      console.log(response);
+
+      // router.push(`/task/${response.data.id}`);
     } catch (err) {
       toast.error("Task submission failed");
     }

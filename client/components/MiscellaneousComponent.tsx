@@ -29,8 +29,10 @@ const MiscellaneousComponent = () => {
   const [tasksAmt, setTasksAmt] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [url, setUrl] = useState("");
+  const [modalUrl, setModalUrl] = useState("");
   const [urlPreview, setUrlPreview] = useState<string[]>([]);
   const [websiteModal, setWebsiteModal] = useState(false);
+  const [votingType, setVotingType] = useState("Rating_Scale");
 
   function openImageModal() {
     setimageModalIsOpen(true);
@@ -38,6 +40,28 @@ const MiscellaneousComponent = () => {
   function closeImageModal() {
     setimageModalIsOpen(false);
   }
+  function openConfimationModal() {
+    setModalIsOpen(true);
+  }
+  function closeConfirmationModal() {
+    setModalIsOpen(false);
+  }
+  function openWebsiteModal() {
+    setWebsiteModal(true);
+  }
+  function closeWebsiteModal() {
+    setWebsiteModal(false);
+  }
+  const handlePrev = () => {
+    setActiveIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
+  const handleNext = () => {
+    setActiveIndex((prevIndex) =>
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
   const imageCustomStyles = {
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.25)",
@@ -51,40 +75,6 @@ const MiscellaneousComponent = () => {
       padding: 0,
     },
   };
-  async function onSubmit() {
-    setTaskSubmitLoader(true);
-
-    try {
-      let d = new Date();
-      let currDate = d.getUTCDate();
-      let currMonth = d.getUTCMonth();
-      let currYear = d.getUTCFullYear();
-
-      //   const response = await axios.post(
-      //     `${BACKEND_URL}/v1/user/task`,
-      //     {
-      //       options: images.map((image) => ({
-      //         imageUrl: image,
-      //       })),
-      //       title,
-      //       signature: txSignature,
-      //       postDate: currDate,
-      //       postMonth: currMonth,
-      //       postYear: currYear,
-      //     },
-      //     {
-      //       headers: {
-      //         Authorization: localStorage.getItem("token"),
-      //       },
-      //     }
-      //   );
-
-      //   router.push(`/task/${response.data.id}`);
-    } catch (err) {
-      toast.error("Task submission failed");
-    }
-    setTaskSubmitLoader(false);
-  }
   const customStyles = {
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.25)",
@@ -98,6 +88,19 @@ const MiscellaneousComponent = () => {
       transform: "translate(-50%, -50%)",
       backgroundColor: "#1F2937",
       color: "white",
+    },
+  };
+  const WebsiteCustomStyles = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.25)",
+    },
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      transform: "translate(-50%, -50%)",
+      padding: 0,
     },
   };
   async function makePayment() {
@@ -134,26 +137,49 @@ const MiscellaneousComponent = () => {
     setTransactionLoader(false);
     toast.success("Transaction successful");
   }
-  function openConfimationModal() {
-    setModalIsOpen(true);
-  }
-  function closeConfirmationModal() {
-    setModalIsOpen(false);
-  }
-  const handlePrev = () => {
-    setActiveIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
-  };
+  async function onSubmit() {
+    setTaskSubmitLoader(true);
 
-  const handleNext = () => {
-    setActiveIndex((prevIndex) =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
-    );
-  };
+    try {
+      let d = new Date();
+      let currDate = d.getUTCDate();
+      let currMonth = d.getUTCMonth();
+      let currYear = d.getUTCFullYear();
+
+      const response = await axios.post(
+        `${BACKEND_URL}/v1/user/task`,
+        {
+          category: "Miscellaneous",
+          title,
+          images,
+          description,
+          url: urlPreview,
+          votingType,
+          signature: txSignature,
+          postDate: currDate,
+          postMonth: currMonth,
+          postYear: currYear,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+
+      console.log(response);
+
+      //   router.push(`/task/${response.data.id}`);
+    } catch (err) {
+      toast.error("Task submission failed");
+    }
+    setTaskSubmitLoader(false);
+  }
 
   return (
-    <div className="h-screen mb-36">
+    <div
+      className={`h-screen mb-36 ${urlPreview && images.length > 0 && "mb-64"}`}
+    >
       {transactionLoader && <TransactionLoadingPage />}
       {TaskSubmitLoader && <TaskSubmittingLoader />}
       <Modal
@@ -277,6 +303,29 @@ const MiscellaneousComponent = () => {
           </div>
         </div>
       </Modal>
+      <Modal
+        isOpen={websiteModal}
+        onRequestClose={closeWebsiteModal}
+        style={WebsiteCustomStyles}
+        contentLabel="Image Courasel"
+      >
+        <div className="flex flex-col gap-3">
+          <div className="flex justify-end">
+            <button
+              onClick={closeWebsiteModal}
+              className="text-2xl font-bold bg-red-700 w-10 h-10 rounded flex justify-center items-center"
+            >
+              X
+            </button>
+          </div>
+          <iframe
+            src={modalUrl}
+            className="w-[60vw] h-[60vh]"
+            frameBorder="0"
+            allowFullScreen
+          ></iframe>
+        </div>
+      </Modal>
       <div className="flex flex-col gap-10 items-center mt-16 justify-center">
         <h1 className="text-5xl">Miscellaneous Upload</h1>
         <div className="flex flex-col w-full md:px-12 gap-5">
@@ -293,20 +342,20 @@ const MiscellaneousComponent = () => {
             />
           </div>
           <div className="flex flex-col justify-center items-start gap-2 w-full">
-            {images.length > 0 && (
-              <button
-                onClick={() => setimageModalIsOpen(true)}
-                className="inline-flex h-12 animate-shimmer items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-white transition-colors focus:outline-none w-full"
-              >
-                Preview Images
-              </button>
-            )}
             <label className="block font-medium text-base">Images</label>
             <UploadImage
               onImageAdded={(imageUrl) => {
                 setImages((i) => [...i, imageUrl]);
               }}
             />
+            {images.length > 0 && (
+              <button
+                onClick={() => setimageModalIsOpen(true)}
+                className="inline-flex mt-4 h-12 animate-shimmer items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-white transition-colors focus:outline-none w-full"
+              >
+                Preview Images
+              </button>
+            )}
           </div>
           <div className="flex flex-col gap-2 justify-start items-start w-full">
             <label htmlFor="designDescription" className="text-base">
@@ -339,14 +388,14 @@ const MiscellaneousComponent = () => {
             />
           </div>
           {urlPreview.length > 0 && (
-            <div className="flex justify-center items-center gap-2 flex-wrap relative">
+            <div className="flex justify-center items-center gap-2 flex-wrap">
               {urlPreview.map((url, index) => (
-                <div className="flex">
+                <div className="flex relative">
                   <button
                     className="relative h-12 items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:150%_100%] bg-right hover:bg-left px-6 font-medium text-white transition-all duration-1000 ease-in-out focus:outline-none pr-8"
                     onClick={() => {
                       setWebsiteModal(true);
-                      setUrl(url);
+                      setModalUrl(url);
                     }}
                   >
                     {`Preview ${index + 1}`}
@@ -367,7 +416,7 @@ const MiscellaneousComponent = () => {
             <label htmlFor="designDescription" className="text-base">
               Choose the type of voting
             </label>
-            <VoteSelection />
+            <VoteSelection setVotingType={setVotingType} />
           </div>
         </div>
         <button

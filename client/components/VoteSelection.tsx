@@ -4,7 +4,11 @@ import { DoubleArrowIcon } from "@/utils/DoubleArrowIcon";
 import { Tabs, Tab } from "@nextui-org/react";
 import { EmojiIcon } from "@/utils/EmojiIcon";
 
-export default function VoteSelection() {
+interface VoteSelectionProps {
+  setVotingType: (type: string) => void;
+}
+
+export default function VoteSelection({ setVotingType }: VoteSelectionProps) {
   return (
     <div className="flex w-full flex-col">
       <Tabs
@@ -15,6 +19,8 @@ export default function VoteSelection() {
       >
         <Tab
           key="rateScale"
+          value="Rating_Scale"
+          onClick={() => setVotingType("Rating_Scale")}
           title={
             <div className="flex items-center space-x-2">
               <StarIcon />
@@ -24,6 +30,8 @@ export default function VoteSelection() {
         />
         <Tab
           key="poll"
+          value="Multiple_Choice_Poll"
+          onClick={() => setVotingType("Multiple_Choice_Poll")}
           title={
             <div className="flex items-center space-x-2">
               <PollIcon />
@@ -33,6 +41,8 @@ export default function VoteSelection() {
         />
         <Tab
           key="upvoteDownvote"
+          value="Upvote_Downvote"
+          onClick={() => setVotingType("Upvote_Downvote")}
           title={
             <div className="flex items-center space-x-2">
               <DoubleArrowIcon />
@@ -42,6 +52,8 @@ export default function VoteSelection() {
         />
         <Tab
           key="emojiVote"
+          value="Emoji_Reaction_Vote"
+          onClick={() => setVotingType("Emoji_Reaction_Vote")}
           title={
             <div className="flex items-center space-x-2">
               <EmojiIcon />
