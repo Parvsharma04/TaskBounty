@@ -53,20 +53,29 @@ const NavBar = () => {
 
   const handlePayoutAmt = async () => {
     try {
-      let response = await axios.post(
+      const token = localStorage.getItem("token");
+      console.log(token);
+      if (!token) {
+        toast.error("You must be signed in to request a payout.");
+        return;
+      }
+
+      const response = await axios.post(
         `${BACKEND_URL}/v1/worker/payout`,
-        {},
+        { publicKey: wallet.publicKey?.toString() }, // Request body
         {
           headers: {
-            Authorization: localStorage.getItem("token"),
+            Authorization: token,
           },
         }
       );
-      console.log(response.data);
+
       setPayoutAmt(response.data.amount);
       toast.success(response.data.message);
     } catch (error: any) {
-      toast.error(error.response.data.message);
+      const message =
+        error.response?.data?.message || "Error processing payout";
+      toast.error(message);
       console.error("Error processing payout:", error);
     }
   };
@@ -90,26 +99,27 @@ const NavBar = () => {
 
   const WalletAndPayoutButtons = () => (
     <>
-      {wallet.connected && Number(payoutAmt) >= 2 && (
-        <motion.button
-          onClick={handlePayoutAmt}
-          className="bg-blue-700 text-white p-3 pl-5 pr-5 rounded-3xl w-full mb-4"
-          whileHover={{ scale: 1.05, backgroundColor: "#3b82f6" }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ duration: 0.3 }}
-        >
-          {`Pay out ${payoutAmt} SOL`}
-        </motion.button>
-      )}
       <motion.div
-        className="w-full"
+        className="w-full flex flex-col md:flex-row items-center md:space-x-4 space-y-4 md:space-y-0"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         transition={{ duration: 0.3 }}
       >
+        {wallet.connected && Number(payoutAmt) >= 2 && (
+          <motion.button
+            onClick={handlePayoutAmt}
+            className="bg-blue-700 text-white py-2 px-5 rounded-[20px] shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-600 hover:shadow-xl text-xl w-full md:w-auto"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+          >
+            {`Pay out ${payoutAmt} SOL`}
+          </motion.button>
+        )}
+
         <WalletMultiButtonDynamic
           onClick={() => getToken()}
-          className="w-full justify-center"
+          className="bg-blue-700 text-white py-2 px-5 rounded-[20px] shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-600 hover:shadow-xl text-xl w-full md:w-auto text-center justify-center"
         >
           {wallet.connected
             ? `${wallet.publicKey?.toBase58().substring(0, 7)}...`

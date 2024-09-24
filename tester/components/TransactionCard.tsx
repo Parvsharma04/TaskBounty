@@ -20,7 +20,7 @@ export default function TransactionCard({ amount, status, date }) {
             <p className="text-lg font-bold">{amount} SOL</p>
             <p
               className={`text-small ${
-                status === "Completed" ? "text-green-500" : "text-red-500"
+                status === "Success" ? "text-green-500" : "text-red-500"
               }`}
             >
               {status}

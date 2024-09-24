@@ -1,6 +1,6 @@
 import ErrorPage from "@/components/Error";
 
-const CustomErrorPage = () => {
+const Error = () => {
   return (
     <div className="flex justify-center items-center w-full h-screen bg-black">
       <ErrorPage />
@@ -8,4 +8,4 @@ const CustomErrorPage = () => {
   );
 };
 
-export default CustomErrorPage;
+export default Error;
