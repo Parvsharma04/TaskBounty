@@ -47,6 +47,7 @@ interface SubmissionCount {
 
 interface TesterData {
   testerData: {
+    payouts: any;
     submissions: Submission[];
     pending_amount: number;
     locked_amount: number;
@@ -66,7 +67,7 @@ export const TesterAnalytics: React.FC = () => {
     increase: boolean;
   } | null>(null);
   const [totalEarned, setTotalEarned] = useState(0);
-  const [totalPayout, setTotalPayout] = useState(0);
+  const [payout, setPayout] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -83,7 +84,7 @@ export const TesterAnalytics: React.FC = () => {
       );
       setTesterData(response.data);
       processData(response.data);
-      console.log(response.data)
+      console.log(response.data.testerData.payouts);
     } catch (error) {
       console.error("Error fetching tester data:", error);
       setError("Failed to fetch tester data. Please try again.");
@@ -104,7 +105,7 @@ export const TesterAnalytics: React.FC = () => {
     calculateNumberOfTests(data.submissionCountByMonthYear);
     calculateTaskRate(data.submissionCountByMonthYear);
     calculateTotalEarned(data.testerData.submissions);
-    setTotalPayout(data.withdrawn);
+    calculatePayout(testerData?.testerData.payouts)
   };
 
   const calculateNumberOfTests = (submissionCounts: SubmissionCount[]) => {
@@ -151,6 +152,15 @@ export const TesterAnalytics: React.FC = () => {
     setTotalEarned(total);
   };
 
+  const calculatePayout = (payouts: any)=>{
+    let total: number = 0
+    payouts.forEach((element: any) => {
+      total += element.amount
+    });
+    setPayout(total)
+  }
+
+
   if (loading) {
     return (
       <div className="min-h-screen flex justify-center items-center text-xl sm:text-2xl bg-black text-white">
@@ -184,7 +194,7 @@ export const TesterAnalytics: React.FC = () => {
           levelUp={taskRate ? taskRate.increase : false}
           levelDown={taskRate ? !taskRate.increase : false}
           totalEarned={Number(totalEarned)}
-          totalPayout={totalPayout}
+          totalPayout={payout}
           pendingAmount={Number(testerData.testerData.pending_amount)}
         />
         <div className="mt-8 sm:mt-12">
