@@ -18,9 +18,6 @@ import { createSubmissionInput } from "../types";
 
 const router = Router();
 const prismaClient = new PrismaClient();
-const DEFAULT_TITLE = "Select the most clickable thumbnail";
-const TOTAL_DECIMALS = 1000000000;
-const SOL_PRICE = 134.64; //! 1 SOL = $134.64
 const TASK_SUBMISSION_AMT = 0.0002;
 const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 config();
@@ -136,7 +133,7 @@ router.post("/payout", workerMiddleware, async (req, res) => {
       where: { id: Number(userId) },
     });
 
-    console.log(worker);
+    // console.log(worker);
     if (!worker) {
       return res.status(403).json({ message: "Worker not found" });
     }
@@ -157,22 +154,22 @@ router.post("/payout", workerMiddleware, async (req, res) => {
       })
     );
 
-    console.log(transaction);
-    console.log("PRIVATE_KEY environment variable:", process.env.PRIVATE_KEY);
+    // console.log(transaction);
+    // console.log("PRIVATE_KEY environment variable:", process.env.PRIVATE_KEY);
     let keypair;
     try {
       const secretKey = Uint8Array.from(
         JSON.parse(process.env.PRIVATE_KEY as string)
       );
 
-      console.log("Length of secretKey:", secretKey.length);
+      // console.log("Length of secretKey:", secretKey.length);
       if (secretKey.length !== 64) {
         throw new Error(
           `Invalid secret key length. Expected 64, got ${secretKey.length}`
         );
       }
       keypair = Keypair.fromSecretKey(secretKey);
-      console.log(keypair);
+      // console.log(keypair);
     } catch (e) {
       console.error("Error with Private Key Configuration:", e);
       return res
