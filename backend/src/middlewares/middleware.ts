@@ -36,12 +36,15 @@ export function workerMiddleware(
 ) {
   const authHeader = req.headers["authorization"] ?? "";
 
-  // console.log("authHeader = ", authHeader);
+  console.log("Authorization Header:", authHeader); // Log the authorization header
+
   try {
     const decoded = jwt.verify(
       authHeader,
       process.env.WORKER_JWT_SECRET as string
     );
+    console.log("Decoded JWT:", decoded); // Log the decoded JWT for verification
+
     // @ts-ignore
     if (decoded.userId) {
       // @ts-ignore
@@ -53,6 +56,7 @@ export function workerMiddleware(
       });
     }
   } catch (e) {
+    console.error("JWT Verification Error:", e); // Log the error
     return res.status(403).json({
       message: "You are not logged in",
     });

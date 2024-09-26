@@ -1,108 +1,22 @@
 "use client";
+import { BACKEND_URL } from "@/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
+import axios from "axios";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { slide as Menu } from "react-burger-menu";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AnimatedLink from "./AnimatedLink";
-
-// Dynamically import the wallet button
 const WalletMultiButtonDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
   { ssr: false }
 );
 
-// Logo Component
-const Logo = () => (
-  <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-    <motion.img
-      src="images/icon-removebg-preview.png"
-      alt="TaskBounty Logo"
-      width={50}
-      className="h-fit"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, ease: "easeInOut" }}
-    />
-    <motion.span
-      className="self-center text-2xl font-semibold whitespace-nowrap text-white"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, ease: "easeInOut" }}
-    >
-      TaskBounty
-    </motion.span>
-  </a>
-);
-
-// MenuItems Component
-const MenuItems = ({ wallet, handleLinkClick }) => (
-  <>
-    {wallet.connected && (
-      <>
-        <AnimatedLink title="Home" href="/" onClick={handleLinkClick} />
-        <AnimatedLink title="Hunt Bounties" href="/bounty" onClick={handleLinkClick} />
-        <AnimatedLink title="Tester Analytics" href="/tester-analytics" onClick={handleLinkClick} />
-        <AnimatedLink title="Transactions" href="/transactions" onClick={handleLinkClick} />
-      </>
-    )}
-  </>
-);
-
-// WalletAndPayoutButtons Component
-const WalletAndPayoutButtons = ({ wallet, payoutAmt, handlePayoutAmt }) => (
-  <motion.div
-    className="w-full flex flex-col md:flex-row items-center md:space-x-4 space-y-4 md:space-y-0"
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    transition={{ duration: 0.3 }}
-  >
-    {wallet.connected && Number(payoutAmt) >= 2 && (
-      <motion.button
-        onClick={handlePayoutAmt}
-        className="bg-blue-700 text-white py-2 px-5 rounded-[20px] shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-600 hover:shadow-xl text-xl w-full md:w-auto"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        transition={{ duration: 0.3 }}
-      >
-        {`Pay out ${payoutAmt} SOL`}
-      </motion.button>
-    )}
-
-    <WalletMultiButtonDynamic
-      onClick={() => {}}
-      className="bg-blue-700 text-white py-2 px-5 rounded-[20px] shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-600 hover:shadow-xl text-xl w-full md:w-auto text-center justify-center"
-    >
-      {wallet.connected
-        ? `${wallet.publicKey?.toBase58().substring(0, 7)}...`
-        : "Connect Wallet"}
-    </WalletMultiButtonDynamic>
-  </motion.div>
-);
-
-// MobileMenu Component
-const MobileMenu = ({ isMenuOpen, setMenuOpen, wallet, handleLinkClick, payoutAmt, handlePayoutAmt }) => (
-  <Menu right isOpen={isMenuOpen} onStateChange={({ isOpen }) => setMenuOpen(isOpen)} className="bm-menu">
-    {wallet.connected && (
-      <>
-        <Link href="/" className="block mt-20 hover:text-blue-700" onClick={handleLinkClick}>Home</Link>
-        <Link href="/bounty" className="block hover:text-blue-700" onClick={handleLinkClick}>Hunt Bounties</Link>
-        <Link href="/tester-analytics" className="block hover:text-blue-700" onClick={handleLinkClick}>Tester Analytics</Link>
-        <Link href="/transactions" className="block hover:text-blue-700" onClick={handleLinkClick}>Transactions</Link>
-        <div className="px-6 mt-4">
-          <WalletAndPayoutButtons wallet={wallet} payoutAmt={payoutAmt} handlePayoutAmt={handlePayoutAmt} />
-        </div>
-      </>
-    )}
-  </Menu>
-);
-
-// Main NavBar Component
 const NavBar = () => {
   const wallet = useWallet();
   const [payoutAmt, setPayoutAmt] = useState("0");
@@ -110,9 +24,27 @@ const NavBar = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Function to get the token and payout amount
   async function getToken() {
-    // ... (unchanged)
+    if (wallet.connected) {
+      try {
+        const message = new TextEncoder().encode(
+          "Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged."
+        );
+
+        const signature = await wallet.signMessage?.(message);
+        let response = await axios.post(`${BACKEND_URL}/v1/worker/signin`, {
+          signature,
+          publicKey: wallet.publicKey?.toString(),
+        });
+        localStorage.setItem("token", response.data.token);
+
+        setPayoutAmt(response.data.amount);
+      } catch (error) {
+        console.error("Error fetching token:", error);
+      }
+    } else if (!wallet.connected) {
+      localStorage.clear();
+    }
   }
 
   useEffect(() => {
@@ -120,7 +52,33 @@ const NavBar = () => {
   }, [wallet.connected]);
 
   const handlePayoutAmt = async () => {
-    // ... (unchanged)
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Authorization Header Sent:", token); // Log the token
+
+      if (!token) {
+        toast.error("You must be signed in to request a payout.");
+        return;
+      }
+
+      const response = await axios.post(
+        `${BACKEND_URL}/v1/worker/payout`,
+        { publicKey: wallet.publicKey?.toString() }, // Request body
+        {
+          headers: {
+            Authorization: token, // or `Bearer ${token}` if needed
+          },
+        }
+      );
+
+      setPayoutAmt(response.data.amount);
+      toast.success(response.data.message);
+    } catch (error: any) {
+      const message =
+        error.response?.data?.message || "Error processing payout";
+      toast.error(message);
+      console.error("Error processing payout:", error);
+    }
   };
 
   const handleLinkClick = () => {
@@ -128,7 +86,9 @@ const NavBar = () => {
   };
 
   const handleClickOutside = (event: MouseEvent) => {
-    // ... (unchanged)
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      setMenuOpen(false);
+    }
   };
 
   useEffect(() => {
@@ -137,6 +97,38 @@ const NavBar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const WalletAndPayoutButtons = () => (
+    <>
+      <motion.div
+        className="w-full flex flex-col md:flex-row items-center md:space-x-4 space-y-4 md:space-y-0"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ duration: 0.3 }}
+      >
+        {wallet.connected && Number(payoutAmt) >= 2 && (
+          <motion.button
+            onClick={handlePayoutAmt}
+            className="bg-blue-700 text-white py-2 px-5 rounded-[20px] shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-600 hover:shadow-xl text-xl w-full md:w-auto"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+          >
+            {`Pay out ${payoutAmt} SOL`}
+          </motion.button>
+        )}
+
+        <WalletMultiButtonDynamic
+          onClick={() => getToken()}
+          className="bg-blue-700 text-white py-2 px-5 rounded-[20px] shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-600 hover:shadow-xl text-xl w-full md:w-auto text-center justify-center"
+        >
+          {wallet.connected
+            ? `${wallet.publicKey?.toBase58().substring(0, 7)}...`
+            : "Connect Wallet"}
+        </WalletMultiButtonDynamic>
+      </motion.div>
+    </>
+  );
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-black shadow-[0_4px_8px_rgba(255,255,255,0.2)] z-50">
@@ -153,20 +145,83 @@ const NavBar = () => {
         theme="colored"
       />
       <div className="mx-auto flex items-center justify-between p-4 w-[100%]">
-        <Logo />
+        <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+          <motion.img
+            src="images/icon-removebg-preview.png"
+            alt="TaskBounty Logo"
+            width={50}
+            className="h-fit"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeInOut" }}
+          />
+          <motion.span
+            className="self-center text-2xl font-semibold whitespace-nowrap text-white"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeInOut" }}
+          >
+            TaskBounty
+          </motion.span>
+        </a>
         <div className="hidden md:flex md:items-center md:space-x-8">
-          <MenuItems wallet={wallet} handleLinkClick={handleLinkClick} />
+          {wallet.connected && (
+            <>
+              <AnimatedLink title="Home" href="/" />
+              <AnimatedLink title="Hunt Bounties" href="/bounty" />
+              <AnimatedLink title="Tester Analytics" href="/tester-analytics" />
+              <AnimatedLink title="Transactions" href="/transactions" />
+            </>
+          )}
         </div>
 
         <div className="hidden md:block">
-          <WalletAndPayoutButtons wallet={wallet} payoutAmt={payoutAmt} handlePayoutAmt={handlePayoutAmt} />
+          <WalletAndPayoutButtons />
         </div>
 
-        <div className="md:hidden">
-          {wallet.connected && (
-            <MobileMenu isMenuOpen={isMenuOpen} setMenuOpen={setMenuOpen} wallet={wallet} handleLinkClick={handleLinkClick} payoutAmt={payoutAmt} handlePayoutAmt={handlePayoutAmt} />
-          )}
-        </div>
+        {wallet.connected && (
+          <div className="md:hidden">
+            <Menu
+              right
+              isOpen={isMenuOpen}
+              onStateChange={({ isOpen }) => setMenuOpen(isOpen)}
+              className="bm-menu"
+              ref={menuRef}
+            >
+              <Link
+                href="/"
+                className="block mt-20 hover:text-blue-700"
+                onClick={handleLinkClick}
+              >
+                Home
+              </Link>
+              <Link
+                href="/bounty"
+                className="block hover:text-blue-700"
+                onClick={handleLinkClick}
+              >
+                Hunt Bounties
+              </Link>
+              <Link
+                href="/tester-analytics"
+                className="block hover:text-blue-700"
+                onClick={handleLinkClick}
+              >
+                Tester Analytics
+              </Link>
+              <Link
+                href="/transactions"
+                className="block hover:text-blue-700"
+                onClick={handleLinkClick}
+              >
+                Transactions
+              </Link>
+              <div className="px-6 mt-4">
+                <WalletAndPayoutButtons />
+              </div>
+            </Menu>
+          </div>
+        )}
       </div>
     </nav>
   );
