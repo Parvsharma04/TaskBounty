@@ -54,7 +54,8 @@ const NavBar = () => {
   const handlePayoutAmt = async () => {
     try {
       const token = localStorage.getItem("token");
-      console.log(token);
+      console.log("Authorization Header Sent:", token); // Log the token
+
       if (!token) {
         toast.error("You must be signed in to request a payout.");
         return;
@@ -65,7 +66,7 @@ const NavBar = () => {
         { publicKey: wallet.publicKey?.toString() }, // Request body
         {
           headers: {
-            Authorization: token,
+            Authorization: token, // or `Bearer ${token}` if needed
           },
         }
       );
@@ -178,47 +179,49 @@ const NavBar = () => {
           <WalletAndPayoutButtons />
         </div>
 
-        <div className="md:hidden">
-          <Menu
-            right
-            isOpen={isMenuOpen}
-            onStateChange={({ isOpen }) => setMenuOpen(isOpen)}
-            className="bm-menu"
-            ref={menuRef}
-          >
-            <Link
-              href="/"
-              className="block mt-20 hover:text-blue-700"
-              onClick={handleLinkClick}
+        {wallet.connected && (
+          <div className="md:hidden">
+            <Menu
+              right
+              isOpen={isMenuOpen}
+              onStateChange={({ isOpen }) => setMenuOpen(isOpen)}
+              className="bm-menu"
+              ref={menuRef}
             >
-              Home
-            </Link>
-            <Link
-              href="/bounty"
-              className="block hover:text-blue-700"
-              onClick={handleLinkClick}
-            >
-              Hunt Bounties
-            </Link>
-            <Link
-              href="/tester-analytics"
-              className="block hover:text-blue-700"
-              onClick={handleLinkClick}
-            >
-              Tester Analytics
-            </Link>
-            <Link
-              href="/transactions"
-              className="block hover:text-blue-700"
-              onClick={handleLinkClick}
-            >
-              Transactions
-            </Link>
-            <div className="px-6 mt-4">
-              <WalletAndPayoutButtons />
-            </div>
-          </Menu>
-        </div>
+              <Link
+                href="/"
+                className="block mt-20 hover:text-blue-700"
+                onClick={handleLinkClick}
+              >
+                Home
+              </Link>
+              <Link
+                href="/bounty"
+                className="block hover:text-blue-700"
+                onClick={handleLinkClick}
+              >
+                Hunt Bounties
+              </Link>
+              <Link
+                href="/tester-analytics"
+                className="block hover:text-blue-700"
+                onClick={handleLinkClick}
+              >
+                Tester Analytics
+              </Link>
+              <Link
+                href="/transactions"
+                className="block hover:text-blue-700"
+                onClick={handleLinkClick}
+              >
+                Transactions
+              </Link>
+              <div className="px-6 mt-4">
+                <WalletAndPayoutButtons />
+              </div>
+            </Menu>
+          </div>
+        )}
       </div>
     </nav>
   );

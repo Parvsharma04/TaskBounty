@@ -47,7 +47,7 @@ const StatCard: React.FC<StatCardProps> = ({
           <span className="text-sm font-medium">{title}</span>
         </div>
 
-        <span
+        {/* <span
           className={`flex items-center gap-1 text-sm font-medium ${
             levelUp ? "text-green-600" : ""
           } ${levelDown ? "text-red-600" : ""}`}
@@ -85,7 +85,7 @@ const StatCard: React.FC<StatCardProps> = ({
               />
             </svg>
           )}
-        </span>
+        </span> */}
       </div>
     </motion.div>
   );

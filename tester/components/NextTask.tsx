@@ -8,12 +8,13 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "./Loading";
-import TaskImage from "./TaskImage";
+import TaskOptions from "./task/TaskOptions";
 import TaskStatement from "./TaskStatement";
 
 interface Task {
   id: number;
   amount: number;
+  category: string;
   title: string;
   options: {
     id: number;
@@ -55,7 +56,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
   const [loading, setLoading] = useState(false);
   const wallet = useWallet();
   const router = useRouter();
-  const token: String | null = localStorage.getItem("token");
+  const token: string | null = localStorage.getItem("token");
 
   useEffect(() => {
     if (!wallet.connected) {
@@ -69,22 +70,61 @@ export const NextTask: React.FC<NextTaskProps> = ({
     if (wallet.connected && token) {
       setLoading(true);
       try {
-        let response = await axios.get(`${BACKEND_URL}/v1/worker/nextTask`, {
+        const response = await axios.get(`${BACKEND_URL}/v1/worker/nextTask`, {
           headers: {
             Authorization: token,
           },
         });
         setCurrentTask(response.data.task);
+        console.log(response.data);
         setNoMoreTasks(false);
       } catch (error: any) {
         console.log(error);
-        console.log(error.response.data.message);
         setCurrentTask(null);
         setNoMoreTasks(true);
       } finally {
         setLoading(false);
       }
     }
+  };
+
+  const handleOptionSelect = async (optionId: number) => {
+    let d = new Date();
+    let currDate = d.getUTCDate();
+    let currMonth = d.getUTCMonth();
+    let currYear = d.getUTCFullYear();
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${BACKEND_URL}/v1/worker/submission`,
+        {
+          taskId: currentTask?.id.toString(),
+          selection: optionId.toString(),
+          postDate: currDate,
+          postMonth: currMonth,
+          postYear: currYear,
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Task completed successfully!");
+      }
+      const nextTask = response.data.nextTask;
+      if (nextTask) {
+        setCurrentTask(nextTask);
+      } else {
+        setCurrentTask(null);
+        setNoMoreTasks(true);
+      }
+    } catch (err) {
+      console.error("Error submitting task:", err);
+      setCurrentTask(null);
+    }
+    setLoading(false);
   };
 
   return (
@@ -131,11 +171,12 @@ export const NextTask: React.FC<NextTaskProps> = ({
               animate="visible"
               transition={{ duration: 1, ease: "easeInOut" }}
             >
-              <div className="flex justify-center mb-4 sm:mb-6 ">
-                <TaskStatement taskTitle={currentTask.title} />
-              </div>
+              <TaskStatement
+                category={currentTask.category}
+                title={currentTask.title}
+              />
               <motion.ul
-                className="flex flex-wrap gap-4 sm:gap-5 md: pl-12"
+                className="flex flex-wrap gap-4 sm:gap-5 md:pl-12"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -146,53 +187,9 @@ export const NextTask: React.FC<NextTaskProps> = ({
                     variants={itemVariants}
                     className="flex justify-center"
                   >
-                    <TaskImage
-                      onSelect={async () => {
-                        let d = new Date();
-                        let currDate = d.getUTCDate();
-                        let currMonth = d.getUTCMonth();
-                        let currYear = d.getUTCFullYear();
-                        setLoading(true);
-                        try {
-                          const response = await axios.post(
-                            `${BACKEND_URL}/v1/worker/submission`,
-                            {
-                              taskId: currentTask.id.toString(),
-                              selection: option.id.toString(),
-                              postDate: currDate,
-                              postMonth: currMonth,
-                              postYear: currYear,
-                            },
-                            {
-                              headers: {
-                                Authorization: token,
-                              },
-                            }
-                          );
-                          if (response.status === 200) {
-                            toast.success("task completed successfully");
-                          }
-                          const nextTask = response.data.nextTask;
-                          if (nextTask) {
-                            setCurrentTask(nextTask);
-                          } else {
-                            setCurrentTask(null);
-                            setNoMoreTasks(true);
-                          }
-                        } catch (err) {
-                          if (axios.isAxiosError(err)) {
-                            console.error(
-                              "Error fetching next task:",
-                              err.response?.data || err.message
-                            );
-                          } else {
-                            console.error("Unexpected error:", err);
-                          }
-                          setCurrentTask(null);
-                        }
-                        setLoading(false);
-                      }}
-                      imageUrl={option.image_url}
+                    <TaskOptions
+                      option={option}
+                      onSelect={() => handleOptionSelect(option.id)}
                     />
                   </motion.li>
                 ))}

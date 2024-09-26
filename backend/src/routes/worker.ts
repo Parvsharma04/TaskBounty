@@ -1,5 +1,6 @@
 import { PrismaClient, TxnStatus } from "@prisma/client";
 import {
+  clusterApiUrl,
   Connection,
   Keypair,
   PublicKey,
@@ -7,6 +8,7 @@ import {
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
+import { config } from "dotenv";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import nacl from "tweetnacl";
@@ -16,11 +18,9 @@ import { createSubmissionInput } from "../types";
 
 const router = Router();
 const prismaClient = new PrismaClient();
-const DEFAULT_TITLE = "Select the most clickable thumbnail";
-const TOTAL_DECIMALS = 1000000000;
-const SOL_PRICE = 134.64; //! 1 SOL = $134.64
 const TASK_SUBMISSION_AMT = 0.0002;
-const connection = new Connection("https://api.devnet.solana.com");
+const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+config();
 
 router.get("/nextTask", workerMiddleware, async (req, res) => {
   // @ts-ignore
@@ -123,75 +123,82 @@ router.get("/balance", workerMiddleware, async (req, res) => {
 });
 
 router.post("/payout", workerMiddleware, async (req, res) => {
-  // @ts-ignore
-  const userId: string = req.userId; // Ensure this is a string
-
-  const MIN_AMOUNT_FOR_PAYOUT = 2;
-
-  const worker = await prismaClient.worker.findFirst({
-    where: {
-      id: Number(userId), // Cast userId to a number here
-    },
-  });
-
-  if (!worker) {
-    return res.status(403).json({
-      message: "Worker not found",
-    });
-  }
-
-  if (parseFloat(worker.pending_amount) < MIN_AMOUNT_FOR_PAYOUT) {
-    return res.status(400).json({
-      message: `Pending amount must be at least ${MIN_AMOUNT_FOR_PAYOUT} SOL for payout`,
-    });
-  }
-
-  const transaction = new Transaction().add(
-    SystemProgram.transfer({
-      fromPubkey: new PublicKey("12AvcKeKRFCn1Gh1qVCzNgumHhXtqnMUpT3xtvoE4fzG"),
-      toPubkey: new PublicKey(worker.address),
-      lamports: Math.floor(1_000_000_000 * parseFloat(worker.pending_amount)),
-    })
-  );
-
-  let keypair;
   try {
-    const secretKey = Uint8Array.from(
-      JSON.parse(process.env.PRIVATE_KEY as string)
+    // @ts-ignore
+    const userId: string = req.userId;
+    console.log("userid", userId);
+    const MIN_AMOUNT_FOR_PAYOUT = 2;
+
+    const worker = await prismaClient.worker.findFirst({
+      where: { id: Number(userId) },
+    });
+
+    // console.log(worker);
+    if (!worker) {
+      return res.status(403).json({ message: "Worker not found" });
+    }
+
+    if (parseFloat(worker.pending_amount) < MIN_AMOUNT_FOR_PAYOUT) {
+      return res.status(400).json({
+        message: `Pending amount must be at least ${MIN_AMOUNT_FOR_PAYOUT} SOL for payout`,
+      });
+    }
+
+    const transaction = new Transaction();
+
+    transaction.add(
+      SystemProgram.transfer({
+        fromPubkey: new PublicKey(process.env.PARENT_WALLET_ADDRESS as string),
+        toPubkey: new PublicKey(worker.address),
+        lamports: Math.floor(1_000_000_000 * parseFloat(worker.pending_amount)),
+      })
     );
-    keypair = Keypair.fromSecretKey(secretKey);
-  } catch (e) {
-    return res.status(500).json({
-      message: "Invalid private key configuration.",
-    });
-  }
 
-  let signature = "";
-  let txnStatus: TxnStatus = "Processing";
+    // console.log(transaction);
+    // console.log("PRIVATE_KEY environment variable:", process.env.PRIVATE_KEY);
+    let keypair;
+    try {
+      const secretKey = Uint8Array.from(
+        JSON.parse(process.env.PRIVATE_KEY as string)
+      );
 
-  try {
-    signature = await sendAndConfirmTransaction(connection, transaction, [
-      keypair,
-    ]);
-    txnStatus = "Success";
-  } catch (e: unknown) {
-    console.error("Transaction failed:", e);
-    txnStatus = "Failure";
-    return res.status(400).json({
-      message:
-        "Transaction failed. Error: " +
-        (e instanceof Error ? e.message : String(e)),
-    });
-  }
+      // console.log("Length of secretKey:", secretKey.length);
+      if (secretKey.length !== 64) {
+        throw new Error(
+          `Invalid secret key length. Expected 64, got ${secretKey.length}`
+        );
+      }
+      keypair = Keypair.fromSecretKey(secretKey);
+      // console.log(keypair);
+    } catch (e) {
+      console.error("Error with Private Key Configuration:", e);
+      return res
+        .status(500)
+        .json({ message: "Invalid private key configuration." });
+    }
 
-  try {
+    let signature = "";
+    let txnStatus: TxnStatus = "Processing";
+    try {
+      signature = await sendAndConfirmTransaction(connection, transaction, [
+        keypair,
+      ]);
+      txnStatus = "Success";
+    } catch (e) {
+      console.error("Transaction failed:", e);
+      txnStatus = "Failure";
+      return res.status(400).json({
+        message:
+          "Transaction failed. Error: " +
+          (e instanceof Error ? e.message : String(e)),
+      });
+    }
+
     const now = new Date();
     await prismaClient.$transaction(async (tx) => {
       if (txnStatus === "Success") {
         await tx.worker.update({
-          where: {
-            id: Number(userId),
-          },
+          where: { id: Number(userId) },
           data: {
             pending_amount: "0",
             locked_amount: (
@@ -217,21 +224,15 @@ router.post("/payout", workerMiddleware, async (req, res) => {
       });
     });
 
-    if (txnStatus.includes("Failure")) {
-      return res.status(400).json({
-        message: "Transaction failed. Please try again later.",
-      });
-    }
-
     res.status(200).json({
       message: "Payout completed successfully",
       amount: worker.pending_amount,
     });
-  } catch (error) {
-    console.error("Error processing payout:", error); // Log the error for debugging
-    return res.status(500).json({
-      message: "An error occurred while processing your request.",
-    });
+  } catch (e) {
+    console.error("Error processing payout:", e);
+    res
+      .status(500)
+      .json({ message: "An error occurred while processing your request." });
   }
 });
 
@@ -300,39 +301,45 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
   }
 
   try {
-    // Fetch tester data with their submissions
-    let testerData = await prismaClient.worker.findFirst({
+    // Fetch the worker's data, including submissions and payouts
+    const workerData = await prismaClient.worker.findFirst({
       where: {
-        address: String(publicKey), // Ensure that 'address' is the correct field in your database schema
+        address: String(publicKey), // Match the worker's address to the provided public key
       },
       include: {
-        payouts: true,
+        payouts: true, // Include all payout records related to this worker
         submissions: {
           include: {
-            task: true, // Includes task details
-            option: true, // Includes option details
+            task: true, // Include task details related to each submission
+            option: true, // Include option details related to each submission
           },
         },
       },
     });
 
-    if (!testerData) {
-      return res.status(404).json({ error: "Tester not found" });
+    if (!workerData) {
+      return res.status(404).json({ error: "Worker not found" });
     }
 
-    // Fetch the count of submissions grouped by month and year
-    const submissionCountByMonthYear = await prismaClient.submission.groupBy({
-      by: ["postMonth", "postYear"],
+    // Calculate the number of tasks marked as done by the worker
+    const tasksDoneCount = await prismaClient.submission.count({
       where: {
-        worker_id: testerData.id,
-      },
-      _count: {
-        id: true, // Count number of submissions
+        worker_id: workerData.id,
+        task: {
+          done: true, // Only count submissions where the task is marked as done
+        },
       },
     });
+
+    // Return response with worker's data and calculated task count
     res.json({
-      testerData,
-      submissionCountByMonthYear,
+      testerData: {
+        pending_amount: workerData.pending_amount, // Send worker's pending amount
+        locked_amount: workerData.locked_amount, // Send worker's locked amount
+        payouts: workerData.payouts, // Send array of payouts
+        submissions: workerData.submissions, // Send worker's submissions
+        tasksDoneCount, // Send number of tasks completed by the worker
+      },
     });
   } catch (error) {
     console.error("Error fetching tester data:", error);
@@ -359,7 +366,11 @@ router.get("/transactions", workerMiddleware, async (req, res) => {
     if (!worker) {
       return res.status(404).json({ error: "Worker not found" });
     }
-    res.json(worker.payouts);
+
+    // Reverse the payouts array to send the latest entries first
+    const reversedPayouts = worker.payouts.reverse();
+
+    res.json(reversedPayouts);
   } catch (error) {
     console.error("Error fetching worker payouts:", error);
     res.status(500).json({ error: "Internal Server Error" });
