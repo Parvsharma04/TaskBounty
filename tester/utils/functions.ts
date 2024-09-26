@@ -1,4 +1,4 @@
-import { Submission, SubmissionCount } from "@/utils";
+import { SubmissionCount } from "@/utils";
 
 export const calculateTaskRate = (submissionCounts: SubmissionCount[]) => {
   const sortedCounts = submissionCounts.sort(
@@ -27,14 +27,17 @@ export const calculateTaskRate = (submissionCounts: SubmissionCount[]) => {
   }
 };
 
-export const calculateTotalEarned = (submissions: Submission[]) => {
-  return submissions.reduce((total, ele) => total + Number(ele.amount), 0);
+export const calculateTotalEarned = (
+  pendingAmount: number = 0,
+  lockedAmount: number = 0
+) => {
+  // console.log(pendingAmount + lockedAmount)
+  return pendingAmount + lockedAmount; // Adjust according to your logic
 };
 
 export const calculatePayout = (payouts: any[]) => {
   return payouts.reduce((total, element) => total + Number(element.amount), 0);
 };
-
 
 export const formatNumberToSOL = (amount: number): string => {
   return `${Number(amount.toFixed(6))} SOL`;

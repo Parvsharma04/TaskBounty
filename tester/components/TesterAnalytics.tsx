@@ -1,7 +1,7 @@
 "use client";
 
 import { BACKEND_URL, TesterData } from "@/utils";
-import { calculatePayout, calculateTaskRate, calculateTotalEarned } from "@/utils/functions"; // Import the utils
+import { calculateTaskRate } from "@/utils/functions"; // Import the utils
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -27,7 +27,9 @@ export const TesterAnalytics: React.FC = () => {
     submissionCountByMonthYear: [],
     withdrawn: 0,
   });
-  const [taskRate, setTaskRate] = useState<{ rate: string; increase: boolean }>({ rate: "0%", increase: false });
+  const [taskRate, setTaskRate] = useState<{ rate: string; increase: boolean }>(
+    { rate: "0%", increase: false }
+  );
   const [totalEarned, setTotalEarned] = useState(0);
   const [payout, setPayout] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -37,12 +39,19 @@ export const TesterAnalytics: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`${BACKEND_URL}/v1/worker/getTesterData`, {
-        params: { publicKey: wallet.publicKey?.toBase58() },
-        headers: { Authorization: localStorage.getItem("token") || "" },
-      });
+      const response = await axios.get(
+        `${BACKEND_URL}/v1/worker/getTesterData`,
+        {
+          params: { publicKey: wallet.publicKey?.toBase58() },
+          headers: { Authorization: localStorage.getItem("token") || "" },
+        }
+      );
       const data = response.data;
       console.log(data);
+      setTotalEarned(
+        parseFloat(data.testerData.pending_amount) +
+          parseFloat(data.testerData.locked_amount)
+      );
       setTesterData(data);
       processData(data);
     } catch (error: any) {
@@ -64,8 +73,9 @@ export const TesterAnalytics: React.FC = () => {
   const processData = (data: TesterData) => {
     if (!data) return;
     setTaskRate(calculateTaskRate(data.submissionCountByMonthYear));
-    setTotalEarned(calculateTotalEarned(data.testerData.submissions));
-    setPayout(calculatePayout(data.testerData.payouts));
+
+    const pendingAmount = Number(data.testerData.pending_amount);
+    const lockedAmount = Number(data.testerData.locked_amount);
   };
 
   return (
@@ -91,9 +101,13 @@ export const TesterAnalytics: React.FC = () => {
           />
           <div className="mt-8 sm:mt-12">
             {isMobile ? (
-              <MobileChart submissions={testerData?.submissionCountByMonthYear || []} />
+              <MobileChart
+                submissions={testerData?.submissionCountByMonthYear || []}
+              />
             ) : (
-              <Graph submissions={testerData?.submissionCountByMonthYear || []} />
+              <Graph
+                submissions={testerData?.submissionCountByMonthYear || []}
+              />
             )}
           </div>
         </div>
