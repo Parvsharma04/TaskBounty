@@ -178,7 +178,9 @@ const MiscellaneousComponent = () => {
 
   return (
     <div
-      className={`h-screen mb-36 ${urlPreview && images.length > 0 && "mb-64"}`}
+      className={`h-screen mb-20 md:mb-36 ${
+        urlPreview && images.length > 0 && "mb-64"
+      }`}
     >
       {transactionLoader && <TransactionLoadingPage />}
       {TaskSubmitLoader && <TaskSubmittingLoader />}
@@ -327,9 +329,11 @@ const MiscellaneousComponent = () => {
         </div>
       </Modal>
       <div className="flex flex-col gap-10 items-center mt-16 justify-center">
-        <h1 className="text-5xl">Miscellaneous Upload</h1>
+        <h1 className="text-3xl md:text-5xl px-6 text-center font-bold uppercase">
+          Miscellaneous Upload
+        </h1>
         <div className="flex flex-col w-full md:px-12 gap-5">
-          <div className="flex flex-col gap-2 justify-center items-start w-full">
+          <div className="flex flex-col gap-2 justify-center items-start px-6 md:w-full">
             <label htmlFor="designTitle" className="text-base text-start">
               Title
             </label>
@@ -341,7 +345,7 @@ const MiscellaneousComponent = () => {
               className="bg-gray-950 rounded-md w-full"
             />
           </div>
-          <div className="flex flex-col justify-center items-start gap-2 w-full">
+          <div className="flex flex-col justify-center items-start gap-2 px-6 md:w-full">
             <label className="block font-medium text-base">Images</label>
             <UploadImage
               onImageAdded={(imageUrl) => {
@@ -357,7 +361,7 @@ const MiscellaneousComponent = () => {
               </button>
             )}
           </div>
-          <div className="flex flex-col gap-2 justify-start items-start w-full">
+          <div className="flex flex-col gap-2 justify-start items-start px-6 md:w-full">
             <label htmlFor="designDescription" className="text-base">
               Description
             </label>
@@ -369,7 +373,7 @@ const MiscellaneousComponent = () => {
               className="bg-gray-950 rounded-md w-full"
             />
           </div>
-          <div className="flex flex-col gap-2 justify-start items-start w-full">
+          <div className="flex flex-col gap-2 justify-start items-start px-6 md:w-full">
             <label htmlFor="designUrl" className="text-lg">
               Design/Website Url
             </label>
@@ -390,8 +394,9 @@ const MiscellaneousComponent = () => {
           {urlPreview.length > 0 && (
             <div className="flex justify-center items-center gap-2 flex-wrap">
               {urlPreview.map((url, index) => (
-                <div className="flex relative">
+                <div className="flex relative" key={index}>
                   <button
+                    key={index}
                     className="relative h-12 items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:150%_100%] bg-right hover:bg-left px-6 font-medium text-white transition-all duration-1000 ease-in-out focus:outline-none pr-8"
                     onClick={() => {
                       setWebsiteModal(true);
@@ -401,6 +406,7 @@ const MiscellaneousComponent = () => {
                     {`Preview ${index + 1}`}
                   </button>
                   <button
+                    key={index}
                     className="bg-red-700 hover:bg-red-500 p-1 rounded flex justify-start items-center h-5 absolute right-0"
                     onClick={() => {
                       setUrlPreview(urlPreview.filter((_, i) => i !== index));
@@ -412,7 +418,7 @@ const MiscellaneousComponent = () => {
               ))}
             </div>
           )}
-          <div className="flex flex-col gap-2 justify-start items-start w-full">
+          <div className="flex flex-col gap-2 justify-start items-start px-6 md:w-full">
             <label htmlFor="designDescription" className="text-base">
               Choose the type of voting
             </label>

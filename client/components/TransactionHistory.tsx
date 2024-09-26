@@ -184,14 +184,16 @@ const TransactionHistory = () => {
     <div className="h-screen bg-gray-950">
       <div className="mx-auto mt-8 max-w-screen-lg px-2">
         <div className="sm:flex sm:items-center sm:justify-between flex-col sm:flex-row mb-6">
-          <p className="flex-1 text-xl font-bold text-white">Latest Payments</p>
+          <p className="flex-1 text-center md:text-start text-4xl md:text-xl font-bold text-white py-8 md:py-0">
+            Latest Payments
+          </p>
 
           <div className="mt-4 sm:mt-0">
-            <div className="flex items-center justify-start sm:justify-end">
+            <div className="flex flex-wrap justify-center gap-5 md:gap-0 items-center md:justify-start sm:justify-end">
               <div className="flex items-center">
                 <label
                   htmlFor=""
-                  className="mr-2 flex-shrink-0 text-base font-medium text-white"
+                  className="mr-2 flex-shrink-0 text-xl md:text-base font-medium text-white"
                 >
                   {" "}
                   Sort by:{" "}
@@ -220,7 +222,7 @@ const TransactionHistory = () => {
 
               <button
                 type="button"
-                className="flex justify-center items-center bg-gray-700 p-2 rounded-md hover:bg-gray-600"
+                className="flex justify-center items-center bg-gray-700 p-2 rounded-md hover:bg-gray-600 text-xl md:text-lg"
                 onClick={handlePdfDownload}
               >
                 <svg

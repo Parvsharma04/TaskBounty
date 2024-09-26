@@ -137,7 +137,7 @@ export const UploadUiUxPageComponent = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col justify-center items-center gap-5 md:px-80">
+    <div className="h-screen flex flex-col justify-center items-center gap-5 w-full md:px-80">
       <ToastContainer
         position="top-left"
         autoClose={1100}
@@ -200,8 +200,10 @@ export const UploadUiUxPageComponent = () => {
           ></iframe>
         </div>
       </Modal>
-      <h1 className="text-5xl">Upload your Creativity</h1>
-      <div className="flex flex-col gap-1 justify-center items-start w-full">
+      <h1 className="text-3xl text-center md:text-5xl font-bold uppercase">
+        Upload your Creativity
+      </h1>
+      <div className="flex flex-col gap-1 justify-center items-start px-6 w-full">
         <label htmlFor="designTitle" className="text-lg text-start">
           Design Title
         </label>
@@ -213,7 +215,7 @@ export const UploadUiUxPageComponent = () => {
           className="bg-gray-950 rounded-md w-full"
         />
       </div>
-      <div className="flex flex-col gap-1 justify-start items-start w-full">
+      <div className="flex flex-col gap-1 justify-start items-start px-6 w-full">
         <label htmlFor="designUrl" className="text-lg">
           Design/Website Url
         </label>
@@ -231,12 +233,16 @@ export const UploadUiUxPageComponent = () => {
           className="bg-gray-950 rounded-md w-full"
         />
       </div>
-      <div className="flex justify-center items-center gap-2 flex-wrap relative">
+      <div
+        className={`flex justify-center items-center gap-2 flex-wrap ${
+          urlPreview.length > 0 && "h-20  overflow-scroll"
+        }`}
+      >
         {urlPreview.length > 0 &&
           urlPreview.map((url, index) => (
-            <div className="flex">
+            <div className="flex relative" key={index}>
               <button
-                className="relative h-12 items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:150%_100%] bg-right hover:bg-left px-6 font-medium text-white transition-all duration-1000 ease-in-out focus:outline-none pr-8"
+                className="h-12 items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:150%_100%] bg-right hover:bg-left px-6 font-medium text-white transition-all duration-1000 ease-in-out focus:outline-none pr-8"
                 onClick={() => {
                   setWebsiteModal(true);
                   setUrl(url);
@@ -255,7 +261,7 @@ export const UploadUiUxPageComponent = () => {
             </div>
           ))}
       </div>
-      <div className="flex flex-col gap-1 justify-start items-start w-full">
+      <div className="flex flex-col gap-1 justify-start items-start px-6 w-full">
         <label htmlFor="designDescription" className="text-lg">
           Design Description (OPTIONAL)
         </label>

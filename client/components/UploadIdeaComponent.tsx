@@ -276,9 +276,11 @@ export const UploadIdeaComponent = () => {
         </div>
       </Modal>
       <div className="flex flex-col gap-10 items-center mt-16 justify-center">
-        <h1 className="text-5xl">Upload your Idea / Product</h1>
+        <h1 className="text-3xl md:text-5xl px-6 text-center font-bold uppercase">
+          Upload your Idea / Product
+        </h1>
         <div className="flex flex-col w-full md:px-12 gap-5">
-          <div className="flex flex-col gap-2 justify-center items-start w-full">
+          <div className="flex flex-col gap-2 justify-center items-start px-6 md:w-full">
             <label htmlFor="designTitle" className="text-base text-start">
               Idea Title
             </label>
@@ -290,7 +292,7 @@ export const UploadIdeaComponent = () => {
               className="bg-gray-950 rounded-md w-full"
             />
           </div>
-          <div className="flex flex-col justify-center items-start gap-2 w-full">
+          <div className="flex flex-col justify-center items-start gap-2 px-6 md:w-full">
             {images.length > 0 && (
               <button
                 onClick={() => setimageModalIsOpen(true)}
@@ -306,7 +308,7 @@ export const UploadIdeaComponent = () => {
               }}
             />
           </div>
-          <div className="flex flex-col gap-2 justify-start items-start w-full">
+          <div className="flex flex-col gap-2 justify-start items-start px-6 md:w-full">
             <label htmlFor="designDescription" className="text-base">
               Design Description (OPTIONAL)
             </label>
@@ -318,7 +320,7 @@ export const UploadIdeaComponent = () => {
               className="bg-gray-950 rounded-md w-full"
             />
           </div>
-          <div className="flex flex-col gap-2 justify-start items-start w-full">
+          <div className="flex flex-col gap-2 justify-start items-start px-6 md:w-full">
             <label htmlFor="designDescription" className="text-base">
               Choose the type of voting
             </label>

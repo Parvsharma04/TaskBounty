@@ -85,8 +85,7 @@ export default function Page({
   return (
     <div className="bg-black text-white h-screen w-full flex flex-col justify-center items-center">
       <div className="capitalize font-semibold text-3xl flex justify-center">
-        {categoryDetails?.Design_Title ?? "Task"}{" "}
-        {" " + taskDetails?.category ?? ""}
+        {categoryDetails?.Design_Title ?? "Task"} {" " + taskDetails?.category}
       </div>
       <div className="flex flex-wrap justify-center pt-8 gap-5">
         {taskDetails.category === "UI_UX_Design" &&

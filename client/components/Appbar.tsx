@@ -29,7 +29,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import "../styles/home.css";
 import AnimatedLink from "./AnimatedLink";
 
@@ -45,7 +45,7 @@ const NavBar = () => {
   const [activeBtn, setActiveBtn] = useState("home");
   const navigate = useRouter();
   const wallet = useWallet();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useReducer((current) => !current, false);
 
   useEffect(() => {
     async function getToken() {
@@ -104,23 +104,25 @@ const NavBar = () => {
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           />
         )}
-        <NavbarBrand>
-          <Link
-            href="/"
-            className="flex items-center space-x-1 rtl:space-x-reverse -mt-1"
-          >
-            <Image
-              src="/icon-removebg-preview.png"
-              className="h-10"
-              alt="TaskBounty Logo"
-              height={60}
-              width={40}
-            />
-            <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-              TaskBounty
-            </span>
-          </Link>
-        </NavbarBrand>
+        {!wallet.connected && (
+          <NavbarBrand>
+            <Link
+              href="/"
+              className="flex items-center space-x-1 rtl:space-x-reverse -mt-1"
+            >
+              <Image
+                src="/icon-removebg-preview.png"
+                className="h-10"
+                alt="TaskBounty Logo"
+                height={60}
+                width={40}
+              />
+              <span className="self-center md:text-2xl font-semibold whitespace-nowrap dark:text-white">
+                TaskBounty
+              </span>
+            </Link>
+          </NavbarBrand>
+        )}
       </NavbarContent>
       <NavbarBrand>
         <Link
@@ -227,7 +229,7 @@ const NavBar = () => {
 
       <NavbarMenu className="bg-gray-800 pt-5">
         <NavbarMenuItem key="Home">
-          <Link className="w-full" href="/">
+          <Link className="w-full" href="/" onClick={() => setIsMenuOpen()}>
             Home
           </Link>
         </NavbarMenuItem>
@@ -259,7 +261,9 @@ const NavBar = () => {
                 description="label your tasks and get them done by the best designers in the world."
                 startContent={icons.scale}
               >
-                <Link href="/uploadUiUx">UI/UX Design</Link>
+                <Link href="/uploadUiUx" onClick={() => setIsMenuOpen()}>
+                  UI/UX Design
+                </Link>
               </DropdownItem>
               <DropdownItem
                 onClick={() => navigate.push("/uploadIdea")}
@@ -267,7 +271,9 @@ const NavBar = () => {
                 description="Get your ideas and products to the market faster with our platform."
                 startContent={icons.activity}
               >
-                <Link href="/uploadIdea">Idea / Product</Link>
+                <Link href="/uploadIdea" onClick={() => setIsMenuOpen()}>
+                  Idea / Product
+                </Link>
               </DropdownItem>
               <DropdownItem
                 onClick={() => navigate.push("/uploadTask")}
@@ -275,7 +281,9 @@ const NavBar = () => {
                 description="Get your youtube thumbnails rated by the best designers in the world."
                 startContent={icons.flash}
               >
-                <Link href="/uploadTask">Youtube Thumbnail</Link>
+                <Link href="/uploadTask" onClick={() => setIsMenuOpen()}>
+                  Youtube Thumbnail
+                </Link>
               </DropdownItem>
               <DropdownItem
                 onClick={() => navigate.push("/miscellaneousUpload")}
@@ -283,18 +291,31 @@ const NavBar = () => {
                 description="rate your miscellaneous tasks and get them done by the humans of the world."
                 startContent={icons.server}
               >
-                <Link href="/miscellaneousUpload">Miscellaneous</Link>
+                <Link
+                  href="/miscellaneousUpload"
+                  onClick={() => setIsMenuOpen()}
+                >
+                  Miscellaneous
+                </Link>
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </NavbarMenuItem>
         <NavbarMenuItem key="taskAnalytics" className="mb-2">
-          <Link className="w-full" href="/">
+          <Link
+            className="w-full"
+            href="/taskAnalytics"
+            onClick={() => setIsMenuOpen()}
+          >
             Task Analytics
           </Link>
         </NavbarMenuItem>
         <NavbarMenuItem key="transactionHistory">
-          <Link className="w-full" href="/">
+          <Link
+            className="w-full"
+            href="/transactionHistory"
+            onClick={() => setIsMenuOpen()}
+          >
             Transaction History
           </Link>
         </NavbarMenuItem>

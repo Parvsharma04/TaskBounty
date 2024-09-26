@@ -196,18 +196,21 @@ export default function Home() {
       >
         <Image
           id="preload-image"
-          className="absolute top-24 left-96"
+          className="absolute top-48 md:top-24 md:left-96"
           src="/solana.png"
           alt="solana logo"
           width={700}
           height={700}
         />
-        <h1 className="absolute bottom-60 left-80 text-5xl" id="preload-title">
+        <h1
+          className="absolute bottom-96 md:bottom-60 text-center md:left-[23%] text-3xl md:text-5xl"
+          id="preload-title"
+        >
           Empower your Data with{" "}
           <span className="text-blue-600">TaskBounty</span>
         </h1>
         <div
-          className="w-full bg-white absolute h-96 rounded-full rounded-b-none -bottom-40"
+          className="w-full bg-white absolute h-96 rounded-3xl md:rounded-full rounded-b-none -bottom-10 md:-bottom-40"
           id="preload-base"
         ></div>
       </div>
@@ -225,13 +228,13 @@ export default function Home() {
           >
             <h1
               id="section2Title"
-              className="text-pink-600 md:text-5xl text-4xl mb-5 text-center font-myFont"
+              className="text-pink-600 md:text-5xl text-5xl mb-5 text-center font-myFont"
             >
               Our Mission
             </h1>
             <p
               id="section2Desc"
-              className="text-white md:text-2xl text-lg text-justify font-myFont3"
+              className="text-white md:text-2xl text-xl text-justify font-myFont3"
             >
               To revolutionize data labeling by creating a decentralized
               platform that connects clients and workers efficiently and
@@ -248,7 +251,7 @@ export default function Home() {
             className="relative block px-6 py-10 md:py-20 md:px-10  border-t border-b border-neutral-900 bg-neutral-900/30"
           >
             <div className="relative mx-auto max-w-5xl text-center">
-              <h2 className="block w-full bg-gradient-to-b from-white to-gray-400 bg-clip-text font-bold text-transparent text-3xl sm:text-4xl animate font-myFont2">
+              <h2 className="block w-full bg-gradient-to-b from-white to-gray-400 bg-clip-text font-bold text-transparent text-4xl md:text-5xl animate font-myFont2">
                 Why Choose Us?
               </h2>
               <p className="mx-auto my-4 w-full max-w-xl bg-transparent text-center font-medium leading-relaxed tracking-wide text-gray-400 text-2xl animate font-myFont3">
@@ -256,7 +259,7 @@ export default function Home() {
               </p>
             </div>
             <div className="relative mx-auto max-w-7xl z-10 grid grid-cols-1 gap-10 pt-14 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="rounded-md border border-neutral-800 bg-neutral-900/50 p-8 text-center shadow">
+              <div className="rounded-md border border-neutral-800 bg-neutral-900/50 p-6 text-center shadow">
                 <div
                   className="button-text mx-auto flex h-12 w-12 items-center justify-center rounded-md border "
                   style={{
@@ -284,15 +287,15 @@ export default function Home() {
                     <line x1={17} y1={17} x2={17} y2="17.01" />
                   </svg>
                 </div>
-                <h3 className="mt-6 text-gray-400 font-myFont3 font-bold">
+                <h3 className="mt-6 text-gray-400 font-myFont3 font-bold text-2xl">
                   Earn While You Work
                 </h3>
-                <p className="my-4 mb-0 font-normal leading-relaxed tracking-wide text-gray-400 font-myFont3 text-base">
+                <p className="my-4 mb-0 font-normal leading-relaxed tracking-wide text-gray-400 font-myFont3 text-xl">
                   Complete tasks and earn 0.0002 Solana for every job you
                   finish, ensuring fair compensation for your efforts.
                 </p>
               </div>
-              <div className="rounded-md border border-neutral-800 bg-neutral-900/50 p-8 text-center shadow">
+              <div className="rounded-md border border-neutral-800 bg-neutral-900/50 p-6  text-center shadow">
                 <div
                   className="button-text mx-auto flex h-12 w-12 items-center justify-center rounded-md border "
                   style={{
@@ -317,15 +320,15 @@ export default function Home() {
                     <polyline points="13 3 13 10 19 10 11 21 11 14 5 14 13 3" />
                   </svg>
                 </div>
-                <h3 className="mt-6 text-gray-400 font-myFont2 font-bold">
+                <h3 className="mt-6 text-gray-400 font-myFont2 font-bold text-2xl">
                   Client Friendly Interface
                 </h3>
-                <p className="my-4 mb-0 font-normal leading-relaxed tracking-wide text-gray-400 font-myFont3 text-base">
+                <p className="my-4 mb-0 font-normal leading-relaxed tracking-wide text-gray-400 font-myFont3 text-xl">
                   Easily post tasks and manage projects with our intuitive
                   dashboard designed for seamless client experience.
                 </p>
               </div>
-              <div className="rounded-md border border-neutral-800 bg-neutral-900/50 p-8 text-center shadow">
+              <div className="rounded-md border border-neutral-800 bg-neutral-900/50 p-6 text-center shadow">
                 <div
                   className="button-text mx-auto flex h-12 w-12 items-center justify-center rounded-md border "
                   style={{
@@ -355,10 +358,10 @@ export default function Home() {
                     <line x1={16} y1={17} x2="14.5" y2="18.5" />
                   </svg>
                 </div>
-                <h3 className="mt-6 text-gray-400 font-myFont2 font-bold">
+                <h3 className="mt-6 text-gray-400 font-myFont2 font-bold text-2xl">
                   Transparent Payments
                 </h3>
-                <p className="my-4 mb-0 font-normal leading-relaxed tracking-wide text-gray-400 font-myFont3 text-base">
+                <p className="my-4 mb-0 font-normal leading-relaxed tracking-wide text-gray-400 font-myFont3 text-xl">
                   Track your earnings and payouts in real-time, ensuring
                   transparency and trust in every transaction.
                 </p>
