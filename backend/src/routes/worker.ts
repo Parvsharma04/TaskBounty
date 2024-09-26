@@ -300,39 +300,45 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
   }
 
   try {
-    // Fetch tester data with their submissions
-    let testerData = await prismaClient.worker.findFirst({
+    // Fetch the worker's data, including submissions and payouts
+    const workerData = await prismaClient.worker.findFirst({
       where: {
-        address: String(publicKey), // Ensure that 'address' is the correct field in your database schema
+        address: String(publicKey), // Match the worker's address to the provided public key
       },
       include: {
-        payouts: true,
+        payouts: true, // Include all payout records related to this worker
         submissions: {
           include: {
-            task: true, // Includes task details
-            option: true, // Includes option details
+            task: true, // Include task details related to each submission
+            option: true, // Include option details related to each submission
           },
         },
       },
     });
 
-    if (!testerData) {
-      return res.status(404).json({ error: "Tester not found" });
+    if (!workerData) {
+      return res.status(404).json({ error: "Worker not found" });
     }
 
-    // Fetch the count of submissions grouped by month and year
-    const submissionCountByMonthYear = await prismaClient.submission.groupBy({
-      by: ["postMonth", "postYear"],
+    // Calculate the number of tasks marked as done by the worker
+    const tasksDoneCount = await prismaClient.submission.count({
       where: {
-        worker_id: testerData.id,
-      },
-      _count: {
-        id: true, // Count number of submissions
+        worker_id: workerData.id,
+        task: {
+          done: true, // Only count submissions where the task is marked as done
+        },
       },
     });
+
+    // Return response with worker's data and calculated task count
     res.json({
-      testerData,
-      submissionCountByMonthYear,
+      testerData: {
+        pending_amount: workerData.pending_amount, // Send worker's pending amount
+        locked_amount: workerData.locked_amount, // Send worker's locked amount
+        payouts: workerData.payouts, // Send array of payouts
+        submissions: workerData.submissions, // Send worker's submissions
+        tasksDoneCount, // Send number of tasks completed by the worker
+      },
     });
   } catch (error) {
     console.error("Error fetching tester data:", error);

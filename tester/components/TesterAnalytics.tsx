@@ -1,5 +1,7 @@
 "use client";
-import { BACKEND_URL } from "@/utils";
+
+import { BACKEND_URL, TesterData } from "@/utils";
+import { calculatePayout, calculateTaskRate, calculateTotalEarned } from "@/utils/functions"; // Import the utils
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -10,62 +12,22 @@ import MobileChart from "./charts/MobileChart";
 import Loading from "./Loading";
 import TesterDash from "./TesterDash";
 
-interface Submission {
-  id: number;
-  worker_id: number;
-  option_id: number;
-  task_id: number;
-  amount: number;
-  postDate: number;
-  postMonth: number;
-  postYear: number;
-  task: {
-    id: number;
-    title: string;
-    user_id: number;
-    signature: string;
-    amount: number;
-    done: boolean;
-    postDate: number;
-    postMonth: number;
-    postYear: number;
-  };
-  option: {
-    id: number;
-    image_url: string;
-    task_id: number;
-  };
-}
-
-interface SubmissionCount {
-  _count: {
-    id: number;
-  };
-  postMonth: number;
-  postYear: number;
-}
-
-interface TesterData {
-  testerData: {
-    payouts: any;
-    submissions: Submission[];
-    pending_amount: number;
-    locked_amount: number;
-  };
-  submissionCountByMonthYear: SubmissionCount[];
-  withdrawn: number;
-}
-
 export const TesterAnalytics: React.FC = () => {
   const wallet = useWallet();
   const router = useRouter();
   const isMobile = useIsMobile();
-  const [testerData, setTesterData] = useState<TesterData | null>(null);
-  const [testCount, setTestCount] = useState(0);
-  const [taskRate, setTaskRate] = useState<{
-    rate: string;
-    increase: boolean;
-  } | null>(null);
+  const [testerData, setTesterData] = useState<TesterData | null>({
+    testerData: {
+      payouts: [],
+      submissions: [],
+      pending_amount: 0,
+      locked_amount: 0,
+      tasksDoneCount: 0,
+    },
+    submissionCountByMonthYear: [],
+    withdrawn: 0,
+  });
+  const [taskRate, setTaskRate] = useState<{ rate: string; increase: boolean }>({ rate: "0%", increase: false });
   const [totalEarned, setTotalEarned] = useState(0);
   const [payout, setPayout] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -75,19 +37,17 @@ export const TesterAnalytics: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(
-        `${BACKEND_URL}/v1/worker/getTesterData`,
-        {
-          params: { publicKey: wallet.publicKey?.toBase58() },
-          headers: { Authorization: localStorage.getItem("token") || "" },
-        }
-      );
-      setTesterData(response.data);
-      processData(response.data);
-      console.log(response.data.testerData.payouts);
-    } catch (error) {
+      const response = await axios.get(`${BACKEND_URL}/v1/worker/getTesterData`, {
+        params: { publicKey: wallet.publicKey?.toBase58() },
+        headers: { Authorization: localStorage.getItem("token") || "" },
+      });
+      const data = response.data;
+      console.log(data);
+      setTesterData(data);
+      processData(data);
+    } catch (error: any) {
       console.error("Error fetching tester data:", error);
-      setError("Failed to fetch tester data. Please try again.");
+      // setError("Failed to fetch tester data.");
     } finally {
       setLoading(false);
     }
@@ -102,109 +62,42 @@ export const TesterAnalytics: React.FC = () => {
   }, [wallet, router]);
 
   const processData = (data: TesterData) => {
-    calculateNumberOfTests(data.submissionCountByMonthYear);
-    calculateTaskRate(data.submissionCountByMonthYear);
-    calculateTotalEarned(data.testerData.submissions);
-    calculatePayout(testerData?.testerData.payouts)
+    if (!data) return;
+    setTaskRate(calculateTaskRate(data.submissionCountByMonthYear));
+    setTotalEarned(calculateTotalEarned(data.testerData.submissions));
+    setPayout(calculatePayout(data.testerData.payouts));
   };
-
-  const calculateNumberOfTests = (submissionCounts: SubmissionCount[]) => {
-    const tests = submissionCounts.reduce(
-      (total, ele) => total + ele._count.id,
-      0
-    );
-    setTestCount(tests);
-  };
-
-  const calculateTaskRate = (submissionCounts: SubmissionCount[]) => {
-    const sortedCounts = submissionCounts.sort(
-      (a, b) => b.postYear * 12 + b.postMonth - (a.postYear * 12 + a.postMonth)
-    );
-
-    if (sortedCounts.length >= 2) {
-      const currentMonth = sortedCounts[0]._count.id;
-      const previousMonth = sortedCounts[1]._count.id;
-
-      if (previousMonth > 0) {
-        const changeRate =
-          ((currentMonth - previousMonth) / previousMonth) * 100;
-        setTaskRate({
-          rate: `${Math.abs(changeRate).toFixed(2)}%`,
-          increase: changeRate >= 0,
-        });
-      } else if (currentMonth > 0) {
-        setTaskRate({ rate: "100%", increase: true });
-      } else {
-        setTaskRate({ rate: "0%", increase: false });
-      }
-    } else if (sortedCounts.length === 1 && sortedCounts[0]._count.id > 0) {
-      setTaskRate({ rate: "100%", increase: true });
-    } else {
-      setTaskRate({ rate: "0%", increase: false });
-    }
-  };
-
-  const calculateTotalEarned = (submissions: Submission[]) => {
-    let total = 0;
-    submissions.forEach((ele) => {
-      total += Number(ele.amount);
-    });
-    setTotalEarned(total);
-  };
-
-  const calculatePayout = (payouts: any)=>{
-    let total: number = 0
-    payouts.forEach((element: any) => {
-      total += element.amount
-    });
-    setPayout(total)
-  }
-
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex justify-center items-center text-xl sm:text-2xl bg-black text-white">
-        <Loading />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex justify-center items-center text-xl sm:text-2xl text-red-500 bg-black px-4">
-        {error}
-      </div>
-    );
-  }
-
-  if (!testerData) {
-    return (
-      <div className="min-h-screen flex justify-center items-center text-xl sm:text-2xl bg-black text-white px-4">
-        No data available.
-      </div>
-    );
-  }
 
   return (
     <div className="bg-black min-h-screen">
-      <div className="flex flex-col bg-black text-white pt-16 sm:pt-20 px-4 sm:px-6 lg:px-6">
-        <TesterDash
-          doneTasks={testCount}
-          rate={taskRate ? taskRate.rate : "0%"}
-          levelUp={taskRate ? taskRate.increase : false}
-          levelDown={taskRate ? !taskRate.increase : false}
-          totalEarned={Number(totalEarned)}
-          totalPayout={payout}
-          pendingAmount={Number(testerData.testerData.pending_amount)}
-        />
-        <div className="mt-8 sm:mt-12">
-          {isMobile ? (
-            <MobileChart submissions={testerData.submissionCountByMonthYear} />
-          ) : (
-            <Graph submissions={testerData.submissionCountByMonthYear} />
-          )}
+      {loading ? (
+        <div className="min-h-screen flex justify-center items-center text-xl sm:text-2xl bg-black text-white">
+          <Loading />
         </div>
-      </div>
+      ) : error ? (
+        <div className="min-h-screen flex justify-center items-center text-xl sm:text-2xl text-red-500 bg-black px-4">
+          {error}
+        </div>
+      ) : (
+        <div className="flex flex-col bg-black text-white pt-16 sm:pt-20 px-4 sm:px-6 lg:px-6">
+          <TesterDash
+            doneTasks={testerData?.testerData?.tasksDoneCount || 0}
+            rate={taskRate.rate}
+            levelUp={taskRate.increase}
+            levelDown={!taskRate.increase}
+            totalEarned={totalEarned}
+            totalPayout={payout}
+            pendingAmount={Number(testerData?.testerData?.pending_amount) || 0}
+          />
+          <div className="mt-8 sm:mt-12">
+            {isMobile ? (
+              <MobileChart submissions={testerData?.submissionCountByMonthYear || []} />
+            ) : (
+              <Graph submissions={testerData?.submissionCountByMonthYear || []} />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
