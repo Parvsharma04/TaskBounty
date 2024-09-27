@@ -246,7 +246,7 @@ function TaskAnalytics() {
         >
           <section className="bg-gray-950 text-white pt-10 pb-10">
             {AllTasks.length > 0 ? (
-              <div className="flex flex-col justify-center items-center bg-gray-950 text-white border ml-6 mr-6 h-screen">
+              <div className="flex flex-col justify-center items-center bg-gray-950 text-white border ml-6 mr-6">
                 <DataTable
                   customStyles={customStyles}
                   className="dataTables_wrapper"

@@ -12,7 +12,6 @@ const FooterPage = () => {
           >
             <Image
               src="/icon-removebg-preview.png"
-              className="h-8"
               alt="TaskBounty Logo"
               width={32}
               height={32}

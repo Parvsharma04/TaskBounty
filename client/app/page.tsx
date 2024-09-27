@@ -124,7 +124,6 @@ export default function Home() {
         duration: 2,
         opacity: 0, // Optional: fade in effect
         ease: "power2.inOut",
-        scrub: true,
         stagger: 0.5,
       });
 
@@ -142,7 +141,6 @@ export default function Home() {
         duration: 2,
         opacity: 0, // Optional: fade in effect
         ease: "power2.inOut",
-        scrub: true,
         stagger: 0.5,
       });
       const t5 = gsap.timeline({
@@ -159,7 +157,6 @@ export default function Home() {
         duration: 2,
         opacity: 0, // Optional: fade in effect
         ease: "power2.inOut",
-        scrub: true,
         stagger: 0.5,
       });
 
@@ -177,7 +174,6 @@ export default function Home() {
         duration: 2,
         opacity: 0, // Optional: fade in effect
         ease: "power2.inOut",
-        scrub: true,
         stagger: 0.5,
       });
     },

@@ -112,7 +112,6 @@ const NavBar = () => {
             >
               <Image
                 src="/icon-removebg-preview.png"
-                className="h-10"
                 alt="TaskBounty Logo"
                 height={60}
                 width={40}
@@ -131,7 +130,6 @@ const NavBar = () => {
         >
           <Image
             src="/icon-removebg-preview.png"
-            className="h-10"
             alt="TaskBounty Logo"
             height={60}
             width={40}

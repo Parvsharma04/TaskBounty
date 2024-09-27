@@ -130,8 +130,8 @@ const AnimatedLink = ({
 
 export default AnimatedLink;
 
-const Word = motion(StyledWord);
-const Span = motion(StyledSpan);
+const Word = motion.create(StyledWord);
+const Span = motion.create(StyledSpan);
 
 const AnimatedWord = ({
   title,
