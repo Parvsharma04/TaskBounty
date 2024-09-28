@@ -12,38 +12,57 @@ import {
   paragraphPhrases,
   phrases,
 } from "./constants";
-import { HeroTextContainer, Inner, Pill, Wrapper } from "./styles";
+import Hero from "./Hero";
+import {
+  Column,
+  ColumnRobot,
+  FlexWrapper,
+  HeroTextContainer,
+  Inner, Overlay, Pill,
+  Wrapper
+} from './styles';
 
 const HeroSection = () => {
   const router = useRouter();
   const isMobile = useIsMobile();
+
   useEffect(() => {
     router.push("/");
   }, []);
 
   return (
-    <Wrapper className="bg-black text-white">
-      <Inner>
-        <Pill>
-          <span>Introducing TaskBounty</span>
-          <Image src={ic_chevron_right} alt="chevron-right" />
-        </Pill>
-        <HeroTextContainer>
-          {isMobile ? (
-            <>
-              <MaskText phrases={mobilePhrases} tag="h1" />
-              <MaskText phrases={mobileParagraphPhrases} tag="p" />
-            </>
-          ) : (
-            <>
-              <MaskText phrases={phrases} tag="h1" />
-              <MaskText phrases={paragraphPhrases} tag="p" />
-            </>
-          )}
-        </HeroTextContainer>
-        <GetStartedButton padding="1rem 2rem" />
-      </Inner>
-    </Wrapper>
+    <FlexWrapper>
+      <Column>
+        <Wrapper>
+          <Inner>
+            <Pill>
+              <span>Introducing TaskBounty</span>
+              <Image src={ic_chevron_right} alt="chevron-right" />
+            </Pill>
+            <HeroTextContainer>
+              {isMobile ? (
+                <>
+                  <MaskText phrases={mobilePhrases} tag="h1" />
+                  <MaskText phrases={mobileParagraphPhrases} tag="p" />
+                </>
+              ) : (
+                <>
+                  <MaskText phrases={phrases} tag="h1" />
+                  <MaskText phrases={paragraphPhrases} tag="p" />
+                </>
+              )}
+            </HeroTextContainer>
+            <GetStartedButton padding="1rem 2rem" />
+          </Inner>
+        </Wrapper>
+      </Column>
+      <ColumnRobot>
+        <Hero />
+        <Overlay>
+          TaskBounty
+        </Overlay>
+      </ColumnRobot>
+    </FlexWrapper>
   );
 };
 
