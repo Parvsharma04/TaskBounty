@@ -1,7 +1,7 @@
 import { styled } from "styled-components";
 
 export const Wrapper = styled.footer`
-  padding-bottom: 3.5rem;
+  padding-bottom: 2rem; /* Reduced padding */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -13,10 +13,10 @@ export const Inner = styled.div`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 3.75rem;
+  gap: 2rem; /* Reduced gap */
 
   @media (max-width: 768px) {
-    gap: 2.5rem;
+    gap: 1.5rem; /* Reduced gap for smaller screens */
   }
 `;
 
@@ -24,12 +24,12 @@ export const FooterMainContent = styled.div`
   display: flex;
   justify-content: space-between; /* Ensures spacing between logo and links */
   align-items: center;
-  padding: 3.75rem 0;
+  padding: 3rem 0; /* Adjusted padding */
   border-top: 1px solid #3d3d3d;
 
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem; /* Reduced gap */
   }
 `;
 
@@ -51,11 +51,11 @@ export const FooterLogo = styled.div`
 
 export const FooterNavigation = styled.div`
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem; /* Adjusted gap */
 
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem; /* Adjusted gap for smaller screens */
   }
 `;
 
@@ -63,14 +63,15 @@ export const GridColumn = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 0.5rem; /* Adjusted gap */
 `;
 
 export const LinksContainer = styled.ul`
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem; /* Adjusted gap */
+  margin-right: 2rem;
 
   li {
     color: #efefef;
@@ -106,8 +107,7 @@ export const FooterBottom = styled.div`
   display: flex;
   justify-content: flex-end;
   padding: 1rem 0;
-  border-top: 1px solid #3d3d3d;
-  margin-top: 1rem;
+  border-bottom: 1px solid #3d3d3d;
 `;
 
 export const CopyRight = styled.div`

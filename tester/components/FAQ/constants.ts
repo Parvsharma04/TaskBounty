@@ -19,9 +19,9 @@ export const animate = {
 
 export const faqData: FAQItem[] = [
   {
-    question: 'How do I create an account with RAFT?',
+    question: 'How do I create an account with TaskBounty?',
     answer:
-      'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+      'Just connect your wallet and you are good to go.',
   },
   {
     question: 'How does RAFT ensure the security of my financial data?',
