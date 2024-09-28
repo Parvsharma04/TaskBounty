@@ -71,12 +71,10 @@ model UI_UX_Design {
 }
 
 model Idea_Product {
-  id               Int         @id @default(autoincrement())
+  id               Int      @id @default(autoincrement())
   Idea_Title       String
   Idea_Description String?
   Idea_Images      String[]
-  Voting_Type_id   Int
-  Voting_Type      Voting_Type @relation(fields: [Voting_Type_id], references: [id])
 
   Task   Task[]
   Option Option[]
@@ -97,9 +95,6 @@ model Miscellaneous {
   Images      String[]
   Description String
   Design_Url  String[]
-
-  Voting_Type_id Int
-  Voting_Type    Voting_Type @relation(fields: [Voting_Type_id], references: [id])
 
   Task   Task[]
   Option Option[]
@@ -167,11 +162,9 @@ model Option {
 }
 
 model Voting_Type {
-  id   Int    @id @default(autoincrement())
-  type String
+  id   Int          @id @default(autoincrement())
+  type Voting_Types
 
-  Idea_Product    Idea_Product[]
-  Miscellaneous   Miscellaneous[]
   Rating_Scale    Rating_Scale[]
   Poll            Poll[]
   Upvote_Downvote Upvote_Downvote[]
@@ -219,4 +212,11 @@ enum Category {
   Idea_Product
   Youtube_Thumbnail
   Miscellaneous
+}
+
+enum Voting_Types {
+  Rating_Scale
+  Emoji_Reaction
+  Upvote_Downvote
+  Poll
 }
