@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -53,6 +47,18 @@ model Task {
 
   miscellaneous_id Int? // Foreign key for Miscellaneous
   miscellaneous    Miscellaneous? @relation(fields: [miscellaneous_id], references: [id])
+
+  rating_ScaleId Int?
+  Rating_Scale   Rating_Scale? @relation(fields: [rating_ScaleId], references: [id])
+
+  pollId Int?
+  Poll   Poll? @relation(fields: [pollId], references: [id])
+
+  upvote_DownvoteId Int?
+  Upvote_Downvote   Upvote_Downvote? @relation(fields: [upvote_DownvoteId], references: [id])
+
+  emoji_ReactionId Int?
+  Emoji_Reaction   Emoji_Reaction? @relation(fields: [emoji_ReactionId], references: [id])
 }
 
 model UI_UX_Design {
@@ -99,6 +105,51 @@ model Miscellaneous {
   Option Option[]
 }
 
+model Rating_Scale {
+  id         Int    @id @default(autoincrement())
+  Five_Star  String @default("★★★★★")
+  Four_Star  String @default("★★★★")
+  Three_Star String @default("★★★")
+  Two_Star   String @default("★★")
+  One_Star   String @default("★")
+
+  Voting_Type   Voting_Type? @relation(fields: [voting_TypeId], references: [id])
+  voting_TypeId Int?
+  Task          Task[]
+}
+
+model Poll {
+  id                 Int      @id @default(autoincrement())
+  Design_Title       String
+  Design_Description String?
+  Design_Url         String[]
+
+  Voting_Type   Voting_Type? @relation(fields: [voting_TypeId], references: [id])
+  voting_TypeId Int?
+  Task          Task[]
+}
+
+model Upvote_Downvote {
+  id       Int    @id @default(autoincrement())
+  Upvote   String @default("⬆")
+  Downvote String @default("⬇")
+
+  Voting_Type   Voting_Type? @relation(fields: [voting_TypeId], references: [id])
+  voting_TypeId Int?
+  Task          Task[]
+}
+
+model Emoji_Reaction {
+  id                 Int      @id @default(autoincrement())
+  Design_Title       String
+  Design_Description String?
+  Design_Url         String[]
+
+  Voting_Type   Voting_Type? @relation(fields: [voting_TypeId], references: [id])
+  voting_TypeId Int?
+  Task          Task[]
+}
+
 model Option {
   id          Int          @id @default(autoincrement())
   image_url   String?
@@ -119,8 +170,12 @@ model Voting_Type {
   id   Int    @id @default(autoincrement())
   type String
 
-  Idea_Product  Idea_Product[]
-  Miscellaneous Miscellaneous[]
+  Idea_Product    Idea_Product[]
+  Miscellaneous   Miscellaneous[]
+  Rating_Scale    Rating_Scale[]
+  Poll            Poll[]
+  Upvote_Downvote Upvote_Downvote[]
+  Emoji_Reaction  Emoji_Reaction[]
 }
 
 model Submission {
