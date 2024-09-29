@@ -11,6 +11,7 @@ import { BACKEND_URL, PARENT_WALLET_ADDRESS } from "@/utils";
 import TaskSubmittingLoader from "./TaskSubmittingLoader";
 import TransactionLoadingPage from "./TransactionLoading";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import VoteSelection from "./VoteSelection";
 
 export const UploadUiUxPageComponent = () => {
   const [title, setTitle] = useState("");
@@ -26,6 +27,7 @@ export const UploadUiUxPageComponent = () => {
   const { connection } = useConnection();
   const router = useRouter();
   const [tasksAmt, setTasksAmt] = useState(0);
+  const [votingType, setVotingType] = useState("Rating_Scale");
 
   function openModal() {
     setWebsiteModal(true);
@@ -117,6 +119,7 @@ export const UploadUiUxPageComponent = () => {
           title,
           url: urlPreview,
           description: description,
+          votingType: votingType,
           signature: txSignature,
           postDate: currDate,
           postMonth: currMonth,
@@ -271,6 +274,12 @@ export const UploadUiUxPageComponent = () => {
           onChange={(e) => setDescription(e.target.value)}
           className="bg-gray-950 rounded-md w-full"
         />
+      </div>
+      <div className="flex flex-col gap-2 justify-start items-start px-6 md:w-full">
+        <label htmlFor="designDescription" className="text-base">
+          Choose the type of voting
+        </label>
+        <VoteSelection setVotingType={setVotingType} />
       </div>
       <button
         onClick={txSignature ? onSubmit : openConfimationModal}

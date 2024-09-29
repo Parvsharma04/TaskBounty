@@ -3,9 +3,11 @@ import { Chip } from "@nextui-org/react";
 const TaskStatement = ({
   category,
   title,
+  name,
 }: {
   category: string;
   title: string;
+  name: string;
 }) => {
   const getCategoryChip = (category: string) => {
     switch (category) {
@@ -28,7 +30,7 @@ const TaskStatement = ({
       role="alert"
     >
       <span className="text-xl font-medium me-2 px-2.5 py-0.5 rounded bg-green-900 text-green-300">
-        Bounty :
+        {name}
       </span>
       <span className="inline-block text-center text-2xl">{title}</span>
       <div className="ml-2">{getCategoryChip(category)}</div>

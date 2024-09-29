@@ -28,75 +28,18 @@ export default function Home() {
     () => {
       const t1 = gsap.timeline();
 
-      t1.to(
-        [
-          "#section1",
-          "#section2",
-          "#section3",
-          "#section4",
-          "#section5",
-          "#section6",
-        ],
-        {
-          display: "none",
-        }
-      )
-        .from("#preload-container", {
-          scrollTop: 0,
-          opacity: 0,
-          duration: 1,
-          xPercent: -100,
-          stagger: 0.5,
-        })
-        .from("#preload-base", {
-          opacity: 0,
-          duration: 1,
-          yPercent: -100,
-          stagger: 0.5,
-        })
-        .from("#preload-title", {
-          opacity: 0,
-          duration: 1,
-          yPercent: 100,
-        })
-        .from("#preload-image", {
-          opacity: 0,
-          duration: 1,
-          xPercent: 100,
-        })
-        .to("#preload-container", {
-          opacity: 0,
-          duration: 1,
-          ease: "power2.out",
-        })
-        .to("#preload-container", {
-          display: "none",
-        })
-        .from(
-          [
-            "#section1",
-            "#section2",
-            "#section3",
-            "#section4",
-            "#section5",
-            "#section6",
-          ],
-          {
-            display: "flex",
-          }
-        )
-        .from("#section1", {
-          xPercent: -100, // Move from left to right
-          duration: 1,
-          opacity: 0, // Optional: fade in effect
-          ease: "power2.inOut",
-        });
+      t1.from("#section1", {
+        xPercent: -100, // Move from left to right
+        duration: 1,
+        opacity: 0, // Optional: fade in effect
+        ease: "power2.inOut",
+      });
 
       window.scrollTo(0, 0);
 
       const t2 = gsap.timeline({
         scrollTrigger: {
-          trigger: "#section1",
+          trigger: "#section2",
           start: "top bottom", // Adjust start point (triggers when section2 enters viewport)
           end: "top top", // Adjust end point (triggers when section2 reaches top)
           scrub: true, // Smooth scrolling
@@ -112,7 +55,7 @@ export default function Home() {
 
       const t3 = gsap.timeline({
         scrollTrigger: {
-          trigger: "#section3",
+          trigger: "#section4",
           start: "top 90%",
           end: "top 50%",
           scrub: true,
@@ -129,7 +72,7 @@ export default function Home() {
 
       const t4 = gsap.timeline({
         scrollTrigger: {
-          trigger: "#section4",
+          trigger: "#section5",
           start: "top 70%",
           end: "top 30%",
           scrub: true,
@@ -145,7 +88,7 @@ export default function Home() {
       });
       const t5 = gsap.timeline({
         scrollTrigger: {
-          trigger: "#section5",
+          trigger: "#section6",
           start: "top 70%",
           end: "top 30%",
           scrub: true,
@@ -162,7 +105,7 @@ export default function Home() {
 
       const t6 = gsap.timeline({
         scrollTrigger: {
-          trigger: "#section6",
+          trigger: "#section7",
           start: "top 70%",
           end: "top 30%",
           scrub: true,
@@ -186,7 +129,7 @@ export default function Home() {
       id="body smooth-wrapper"
       className="overflow-hidden scroll-smooth"
     >
-      <div
+      {/* <div
         className="bg-gray-950 h-screen overflow-hidden"
         id="preload-container"
       >
@@ -209,7 +152,7 @@ export default function Home() {
           className="w-full bg-white absolute h-96 rounded-3xl md:rounded-full rounded-b-none -bottom-10 md:-bottom-40"
           id="preload-base"
         ></div>
-      </div>
+      </div> */}
       <div id="smooth-content">
         <section className="bg-gray-950" id="section1">
           <Hero />

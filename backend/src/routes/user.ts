@@ -90,6 +90,112 @@ router.get("/task", authMiddleware, async (req, res) => {
     });
   }
 
+  if (taskDetails.Voting_Type_id === null) {
+    return res.status(411).json({
+      message: "Voting type not found",
+    });
+  }
+
+  let votingDetails;
+  let votingTypeDetails;
+  votingDetails = await prismaClient.voting_Type.findFirst({
+    where: {
+      id: taskDetails?.Voting_Type_id,
+    },
+  });
+
+  if (!votingDetails) {
+    return res.status(411).json({
+      message: "Voting type not found",
+    });
+  }
+
+  if (votingDetails.type === "Rating_Scale") {
+    if (votingDetails.rating_ScaleId === null) {
+      return res.status(411).json({
+        message: "Rating scale not found",
+      });
+    }
+
+    const ratingScale = await prismaClient.rating_Scale.findFirst({
+      where: {
+        id: votingDetails.rating_ScaleId,
+      },
+    });
+
+    if (!ratingScale) {
+      return res.status(411).json({
+        message: "Rating scale not found",
+      });
+    }
+
+    votingTypeDetails = ratingScale;
+  } else if (votingDetails.type === "Multiple_Choice_Poll") {
+    if (votingDetails.pollId === null) {
+      return res.status(411).json({
+        message: "Poll not found",
+      });
+    }
+
+    const poll = await prismaClient.poll.findFirst({
+      where: {
+        id: votingDetails.pollId,
+      },
+    });
+
+    if (!poll) {
+      return res.status(411).json({
+        message: "Poll not found",
+      });
+    }
+
+    votingTypeDetails = poll;
+  } else if (votingDetails.type === "Upvote_Downvote") {
+    if (votingDetails.upvote_DownvoteId === null) {
+      return res.status(411).json({
+        message: "Upvote downvote not found",
+      });
+    }
+
+    const upvoteDownvote = await prismaClient.upvote_Downvote.findFirst({
+      where: {
+        id: votingDetails.upvote_DownvoteId,
+      },
+    });
+
+    if (!upvoteDownvote) {
+      return res.status(411).json({
+        message: "Upvote downvote not found",
+      });
+    }
+
+    votingTypeDetails = upvoteDownvote;
+  } else if (votingDetails.type === "Emoji_Reaction_Vote") {
+    if (votingDetails.emoji_ReactionId === null) {
+      return res.status(411).json({
+        message: "Emoji reaction not found",
+      });
+    }
+
+    const emojiReaction = await prismaClient.emoji_Reaction.findFirst({
+      where: {
+        id: votingDetails.emoji_ReactionId,
+      },
+    });
+
+    if (!emojiReaction) {
+      return res.status(411).json({
+        message: "Emoji reaction not found",
+      });
+    }
+
+    votingTypeDetails = emojiReaction;
+  } else {
+    return res.status(411).json({
+      message: "Voting type not found",
+    });
+  }
+
   // Todo: Can u make this faster?
   const responses = await prismaClient.submission.findMany({
     where: {
@@ -97,12 +203,14 @@ router.get("/task", authMiddleware, async (req, res) => {
     },
   });
 
-  console.log(responses, taskDetails);
+  // console.log(responses, taskDetails);
 
   res.json({
     taskDetails,
-    responses,
     categoryDetails,
+    votingDetails,
+    votingTypeDetails,
+    responses,
   });
 });
 router.get("/getAllTask", authMiddleware, async (req, res) => {
@@ -201,24 +309,103 @@ router.post("/task", authMiddleware, async (req, res) => {
         async (tx) => {
           let category: Category = parseData.data.category as Category;
 
+          async function voting_type_generator(parseData: any) {
+            if (parseData.data.votingType === "Rating_Scale") {
+              const rating_scale_model = await tx.rating_Scale.create({
+                data: {
+                  Five_Star: parseData.data.fiveStar,
+                  Four_Star: parseData.data.fourStar,
+                  Three_Star: parseData.data.threeStar,
+                  Two_Star: parseData.data.twoStar,
+                  One_Star: parseData.data.oneStar,
+                },
+              });
+
+              const votingModel = await tx.voting_Type.create({
+                data: {
+                  rating_ScaleId: rating_scale_model.id,
+                  type: parseData.data.votingType,
+                },
+              });
+
+              return votingModel;
+            } else if (parseData.data.votingType === "Multiple_Choice_Poll") {
+              const multiple_choice_poll_model = await tx.poll.create({
+                data: {
+                  option1: parseData.data.option1,
+                  option2: parseData.data.option2,
+                  option3: parseData.data.option3,
+                  option4: parseData.data.option4,
+                },
+              });
+
+              const votingModel = await tx.voting_Type.create({
+                data: {
+                  pollId: multiple_choice_poll_model.id,
+                  type: parseData.data.votingType,
+                },
+              });
+
+              return votingModel;
+            } else if (parseData.data.votingType === "Upvote_Downvote") {
+              const upvote_downvote_model = await tx.upvote_Downvote.create({
+                data: {
+                  Upvote: parseData.data.upvote,
+                  Downvote: parseData.data.downvote,
+                },
+              });
+
+              const votingModel = await tx.voting_Type.create({
+                data: {
+                  upvote_DownvoteId: upvote_downvote_model.id,
+                  type: parseData.data.votingType,
+                },
+              });
+
+              return votingModel;
+            } else if (parseData.data.votingType === "Emoji_Reaction_Vote") {
+              const emoji_reaction_vote_model = await tx.emoji_Reaction.create({
+                data: {
+                  Emoji_1: parseData.data.emoji1,
+                  Emoji_2: parseData.data.emoji2,
+                  Emoji_3: parseData.data.emoji3,
+                  Emoji_4: parseData.data.emoji4,
+                },
+              });
+
+              const votingModel = await tx.voting_Type.create({
+                data: {
+                  emoji_ReactionId: emoji_reaction_vote_model.id,
+                  type: parseData.data.votingType,
+                },
+              });
+
+              return votingModel;
+            } else {
+              return null;
+            }
+          }
+
           let categoryModel:
             | {
                 id: number;
                 Design_Title: string;
                 Design_Description: string | null;
                 Design_Url: string[];
+                Voting_Type: String;
               }
             | {
                 id: number;
                 Idea_Title: string;
                 Idea_Description: string | null;
                 Idea_Images: string[] | null;
-                Voting_Type_id: number;
+                Voting_Type: String;
               }
             | {
                 id: number;
                 Youtube_Thumbnail_Title: String;
-                // Youtube_Thumbnail_Images: string[];
+                Youtube_Thumbnail_Images: string[];
+                Voting_Type: String;
               }
             | {
                 id: number;
@@ -226,7 +413,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                 Images: string[];
                 Description: string;
                 Design_Url: string[];
-                Voting_Type_id: number;
+                Voting_Type: String;
               };
           if (category == Category.UI_UX_Design) {
             categoryModel = await tx.uI_UX_Design.create({
@@ -234,8 +421,16 @@ router.post("/task", authMiddleware, async (req, res) => {
                 Design_Title: parseData.data.title,
                 Design_Url: parseData.data.url ?? [],
                 Design_Description: parseData.data.description ?? "",
+                Voting_Type: parseData.data.votingType ?? "Rating_Scale",
               },
             });
+
+            const votingModel = await voting_type_generator(parseData);
+
+            if (votingModel === null) {
+              return "Invalid voting type";
+            }
+
             const task = await tx.task.create({
               data: {
                 category: category,
@@ -246,23 +441,18 @@ router.post("/task", authMiddleware, async (req, res) => {
                 postMonth: body.postMonth,
                 postYear: body.postYear,
                 uiUxDesign_id: categoryModel.id,
+                Voting_Type_id: votingModel.id,
               },
             });
 
             return task;
           } else if (category == Category.Idea_Product) {
-            const votingModel = await tx.voting_Type.create({
-              data: {
-                type: parseData.data.votingType ?? "Rating_Scale",
-              },
-            });
-
             categoryModel = await tx.idea_Product.create({
               data: {
                 Idea_Title: parseData.data.title,
                 Idea_Description: parseData.data.description ?? "",
                 Idea_Images: parseData.data.images ?? [],
-                Voting_Type_id: votingModel.id,
+                Voting_Type: parseData.data.votingType ?? "Rating_Scale",
               },
             });
 
@@ -275,6 +465,12 @@ router.post("/task", authMiddleware, async (req, res) => {
               });
             });
 
+            const votingModel = await voting_type_generator(parseData);
+
+            if (votingModel === null) {
+              return "Invalid voting type";
+            }
+
             const task = await tx.task.create({
               data: {
                 category: category,
@@ -285,6 +481,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                 postMonth: body.postMonth,
                 postYear: body.postYear,
                 ideaProduct_id: categoryModel.id,
+                Voting_Type_id: votingModel.id,
               },
             });
 
@@ -294,6 +491,7 @@ router.post("/task", authMiddleware, async (req, res) => {
               data: {
                 Youtube_Thumbnail_Title: parseData.data.title,
                 Youtube_Thumbnail_Images: parseData.data.images ?? [],
+                Voting_Type: parseData.data.votingType ?? "Rating_Scale",
               },
             });
 
@@ -308,6 +506,12 @@ router.post("/task", authMiddleware, async (req, res) => {
               })
             );
 
+            const votingModel = await voting_type_generator(parseData);
+
+            if (votingModel === null) {
+              return "Invalid voting type";
+            }
+
             const task = await tx.task.create({
               data: {
                 category: category,
@@ -318,23 +522,19 @@ router.post("/task", authMiddleware, async (req, res) => {
                 postMonth: body.postMonth,
                 postYear: body.postYear,
                 youtubeThumbnail_id: categoryModel.id,
+                Voting_Type_id: votingModel.id,
               },
             });
 
             return task;
           } else if (category == Category.Miscellaneous) {
-            const votingModel = await tx.voting_Type.create({
-              data: {
-                type: parseData.data.votingType ?? "Rating_Scale",
-              },
-            });
             categoryModel = await tx.miscellaneous.create({
               data: {
                 title: parseData.data.title,
                 Images: parseData.data.images ?? [],
                 Description: parseData.data.description ?? "",
                 Design_Url: parseData.data.url ?? [],
-                Voting_Type_id: votingModel.id,
+                Voting_Type: parseData.data.votingType ?? "Rating_Scale",
               },
             });
             await Promise.all(
@@ -357,6 +557,13 @@ router.post("/task", authMiddleware, async (req, res) => {
                 });
               })
             );
+
+            const votingModel = await voting_type_generator(parseData);
+
+            if (votingModel === null) {
+              return "Invalid voting type";
+            }
+
             const task = await tx.task.create({
               data: {
                 category: category,
@@ -367,6 +574,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                 postMonth: body.postMonth,
                 postYear: body.postYear,
                 miscellaneous_id: categoryModel.id,
+                Voting_Type_id: votingModel.id,
               },
             });
             return task;
@@ -378,6 +586,11 @@ router.post("/task", authMiddleware, async (req, res) => {
         }
       );
 
+      if (response === "Invalid voting type") {
+        return res.status(411).json({
+          message: "Invalid voting type",
+        });
+      }
       res.json({
         id: response?.id ?? -1,
       });

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Task" ALTER COLUMN "worker_id" SET DEFAULT ARRAY[-1]::INTEGER[];

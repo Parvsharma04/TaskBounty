@@ -3,134 +3,157 @@ import { PrismaClient } from "@prisma/client";
 const prismaClient = new PrismaClient();
 
 export const getNextTask = async (userId: number) => {
-  const task = await prismaClient.task.findFirst({
+  const tasks = await prismaClient.task.findMany({
     where: {
       done: false,
-      submissions: {
-        none: {
-          worker_id: userId,
-        },
-      },
     },
-    select: {
-      id: true,
-      amount: true,
-      category: true,
-      signature: true,
-      postDate: true,
-      postMonth: true,
-      postYear: true,
-      uiUxDesign: {
-        select: {
-          id: true,
-          Design_Title: true,
-          Design_Description: true,
-          Design_Url: true,
-        },
+  });
+  const filteredTasks = tasks.filter((task) => {
+    return task.worker_id.every((val) => {
+      return JSON.parse(JSON.stringify(val)).id !== userId;
+    });
+  });
+
+  const task = filteredTasks[0];
+
+  let categoryDetails;
+  if (task?.category == "UI_UX_Design") {
+    categoryDetails = await prismaClient.uI_UX_Design.findFirst({
+      where: {
+        id: task.uiUxDesign_id!,
       },
-      ideaProduct: {
-        select: {
-          id: true,
-          Idea_Title: true,
-          Idea_Description: true,
-          Idea_Images: true,
-          Voting_Type: {
-            select: {
-              id: true,
-              type: true,
-            },
-          },
-          Option: {
-            select: {
-              id: true,
-              image_url: true,
-              website_url: true,
-            },
-          },
-        },
+    });
+  } else if (task?.category == "Idea_Product") {
+    categoryDetails = await prismaClient.idea_Product.findFirst({
+      where: {
+        id: task.ideaProduct_id!,
       },
-      youtubeThumbnail: {
-        select: {
-          id: true,
-          Youtube_Thumbnail_Title: true,
-          Youtube_Thumbnail_Images: true,
-          Option: {
-            select: {
-              id: true,
-              image_url: true,
-              website_url: true,
-            },
-          },
-        },
+    });
+  } else if (task?.category == "Youtube_Thumbnail") {
+    categoryDetails = await prismaClient.youtube_Thumbnail.findFirst({
+      where: {
+        id: task.youtubeThumbnail_id!,
       },
-      miscellaneous: {
-        select: {
-          id: true,
-          title: true,
-          Description: true,
-          Images: true,
-          Design_Url: true,
-          Voting_Type: {
-            select: {
-              id: true,
-              type: true,
-            },
-          },
-          Option: {
-            select: {
-              id: true,
-              image_url: true,
-              website_url: true,
-            },
-          },
-        },
+    });
+  } else if (task?.category == "Miscellaneous") {
+    categoryDetails = await prismaClient.miscellaneous.findFirst({
+      where: {
+        id: task.miscellaneous_id!,
       },
+    });
+  }
+
+  if (!task?.Voting_Type_id) {
+    return null;
+  }
+
+  let votingDetails = await prismaClient.voting_Type.findFirst({
+    where: {
+      id: task?.Voting_Type_id!,
     },
   });
 
-  // Determine the correct title and options based on the category
-  let taskTitle = "";
-  let options: any[] = [];
-  if (task) {
-    switch (task.category) {
-      case "UI_UX_Design":
-        taskTitle = task.uiUxDesign?.Design_Title || "";
-        options = []; // UI/UX Design might not have options
-        break;
-      case "Idea_Product":
-        taskTitle = task.ideaProduct?.Idea_Title || "";
-        options = task.ideaProduct?.Option || [];
-        break;
-      case "Youtube_Thumbnail":
-        taskTitle = task.youtubeThumbnail?.Youtube_Thumbnail_Title || "";
-        options = task.youtubeThumbnail?.Option || [];
-        break;
-      case "Miscellaneous":
-        taskTitle = task.miscellaneous?.title || "";
-        options = task.miscellaneous?.Option || [];
-        break;
-      default:
-        taskTitle = "";
-    }
+  let votingTypeDetails;
+  if (votingDetails?.type == "Rating_Scale") {
+    votingTypeDetails = await prismaClient.rating_Scale.findFirst({
+      where: {
+        id: votingDetails.rating_ScaleId!,
+      },
+    });
+  } else if (votingDetails?.type == "Multiple_Choice_Poll") {
+    votingTypeDetails = await prismaClient.poll.findFirst({
+      where: {
+        id: votingDetails.pollId!,
+      },
+    });
+  } else if (votingDetails?.type == "Upvote_Downvote") {
+    votingTypeDetails = await prismaClient.upvote_Downvote.findFirst({
+      where: {
+        id: votingDetails.upvote_DownvoteId!,
+      },
+    });
+  } else if (votingDetails?.type == "Emoji_Reaction_Vote") {
+    votingTypeDetails = await prismaClient.emoji_Reaction.findFirst({
+      where: {
+        id: votingDetails.emoji_ReactionId!,
+      },
+    });
+  }
+
+  let votingType = votingDetails?.type;
+
+  let id = task?.id;
+  let amount = task?.amount ? parseFloat(task?.amount) / 1000_000_000 : 0;
+  let category = task?.category;
+
+  let title;
+  if (
+    category == "UI_UX_Design" &&
+    categoryDetails &&
+    "Design_Title" in categoryDetails
+  ) {
+    title = categoryDetails.Design_Title;
+  } else if (
+    category == "Idea_Product" &&
+    categoryDetails &&
+    "Idea_Title" in categoryDetails
+  ) {
+    title = categoryDetails.Idea_Title;
+  } else if (
+    category == "Youtube_Thumbnail" &&
+    categoryDetails &&
+    "Youtube_Thumbnail_Title" in categoryDetails
+  ) {
+    title = categoryDetails.Youtube_Thumbnail_Title;
+  } else if (
+    category == "Miscellaneous" &&
+    categoryDetails &&
+    "title" in categoryDetails
+  ) {
+    title = categoryDetails.title;
+  }
+
+  let options = [];
+  if (
+    category == "UI_UX_Design" &&
+    categoryDetails &&
+    "Design_Url" in categoryDetails
+  ) {
+    options.push({ id: 1, image_url: categoryDetails.Design_Url });
+  } else if (
+    category == "Idea_Product" &&
+    categoryDetails &&
+    "Idea_Images" in categoryDetails
+  ) {
+    options.push({ id: 1, image_url: categoryDetails.Idea_Images });
+  } else if (
+    category == "Youtube_Thumbnail" &&
+    categoryDetails &&
+    "Youtube_Thumbnail_Images" in categoryDetails
+  ) {
+    options.push({
+      id: 1,
+      image_url: categoryDetails.Youtube_Thumbnail_Images,
+    });
+  } else if (
+    category == "Miscellaneous" &&
+    categoryDetails &&
+    ("Images" in categoryDetails || "Design_Url" in categoryDetails)
+  ) {
+    options.push({
+      id: 1,
+      image_url: "Images" in categoryDetails ? categoryDetails.Images : [],
+      Design_Url: categoryDetails.Design_Url ? categoryDetails.Design_Url : [],
+    });
   }
 
   return {
-    id: task?.id,
-    amount: task?.amount,
-    category: task?.category,
-    signature: task?.signature,
-    postDate: task?.postDate,
-    postMonth: task?.postMonth,
-    postYear: task?.postYear,
-    title: taskTitle,
-    options: options.map((option) => ({
-      id: option.id,
-      image_url: option.image_url,
-      website_url: option.website_url,
-    })),
-    uiUxDesign: task?.uiUxDesign,
-    ideaProduct: task?.ideaProduct,
-    youtubeThumbnail: task?.youtubeThumbnail,
-    miscellaneous: task?.miscellaneous,
+    id,
+    amount,
+    category,
+    title,
+    options,
+    votingType,
+    votingTypeDetails,
   };
 };

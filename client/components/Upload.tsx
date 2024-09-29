@@ -13,6 +13,7 @@ import "@/styles/UploadPage.css";
 import TransactionLoadingPage from "./TransactionLoading";
 import { toast } from "react-toastify";
 import TaskSubmittingLoader from "./TaskSubmittingLoader";
+import VoteSelection from "./VoteSelection";
 
 export const Upload = () => {
   const [images, setImages] = useState<string[]>([]);
@@ -28,6 +29,7 @@ export const Upload = () => {
   const [tasksAmt, setTasksAmt] = useState(0);
   const [transactionLoader, setTransactionLoader] = useState(false);
   const [TaskSubmitLoader, setTaskSubmitLoader] = useState(false);
+  const [votingType, setVotingType] = useState("Rating_Scale");
 
   useEffect(() => {
     if (!wallet.connected) {
@@ -50,6 +52,7 @@ export const Upload = () => {
           category: "Youtube_Thumbnail",
           title,
           images,
+          votingType: votingType,
           signature: txSignature,
           postDate: currDate,
           postMonth: currMonth,
@@ -315,6 +318,13 @@ export const Upload = () => {
               setImages((i) => [...i, imageUrl]);
             }}
           />
+        </div>
+
+        <div className="flex flex-col gap-2 justify-start items-start px-6 md:w-full">
+          <label htmlFor="designDescription" className="text-base">
+            Choose the type of voting
+          </label>
+          <VoteSelection setVotingType={setVotingType} />
         </div>
 
         <div className="flex justify-center mt-4">

@@ -24,17 +24,20 @@ model Worker {
 }
 
 model Task {
-  id          Int          @id @default(autoincrement())
-  category    Category     @default(Miscellaneous)
-  user_id     Int
-  signature   String
-  amount      String
-  done        Boolean      @default(false)
-  user        User         @relation(fields: [user_id], references: [id])
-  submissions Submission[]
-  postDate    Int
-  postMonth   Int
-  postYear    Int
+  id             Int          @id @default(autoincrement())
+  category       Category     @default(Miscellaneous)
+  user_id        Int
+  worker_id      Json[]
+  signature      String
+  amount         String
+  done           Boolean      @default(false)
+  user           User         @relation(fields: [user_id], references: [id])
+  submissions    Submission[]
+  postDate       Int
+  postMonth      Int
+  postYear       Int
+  Voting_Type_id Int? // Foreign key for Voting Type
+  Voting_Type    Voting_Type? @relation(fields: [Voting_Type_id], references: [id])
 
   uiUxDesign_id Int? // Foreign key for UI/UX Design
   uiUxDesign    UI_UX_Design? @relation(fields: [uiUxDesign_id], references: [id])
@@ -47,6 +50,60 @@ model Task {
 
   miscellaneous_id Int? // Foreign key for Miscellaneous
   miscellaneous    Miscellaneous? @relation(fields: [miscellaneous_id], references: [id])
+}
+
+model UI_UX_Design {
+  id                 Int      @id @default(autoincrement())
+  Design_Title       String
+  Design_Description String?
+  Design_Url         String[]
+  Voting_Type        String
+  Responses          Json     @default("[{\"id\": \"worker_id\", \"value\": \"Five_Star\"}]")
+
+  Task Task[]
+}
+
+model Idea_Product {
+  id               Int      @id @default(autoincrement())
+  Idea_Title       String
+  Idea_Description String?
+  Idea_Images      String[]
+  Voting_Type      String
+  Responses        Json     @default("[{\"id\": \"worker_id\", \"value\": \"Five_Star\"}]")
+
+  Task   Task[]
+  Option Option[]
+}
+
+model Youtube_Thumbnail {
+  id                       Int      @id @default(autoincrement())
+  Youtube_Thumbnail_Title  String
+  Youtube_Thumbnail_Images String[]
+  Voting_Type              String
+  Responses                Json     @default("[{\"id\": \"worker_id\", \"value\": \"Five_Star\"}]")
+
+  Task   Task[]
+  Option Option[]
+}
+
+model Miscellaneous {
+  id          Int      @id @default(autoincrement())
+  title       String
+  Images      String[]
+  Description String
+  Design_Url  String[]
+  Voting_Type String
+  Responses   Json     @default("[{\"id\": \"worker_id\", \"value\": \"Five_Star\"}]")
+
+  Task   Task[]
+  Option Option[]
+}
+
+model Voting_Type {
+  id   Int    @id @default(autoincrement())
+  type String
+
+  Task Task[]
 
   rating_ScaleId Int?
   Rating_Scale   Rating_Scale? @relation(fields: [rating_ScaleId], references: [id])
@@ -61,45 +118,6 @@ model Task {
   Emoji_Reaction   Emoji_Reaction? @relation(fields: [emoji_ReactionId], references: [id])
 }
 
-model UI_UX_Design {
-  id                 Int      @id @default(autoincrement())
-  Design_Title       String
-  Design_Description String?
-  Design_Url         String[]
-
-  Task Task[]
-}
-
-model Idea_Product {
-  id               Int      @id @default(autoincrement())
-  Idea_Title       String
-  Idea_Description String?
-  Idea_Images      String[]
-
-  Task   Task[]
-  Option Option[]
-}
-
-model Youtube_Thumbnail {
-  id                       Int      @id @default(autoincrement())
-  Youtube_Thumbnail_Title  String
-  Youtube_Thumbnail_Images String[]
-
-  Task   Task[]
-  Option Option[]
-}
-
-model Miscellaneous {
-  id          Int      @id @default(autoincrement())
-  title       String
-  Images      String[]
-  Description String
-  Design_Url  String[]
-
-  Task   Task[]
-  Option Option[]
-}
-
 model Rating_Scale {
   id         Int    @id @default(autoincrement())
   Five_Star  String @default("★★★★★")
@@ -108,20 +126,17 @@ model Rating_Scale {
   Two_Star   String @default("★★")
   One_Star   String @default("★")
 
-  Voting_Type   Voting_Type? @relation(fields: [voting_TypeId], references: [id])
-  voting_TypeId Int?
-  Task          Task[]
+  Voting_Type Voting_Type[]
 }
 
 model Poll {
-  id                 Int      @id @default(autoincrement())
-  Design_Title       String
-  Design_Description String?
-  Design_Url         String[]
+  id      Int    @id @default(autoincrement())
+  option1 String @default("Option 1")
+  option2 String @default("Option 2")
+  option3 String @default("Option 3")
+  option4 String @default("Option 4")
 
-  Voting_Type   Voting_Type? @relation(fields: [voting_TypeId], references: [id])
-  voting_TypeId Int?
-  Task          Task[]
+  Voting_Type Voting_Type[]
 }
 
 model Upvote_Downvote {
@@ -129,27 +144,24 @@ model Upvote_Downvote {
   Upvote   String @default("⬆")
   Downvote String @default("⬇")
 
-  Voting_Type   Voting_Type? @relation(fields: [voting_TypeId], references: [id])
-  voting_TypeId Int?
-  Task          Task[]
+  Voting_Type Voting_Type[]
 }
 
 model Emoji_Reaction {
-  id                 Int      @id @default(autoincrement())
-  Design_Title       String
-  Design_Description String?
-  Design_Url         String[]
+  id      Int    @id @default(autoincrement())
+  Emoji_1 String @default("😍")
+  Emoji_2 String @default("😂")
+  Emoji_3 String @default("😲")
+  Emoji_4 String @default("😡")
 
-  Voting_Type   Voting_Type? @relation(fields: [voting_TypeId], references: [id])
-  voting_TypeId Int?
-  Task          Task[]
+  Voting_Type Voting_Type[]
 }
 
 model Option {
-  id          Int          @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   image_url   String?
   website_url String?
-  submissions Submission[]
+  // submissions Submission[]
 
   Idea_Product_id Int? // Foreign key for Idea/Product
   Idea_Product    Idea_Product? @relation(fields: [Idea_Product_id], references: [id])
@@ -161,23 +173,11 @@ model Option {
   Miscellaneous    Miscellaneous? @relation(fields: [Miscellaneous_id], references: [id])
 }
 
-model Voting_Type {
-  id   Int          @id @default(autoincrement())
-  type Voting_Types
-
-  Rating_Scale    Rating_Scale[]
-  Poll            Poll[]
-  Upvote_Downvote Upvote_Downvote[]
-  Emoji_Reaction  Emoji_Reaction[]
-}
-
 model Submission {
   id        Int    @id @default(autoincrement())
   worker_id Int
   worker    Worker @relation(fields: [worker_id], references: [id])
-  option_id Int
-  option    Option @relation(fields: [option_id], references: [id])
-  task_id   Int
+  task_id   Int //! for category in submission
   task      Task   @relation(fields: [task_id], references: [id])
   amount    String
   postDate  Int // Day the submission was made

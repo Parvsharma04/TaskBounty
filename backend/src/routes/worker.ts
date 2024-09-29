@@ -51,36 +51,97 @@ router.post("/submission", workerMiddleware, async (req, res) => {
         message: "Incorrect task id",
       });
     }
+    const taskmodel = await prismaClient.task.findFirst({
+      where: {
+        id: Number(parsedBody.data.taskId),
+      },
+    });
+    const taskCategory = taskmodel?.category;
+    let categoryModel: any;
+
+    if (taskCategory === "UI_UX_Design") {
+      categoryModel = await prismaClient.uI_UX_Design.findFirst({
+        where: {
+          id: taskmodel?.uiUxDesign_id!,
+        },
+      });
+    } else if (taskCategory === "Idea_Product") {
+      categoryModel = await prismaClient.idea_Product.findFirst({
+        where: {
+          id: taskmodel?.ideaProduct_id!,
+        },
+      });
+    } else if (taskCategory === "Youtube_Thumbnail") {
+      categoryModel = await prismaClient.youtube_Thumbnail.findFirst({
+        where: {
+          id: taskmodel?.youtubeThumbnail_id!,
+        },
+      });
+    } else if (taskCategory === "Miscellaneous") {
+      categoryModel = await prismaClient.miscellaneous.findFirst({
+        where: {
+          id: taskmodel?.miscellaneous_id!,
+        },
+      });
+    }
 
     const worker = await prismaClient.worker.findFirst({
       where: {
         id: Number(userId),
       },
     });
-
     if (!worker) {
       return res.status(403).json({
         message: "Worker not found",
       });
     }
-
     const amount = TASK_SUBMISSION_AMT.toString();
-
     const submission = await prismaClient.$transaction(async (tx) => {
+      //! Create submission
+      console.log("Creating submission");
       const submission = await prismaClient.submission.create({
         data: {
-          option_id: Number(parsedBody.data.selection),
-          worker_id: userId,
+          worker_id: Number(userId),
           task_id: Number(parsedBody.data.taskId),
           amount: amount,
-          postDate: body.postDate,
-          postMonth: body.postMonth,
-          postYear: body.postYear,
+          postDate: parsedBody.data.postDate,
+          postMonth: parsedBody.data.postMonth,
+          postYear: parsedBody.data.postYear,
+        },
+      });
+      //! Update task
+      console.log("Updating task");
+      await tx.task.update({
+        where: {
+          id: Number(parsedBody.data.taskId),
+        },
+        data: {
+          worker_id: Array.isArray(taskmodel?.worker_id)
+            ? [...(taskmodel.worker_id as any[]), { id: userId }]
+            : [{ id: userId }],
         },
       });
 
-      // console.log(submission);
+      //! Update category
+      console.log("Updating category");
+      if (taskCategory === "UI_UX_Design") {
+        await tx.uI_UX_Design.update({
+          where: {
+            id: taskmodel?.uiUxDesign_id!,
+          },
+          data: {
+            Responses: Array.isArray(categoryModel?.Responses)
+              ? [
+                  ...categoryModel.Responses,
+                  { id: userId, value: parsedBody.data.voteOptionId },
+                ]
+              : [{ id: userId, value: parsedBody.data.voteOptionId }],
+          },
+        });
+      }
 
+      //! Update worker
+      console.log("Updating worker");
       await tx.worker.update({
         where: {
           id: userId,
@@ -91,10 +152,8 @@ router.post("/submission", workerMiddleware, async (req, res) => {
           ).toString(),
         },
       });
-
       return submission;
     });
-
     const nextTask = await getNextTask(Number(userId));
     res.status(200).json({
       nextTask,
@@ -311,7 +370,7 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
         submissions: {
           include: {
             task: true, // Include task details related to each submission
-            option: true, // Include option details related to each submission
+            // option: true, // Include option details related to each submission
           },
         },
       },
