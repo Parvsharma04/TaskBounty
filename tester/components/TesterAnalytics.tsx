@@ -96,7 +96,7 @@ export const TesterAnalytics: React.FC = () => {
             levelUp={taskRate.increase}
             levelDown={!taskRate.increase}
             totalEarned={totalEarned}
-            totalPayout={payout}
+            totalPayout={Number(testerData?.testerData.locked_amount) || 0}
             pendingAmount={Number(testerData?.testerData?.pending_amount) || 0}
           />
           <div className="mt-8 sm:mt-12">

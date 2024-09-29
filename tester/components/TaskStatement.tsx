@@ -3,11 +3,11 @@ import { Chip } from "@nextui-org/react";
 const TaskStatement = ({
   category,
   title,
-  name,
+  name = null,
 }: {
   category: string;
   title: string;
-  name: string;
+  name: any;
 }) => {
   const getCategoryChip = (category: string) => {
     switch (category) {
@@ -29,9 +29,11 @@ const TaskStatement = ({
       className="p-4 mb-4 text-sm text-white bg-gray-800 rounded-2xl w-full flex items-center"
       role="alert"
     >
-      <span className="text-xl font-medium me-2 px-2.5 py-0.5 rounded bg-green-900 text-green-300">
-        {name}
-      </span>
+      {name && (
+        <span className="text-xl font-medium me-2 px-2.5 py-0.5 rounded bg-green-900 text-green-300">
+          {name}
+        </span>
+      )}
       <span className="inline-block text-center text-2xl">{title}</span>
       <div className="ml-2">{getCategoryChip(category)}</div>
     </div>
