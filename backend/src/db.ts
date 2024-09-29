@@ -60,7 +60,7 @@ export const getNextTask = async (userId: number) => {
         id: votingDetails.rating_ScaleId!,
       },
     });
-  } else if (votingDetails?.type == "Multiple_Choice_Poll") {
+  } else if (votingDetails?.type == "Poll") {
     votingTypeDetails = await prismaClient.poll.findFirst({
       where: {
         id: votingDetails.pollId!,
@@ -72,7 +72,7 @@ export const getNextTask = async (userId: number) => {
         id: votingDetails.upvote_DownvoteId!,
       },
     });
-  } else if (votingDetails?.type == "Emoji_Reaction_Vote") {
+  } else if (votingDetails?.type == "Emoji_Reaction") {
     votingTypeDetails = await prismaClient.emoji_Reaction.findFirst({
       where: {
         id: votingDetails.emoji_ReactionId!,

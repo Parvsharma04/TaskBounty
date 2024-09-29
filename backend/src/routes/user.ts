@@ -20,8 +20,7 @@ const s3Client = new S3Client({
 });
 const DEFAULT_TITLE = "Select the most clickable thumbnail";
 const connection = new Connection(
-  "https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt" ??
-    ""
+  "https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt"
 );
 
 router.get("/task", authMiddleware, async (req, res) => {
@@ -130,7 +129,7 @@ router.get("/task", authMiddleware, async (req, res) => {
     }
 
     votingTypeDetails = ratingScale;
-  } else if (votingDetails.type === "Multiple_Choice_Poll") {
+  } else if (votingDetails.type === "Poll") {
     if (votingDetails.pollId === null) {
       return res.status(411).json({
         message: "Poll not found",
@@ -170,7 +169,7 @@ router.get("/task", authMiddleware, async (req, res) => {
     }
 
     votingTypeDetails = upvoteDownvote;
-  } else if (votingDetails.type === "Emoji_Reaction_Vote") {
+  } else if (votingDetails.type === "Emoji_Reaction") {
     if (votingDetails.emoji_ReactionId === null) {
       return res.status(411).json({
         message: "Emoji reaction not found",
@@ -363,7 +362,7 @@ router.post("/task", authMiddleware, async (req, res) => {
               });
 
               return votingModel;
-            } else if (parseData.data.votingType === "Emoji_Reaction_Vote") {
+            } else if (parseData.data.votingType === "Emoji_Reaction") {
               const emoji_reaction_vote_model = await tx.emoji_Reaction.create({
                 data: {
                   Emoji_1: parseData.data.emoji1,
