@@ -22,7 +22,7 @@ const FooterPage = () => {
           </Link>
           <ul className="flex flex-wrap items-center mb-6 text-sm font-medium  sm:mb-0 text-gray-400">
             <li>
-              <a href="#" className="hover:underline me-4 md:me-6">
+              <a href="/privacy" className="hover:underline me-4 md:me-6">
                 Privacy Policy
               </a>
             </li>
