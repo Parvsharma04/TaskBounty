@@ -1,11 +1,10 @@
-// layout.tsx or _app.tsx
 import NavBar from "@/components/Navbar";
 import { Wallet } from "@/components/Wallet";
 import StyledComponentsRegistry from "@/libs/registry";
 import type { Metadata } from "next";
 import "./globals.css";
 import { GlobalStyles } from "./GlobalStyles";
-import { Providers } from "./providers"; // Adjust the path if necessary
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Tester-TaskBounty",
