@@ -100,8 +100,8 @@ model Miscellaneous {
 }
 
 model Voting_Type {
-  id   Int    @id @default(autoincrement())
-  type String
+  id   Int          @id @default(autoincrement())
+  type Voting_Types @default(Rating_Scale)
 
   Task Task[]
 
