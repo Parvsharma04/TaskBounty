@@ -29,7 +29,7 @@ router.get("/nextTask", workerMiddleware, async (req, res) => {
   const task = await getNextTask(Number(userId));
 
   if (!task) {
-    res.status(411).json({
+    res.status(404).json({
       message: "No more tasks left for you to review",
     });
   } else {
@@ -38,6 +38,7 @@ router.get("/nextTask", workerMiddleware, async (req, res) => {
     });
   }
 });
+
 router.post("/submission", workerMiddleware, async (req, res) => {
   // @ts-ignore
   const userId = req.userId;
@@ -165,6 +166,7 @@ router.post("/submission", workerMiddleware, async (req, res) => {
     });
   }
 });
+
 router.get("/balance", workerMiddleware, async (req, res) => {
   // @ts-ignore
   const userId: string = req.userId;
@@ -352,60 +354,6 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-router.get("/getTesterData", workerMiddleware, async (req, res) => {
-  const { publicKey } = req.query; // Extract publicKey from query params
-
-  if (!publicKey) {
-    return res.status(400).json({ error: "Public key is required" });
-  }
-
-  try {
-    // Fetch the worker's data, including submissions and payouts
-    const workerData = await prismaClient.worker.findFirst({
-      where: {
-        address: String(publicKey), // Match the worker's address to the provided public key
-      },
-      include: {
-        payouts: true, // Include all payout records related to this worker
-        submissions: {
-          include: {
-            task: true, // Include task details related to each submission
-            // option: true, // Include option details related to each submission
-          },
-        },
-      },
-    });
-
-    if (!workerData) {
-      return res.status(404).json({ error: "Worker not found" });
-    }
-
-    // Calculate the number of tasks marked as done by the worker
-    const tasksDoneCount = await prismaClient.submission.count({
-      where: {
-        worker_id: workerData.id,
-        task: {
-          done: true, // Only count submissions where the task is marked as done
-        },
-      },
-    });
-
-    // Return response with worker's data and calculated task count
-    res.json({
-      testerData: {
-        pending_amount: workerData.pending_amount, // Send worker's pending amount
-        locked_amount: workerData.locked_amount, // Send worker's locked amount
-        payouts: workerData.payouts, // Send array of payouts
-        submissions: workerData.submissions, // Send worker's submissions
-        tasksDoneCount, // Send number of tasks completed by the worker
-      },
-    });
-  } catch (error) {
-    console.error("Error fetching tester data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
 router.get("/transactions", workerMiddleware, async (req, res) => {
   const { publicKey } = req.query;
   if (!publicKey) {
@@ -432,6 +380,67 @@ router.get("/transactions", workerMiddleware, async (req, res) => {
     res.json(reversedPayouts);
   } catch (error) {
     console.error("Error fetching worker payouts:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/getTesterData", workerMiddleware, async (req, res) => {
+  const { publicKey } = req.query; // Extract publicKey from query params
+
+  if (!publicKey) {
+    return res.status(400).json({ error: "Public key is required" });
+  }
+
+  try {
+    // Fetch the worker's data, including submissions and payouts
+    const workerData = await prismaClient.worker.findUnique({
+      where: {
+        address: String(publicKey), // Match the worker's address to the provided public key
+      },
+      include: {
+        payouts: true, // Include all payout records related to this worker
+        submissions: {
+          include: {
+            task: {
+              include: {
+                uiUxDesign: true,
+                ideaProduct: true,
+                youtubeThumbnail: true,
+                miscellaneous: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!workerData) {
+      return res.status(404).json({ error: "Worker not found" });
+    }
+
+    // Calculate the number of tasks marked as done by the worker
+    const tasksDoneCount = await prismaClient.submission.count({
+      where: {
+        worker_id: workerData.id,
+        task: {
+          done: true, // Only count submissions where the task is marked as done
+        },
+      },
+    });
+
+    // Return response with worker's data and calculated task count
+    res.json({
+      testerData: {
+        pending_amount: workerData.pending_amount,
+        locked_amount: workerData.locked_amount,
+        withdrawn: workerData.withdrawn, // Added withdrawn amount
+        payouts: workerData.payouts,
+        submissions: workerData.submissions,
+        tasksDoneCount,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching tester data:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

@@ -1,14 +1,12 @@
 "use client";
 
-import { BACKEND_URL, TesterData } from "@/utils";
-import { calculateTaskRate } from "@/utils/functions"; // Import the utils
+import { BACKEND_URL, Submission, TesterData } from "@/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useIsMobile } from "../libs/useIsMobile";
 import Graph from "./charts/Graph";
-import MobileChart from "./charts/MobileChart";
 import Loading from "./Loading";
 import TesterDash from "./TesterDash";
 
@@ -27,11 +25,8 @@ export const TesterAnalytics: React.FC = () => {
     submissionCountByMonthYear: [],
     withdrawn: 0,
   });
-  const [taskRate, setTaskRate] = useState<{ rate: string; increase: boolean }>(
-    { rate: "0%", increase: false }
-  );
   const [totalEarned, setTotalEarned] = useState(0);
-  const [payout, setPayout] = useState(0);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +42,7 @@ export const TesterAnalytics: React.FC = () => {
         }
       );
       const data = response.data;
-      console.log(data);
+      // console.log(data);
       setTotalEarned(
         parseFloat(data.testerData.pending_amount) +
           parseFloat(data.testerData.locked_amount)
@@ -72,10 +67,21 @@ export const TesterAnalytics: React.FC = () => {
 
   const processData = (data: TesterData) => {
     if (!data) return;
-    setTaskRate(calculateTaskRate(data.submissionCountByMonthYear));
 
+    // Calculate total earned
     const pendingAmount = Number(data.testerData.pending_amount);
     const lockedAmount = Number(data.testerData.locked_amount);
+    setTotalEarned(pendingAmount + lockedAmount);
+
+    const submissions = data.testerData.submissions.map((submission) => ({
+      _count: { id: submission.id },
+      postMonth: submission.postMonth,
+      postYear: submission.postYear,
+    }));
+
+    setSubmissions(submissions);
+    // Log or set the processed submissions if needed
+    console.log("Processed Submissions:", submissions);
   };
 
   return (
@@ -91,23 +97,18 @@ export const TesterAnalytics: React.FC = () => {
       ) : (
         <div className="flex flex-col bg-black text-white pt-16 sm:pt-20 px-4 sm:px-6 lg:px-6">
           <TesterDash
-            doneTasks={testerData?.testerData?.tasksDoneCount || 0}
-            rate={taskRate.rate}
-            levelUp={taskRate.increase}
-            levelDown={!taskRate.increase}
+            doneTasks={testerData?.testerData?.submissions.length || 0}
             totalEarned={totalEarned}
             totalPayout={Number(testerData?.testerData.locked_amount) || 0}
             pendingAmount={Number(testerData?.testerData?.pending_amount) || 0}
           />
           <div className="mt-8 sm:mt-12">
             {isMobile ? (
-              <MobileChart
-                submissions={testerData?.submissionCountByMonthYear || []}
-              />
+              <div className="text-center p-5">
+                <h1>Graph not available</h1>
+              </div>
             ) : (
-              <Graph
-                submissions={testerData?.submissionCountByMonthYear || []}
-              />
+              <Graph submissions={submissions} />
             )}
           </div>
         </div>

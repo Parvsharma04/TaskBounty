@@ -1,11 +1,16 @@
-import { ApexOptions } from "apexcharts";
+import { options } from "@/utils";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
-
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
+
+interface SubmissionCount {
+  _count: { id: number };
+  postMonth: number;
+  postYear: number;
+}
 
 const containerVariants = {
   hidden: {
@@ -18,16 +23,13 @@ const containerVariants = {
   },
 };
 
-const Graph = ({
-  submissions,
-}: {
-  submissions: Array<{ _count: { id: any }; postMonth: any; postYear: any }>[];
-}) => {
+const Graph = ({ submissions }: { submissions: SubmissionCount[] }) => {
   const [doneTasks, setDoneTasks] = useState<number[]>(Array(12).fill(0));
   const [year, setYear] = useState<number[]>([]);
   const [userSelectedCurrYear, setUserSelectedCurrYear] = useState<number>(0);
 
   useEffect(() => {
+    // console.log("subs", submissions);
     const currentYear = new Date().getUTCFullYear();
     const pastTenYears = Array.from({ length: 10 }, (_, i) => currentYear - i);
     setYear([currentYear, ...pastTenYears.slice(1)]);
@@ -38,7 +40,7 @@ const Graph = ({
     const tempDoneTasks = Array(12).fill(0);
     submissions.forEach((task) => {
       if (task.postYear === userSelectedCurrYear) {
-        tempDoneTasks[task.postMonth] = task._count.id;
+        tempDoneTasks[task.postMonth]++;
       }
     });
     setDoneTasks(tempDoneTasks);
@@ -55,127 +57,6 @@ const Graph = ({
     },
   ];
 
-  const xaxisCategories = Array.from({ length: 12 }, (_, i) =>
-    new Date(0, i).toLocaleString("en-US", { month: "short" })
-  );
-
-  const options: ApexOptions = {
-    legend: {
-      show: false,
-    },
-    colors: ["#3C50E0", "#80CAEE"],
-    chart: {
-      fontFamily: "Satoshi, sans-serif",
-      height: 335,
-      type: "area",
-      dropShadow: {
-        enabled: true,
-        color: "#623CEA14",
-        top: 10,
-        blur: 4,
-        left: 0,
-        opacity: 0.1,
-      },
-      toolbar: {
-        show: false,
-      },
-      background: "#111827",
-    },
-    responsive: [
-      {
-        breakpoint: 1024,
-        options: {
-          chart: {
-            height: 300,
-          },
-        },
-      },
-      {
-        breakpoint: 1366,
-        options: {
-          chart: {
-            height: 350,
-          },
-        },
-      },
-    ],
-    stroke: {
-      width: [2, 2],
-      curve: "smooth",
-    },
-    grid: {
-      borderColor: "#333",
-      xaxis: {
-        lines: {
-          show: true,
-          color: "#444",
-        },
-      },
-      yaxis: {
-        lines: {
-          show: true,
-          color: "#444",
-        },
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    markers: {
-      size: 4,
-      colors: "#fff",
-      strokeColors: ["#3056D3", "#80CAEE"],
-      strokeWidth: 3,
-      strokeOpacity: 0.9,
-      fillOpacity: 1,
-      hover: {
-        size: undefined,
-        sizeOffset: 5,
-      },
-    },
-    xaxis: {
-      type: "category",
-      categories: xaxisCategories,
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-      labels: {
-        style: {
-          colors: "#fff",
-          fontSize: "12px",
-        },
-      },
-    },
-    yaxis: {
-      title: {
-        style: {
-          fontSize: "14px",
-          color: "#fff",
-        },
-      },
-      labels: {
-        style: {
-          colors: "#fff",
-          fontSize: "12px",
-        },
-      },
-      min: 0,
-    },
-    tooltip: {
-      theme: "dark",
-      style: {
-        fontSize: "12px",
-        color: "#fff",
-      },
-      y: {
-        formatter: (value) => value.toString(),
-      },
-    },
-  };
-
   return (
     <motion.div
       className="relative rounded-[20px] bg-gray-900 shadow-[0_25px_50px_rgba(0,0,0,0.55)] text-white p-6 m-10"
@@ -184,10 +65,6 @@ const Graph = ({
       animate="visible"
       transition={{ duration: 0.6, ease: "easeInOut" }}
     >
-      <div className="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
-        {/* Optional icon or content */}
-      </div>
-
       <div className="mt-4 flex items-start justify-between">
         <h4 className="text-title-md font-bold text-white">Bounty Chart</h4>
         <div className="ml-auto flex items-center">

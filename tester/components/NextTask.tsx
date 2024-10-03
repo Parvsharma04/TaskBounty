@@ -229,6 +229,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
                 <TaskStatement
                   category="Voting"
                   title="Options: "
+                  name={null}
                 />
                 <motion.ul
                   className="flex flex-wrap gap-4 sm:gap-5"

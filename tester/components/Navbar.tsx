@@ -22,6 +22,7 @@ const NavBar = () => {
   const [payoutAmt, setPayoutAmt] = useState("0");
   const pathname = usePathname();
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   async function getToken() {
@@ -53,6 +54,7 @@ const NavBar = () => {
 
   const handlePayoutAmt = async () => {
     try {
+      setLoading(true);
       const token = localStorage.getItem("token");
       console.log("Authorization Header Sent:", token); // Log the token
 
@@ -63,21 +65,30 @@ const NavBar = () => {
 
       const response = await axios.post(
         `${BACKEND_URL}/v1/worker/payout`,
-        { publicKey: wallet.publicKey?.toString() }, // Request body
+        { publicKey: wallet.publicKey?.toString() },
         {
           headers: {
-            Authorization: token, // or `Bearer ${token}` if needed
+            Authorization: token,
           },
         }
       );
 
+      console.log("Payout response:", response.data);
       setPayoutAmt(response.data.amount);
-      toast.success(response.data.message);
+
+      // Ensure the success message exists in the response
+      if (response.data.message) {
+        toast.success(response.data.message);
+      } else {
+        toast.error("No message returned from the payout request.");
+      }
     } catch (error: any) {
       const message =
         error.response?.data?.message || "Error processing payout";
       toast.error(message);
       console.error("Error processing payout:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -109,12 +120,41 @@ const NavBar = () => {
         {wallet.connected && Number(payoutAmt) >= 2 && (
           <motion.button
             onClick={handlePayoutAmt}
-            className="bg-blue-700 text-white py-2 px-5 rounded-[20px] shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-600 hover:shadow-xl text-xl w-full md:w-auto"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className={`bg-blue-700 text-white py-2 px-5 rounded-[20px] shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-600 hover:shadow-xl text-xl w-full md:w-auto ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={loading} // Disable button while loading
+            whileHover={!loading ? { scale: 1.05 } : {}}
+            whileTap={!loading ? { scale: 0.95 } : {}}
             transition={{ duration: 0.3 }}
           >
-            {`Pay out ${payoutAmt} SOL`}
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 0116 0H4z"
+                  ></path>
+                </svg>
+                Loading...
+              </span>
+            ) : (
+              `Pay out ${payoutAmt} SOL`
+            )}
           </motion.button>
         )}
 
@@ -144,6 +184,7 @@ const NavBar = () => {
         pauseOnHover
         theme="colored"
       />
+
       <div className="mx-auto flex items-center justify-between p-4 w-[100%]">
         <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           <motion.img

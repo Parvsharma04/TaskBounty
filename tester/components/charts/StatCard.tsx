@@ -4,31 +4,21 @@ import React, { ReactNode } from "react";
 interface StatCardProps {
   title: string;
   total: string;
-  rate: string;
-  levelUp?: boolean;
-  levelDown?: boolean;
   children: ReactNode;
 }
 
 const containerVariants = {
   hidden: {
     opacity: 0,
-    scale: 0.95
+    scale: 0.95,
   },
   visible: {
     opacity: 1,
-    scale: 1
-  }
+    scale: 1,
+  },
 };
 
-const StatCard: React.FC<StatCardProps> = ({
-  title,
-  total,
-  rate,
-  levelUp,
-  levelDown,
-  children,
-}) => {
+const StatCard: React.FC<StatCardProps> = ({ title, total, children }) => {
   return (
     <motion.div
       className="relative w-full max-w-sm rounded-[20px] bg-gray-900 shadow-[0_25px_50px_rgba(0,0,0,0.55)] cursor-pointer transition-transform duration-300 hover:scale-90 text-white p-6"
@@ -43,7 +33,7 @@ const StatCard: React.FC<StatCardProps> = ({
 
       <div className="mt-4 flex items-end justify-between">
         <div>
-          <h4 className="text-title-md font-bold text-white">{total}</h4>
+          <h4 className="text-title-md font-bold text-white">{total} {title !== 'Bounties Hunted' ? "SOL" : ""}</h4>
           <span className="text-sm font-medium">{title}</span>
         </div>
 

@@ -3,11 +3,11 @@ import React from 'react';
 import ApexCharts from 'react-apexcharts';
 
 interface SubmissionCount {
-  postMonth: string;
-  postYear: string;
   _count: {
     id: number;
   };
+  postMonth: number;
+  postYear: number;
 }
 
 interface MobileGraphProps {
