@@ -283,20 +283,19 @@ router.post("/task", authMiddleware, async (req, res) => {
 
     const recipientAddress = transaction.transaction.message
       .getAccountKeys()
-      .get(1)
+      .get(0)
       ?.toString();
     const senderAddress = transaction.transaction.message
       .getAccountKeys()
       .get(0)
       ?.toString();
 
-    // if (recipientAddress !== PARENT_WALLET_ADDRESS) {
+    // if (recipientAddress !== process.env.PARENT_WALLET_ADDRESS) {
     //   return res.status(411).json({
     //     message: "Transaction sent to the wrong address",
     //   });
     // }
 
-    // console.log(senderAddress, user.address);
     // if (senderAddress !== user.address) {
     //   return res.status(411).json({
     //     message: "Transaction sent from the wrong address",
@@ -312,11 +311,11 @@ router.post("/task", authMiddleware, async (req, res) => {
             if (parseData.data.votingType === "Rating_Scale") {
               const rating_scale_model = await tx.rating_Scale.create({
                 data: {
-                  Five_Star: parseData.data.fiveStar,
-                  Four_Star: parseData.data.fourStar,
-                  Three_Star: parseData.data.threeStar,
-                  Two_Star: parseData.data.twoStar,
-                  One_Star: parseData.data.oneStar,
+                  Five_Star: parseData.data.votingCustomOptionsArr[0],
+                  Four_Star: parseData.data.votingCustomOptionsArr[1],
+                  Three_Star: parseData.data.votingCustomOptionsArr[2],
+                  Two_Star: parseData.data.votingCustomOptionsArr[3],
+                  One_Star: parseData.data.votingCustomOptionsArr[4],
                 },
               });
 
@@ -331,10 +330,10 @@ router.post("/task", authMiddleware, async (req, res) => {
             } else if (parseData.data.votingType === "Multiple_Choice_Poll") {
               const multiple_choice_poll_model = await tx.poll.create({
                 data: {
-                  option1: parseData.data.option1,
-                  option2: parseData.data.option2,
-                  option3: parseData.data.option3,
-                  option4: parseData.data.option4,
+                  option1: parseData.data.votingCustomOptionsArr[0],
+                  option2: parseData.data.votingCustomOptionsArr[1],
+                  option3: parseData.data.votingCustomOptionsArr[2],
+                  option4: parseData.data.votingCustomOptionsArr[3],
                 },
               });
 
@@ -349,8 +348,8 @@ router.post("/task", authMiddleware, async (req, res) => {
             } else if (parseData.data.votingType === "Upvote_Downvote") {
               const upvote_downvote_model = await tx.upvote_Downvote.create({
                 data: {
-                  Upvote: parseData.data.upvote,
-                  Downvote: parseData.data.downvote,
+                  Upvote: parseData.data.votingCustomOptionsArr[0],
+                  Downvote: parseData.data.votingCustomOptionsArr[1],
                 },
               });
 
@@ -365,10 +364,10 @@ router.post("/task", authMiddleware, async (req, res) => {
             } else if (parseData.data.votingType === "Emoji_Reaction") {
               const emoji_reaction_vote_model = await tx.emoji_Reaction.create({
                 data: {
-                  Emoji_1: parseData.data.emoji1,
-                  Emoji_2: parseData.data.emoji2,
-                  Emoji_3: parseData.data.emoji3,
-                  Emoji_4: parseData.data.emoji4,
+                  Emoji_1: parseData.data.votingCustomOptionsArr[0],
+                  Emoji_2: parseData.data.votingCustomOptionsArr[1],
+                  Emoji_3: parseData.data.votingCustomOptionsArr[2],
+                  Emoji_4: parseData.data.votingCustomOptionsArr[3],
                 },
               });
 

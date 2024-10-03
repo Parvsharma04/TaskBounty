@@ -29,6 +29,32 @@ export const UploadIdeaComponent = () => {
   const [tasksAmt, setTasksAmt] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [votingType, setVotingType] = useState("Rating_Scale");
+  const [votingCustomOptionsArr, setvotingCustomOptionsArr] = useState<
+    string[]
+  >([]);
+
+  // Voting stars
+  const [fiveStar, setFiveStar] = useState("");
+  const [fourStar, setFourStar] = useState("");
+  const [threeStar, setThreeStar] = useState("");
+  const [twoStar, setTwoStar] = useState("");
+  const [oneStar, setOneStar] = useState("");
+
+  // Multiple choice poll
+  const [option1, setOption1] = useState("");
+  const [option2, setOption2] = useState("");
+  const [option3, setOption3] = useState("");
+  const [option4, setOption4] = useState("");
+
+  // Up and down vote
+  const [upVote, setUpVote] = useState("");
+  const [downVote, setDownVote] = useState("");
+
+  // Emoji votes
+  const [emoji1, setEmoji1] = useState("");
+  const [emoji2, setEmoji2] = useState("");
+  const [emoji3, setEmoji3] = useState("");
+  const [emoji4, setEmoji4] = useState("");
 
   function openImageModal() {
     setimageModalIsOpen(true);
@@ -131,6 +157,7 @@ export const UploadIdeaComponent = () => {
           images: images,
           description: description || "",
           votingType: votingType,
+          votingCustomOptionsArr: votingCustomOptionsArr,
           signature: txSignature,
           postDate: currDate,
           postMonth: currMonth,
@@ -324,7 +351,40 @@ export const UploadIdeaComponent = () => {
             <label htmlFor="designDescription" className="text-base">
               Choose the type of voting
             </label>
-            <VoteSelection setVotingType={setVotingType} />
+            <VoteSelection
+              fiveStar={fiveStar}
+              setFiveStar={setFiveStar}
+              fourStar={fourStar}
+              setFourStar={setFourStar}
+              threeStar={threeStar}
+              setThreeStar={setThreeStar}
+              twoStar={twoStar}
+              setTwoStar={setTwoStar}
+              oneStar={oneStar}
+              setOneStar={setOneStar}
+              setVotingType={setVotingType}
+              option1={option1}
+              setOption1={setOption1}
+              option2={option2}
+              setOption2={setOption2}
+              option3={option3}
+              setOption3={setOption3}
+              option4={option4}
+              setOption4={setOption4}
+              upVote={upVote}
+              setUpVote={setUpVote}
+              downVote={downVote}
+              setDownVote={setDownVote}
+              emoji1={emoji1}
+              setEmoji1={setEmoji1}
+              emoji2={emoji2}
+              setEmoji2={setEmoji2}
+              emoji3={emoji3}
+              setEmoji3={setEmoji3}
+              emoji4={emoji4}
+              setEmoji4={setEmoji4}
+              setvotingCustomOptionsArr={setvotingCustomOptionsArr}
+            />
           </div>
         </div>
         <button

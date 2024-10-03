@@ -26,6 +26,7 @@ export const createTaskInput = z.object({
   emoji2: z.string().optional(),
   emoji3: z.string().optional(),
   emoji4: z.string().optional(),
+  votingCustomOptionsArr: z.array(z.string()).optional(),
 });
 
 export const createSubmissionInput = z.object({
