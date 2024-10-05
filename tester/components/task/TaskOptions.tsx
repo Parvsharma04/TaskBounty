@@ -1,41 +1,46 @@
-import { useState } from "react";
-import TaskImage from "../TaskImage";
+import React, { useState } from "react";
+import { FaEye } from "react-icons/fa";
 import Modal from "react-modal";
 
 interface Option {
-  votingTypeDetails: any;
   id: number;
-  image_url: string[];
+  url?: string; // For UI/UX Design tasks
+  image_url?: string; // For other task types
+  votingTypeDetails?: Record<string, any>;
 }
 
 interface TaskOptionsProps {
-  option: Option;
+  options: Option[];
   taskOptionSelect: number;
   setTaskOptionSelect: (value: number) => void;
   category: string;
 }
 
 const TaskOptions: React.FC<TaskOptionsProps> = ({
-  option,
+  options,
   taskOptionSelect,
   setTaskOptionSelect,
   category,
 }) => {
   const [websiteModal, setWebsiteModal] = useState(false);
-  const [url, setUrl] = useState("");
+  const [previewUrl, setPreviewUrl] = useState("");
 
-  const handleCheckboxChange = (idx: number) => {
-    setTaskOptionSelect(idx); // Only the clicked checkbox will be selected
+  const handleOptionSelect = (id: number) => {
+    setTaskOptionSelect(id);
   };
-  function openModal() {
+
+  const openModal = (url: string) => {
+    setPreviewUrl(url);
     setWebsiteModal(true);
-  }
-  function closeModal() {
+  };
+
+  const closeModal = () => {
     setWebsiteModal(false);
-  }
+  };
+
   const UrlCustomStyles = {
     overlay: {
-      backgroundColor: "rgba(0, 0, 0, 0.25)",
+      backgroundColor: "rgba(0, 0, 0, 0.75)",
     },
     content: {
       top: "50%",
@@ -44,7 +49,86 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
       bottom: "auto",
       transform: "translate(-50%, -50%)",
       padding: 0,
+      width: "90vw",
+      height: "90vh",
+      maxWidth: "1200px",
+      maxHeight: "800px",
     },
+  };
+
+  const renderOption = (option: Option, index: number) => {
+    // Check if the category is "UI_UX_Design" and handle URL previews
+    if (category === "UI_UX_Design" && option.url) {
+      return (
+        <div
+          key={option.id}
+          className="relative cursor-pointer bg-gray-900 rounded-md overflow-hidden transition-transform duration-300 hover:scale-105 p-2"
+          onClick={() => handleOptionSelect(option.id)}
+        >
+          <div className="w-full h-40 relative">
+            <iframe
+              src={option.url}
+              className="w-full h-full border-0"
+              title={`Website Preview ${index + 1}`}
+            />
+            <div className="absolute inset-0 bg-transparent" />
+          </div>
+          <div className="absolute top-2 left-2">
+            <input
+              type="checkbox"
+              checked={taskOptionSelect === option.id}
+              readOnly
+              className={`w-5 h-5 rounded-full ${
+                taskOptionSelect === option.id ? "bg-green-500 border-green-600" : "border-gray-300"
+              }`}
+            />
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              openModal(option.url!);
+            }}
+            className="absolute top-2 right-2 p-1 bg-gray-700 rounded-full text-white transition-colors hover:bg-gray-800"
+          >
+            <FaEye size={18} />
+          </button>
+        </div>
+      );
+    } else if (option.image_url) { // For other task types
+      return (
+        <div
+          key={option.id}
+          className="relative cursor-pointer bg-gray-900 rounded-md overflow-hidden transition-transform duration-300 hover:scale-105 p-2"
+          onClick={() => handleOptionSelect(option.id)}
+        >
+          <img
+            src={option.image_url}
+            alt={`Option ${index + 1}`}
+            className="w-full h-40 object-cover"
+          />
+          <div className="absolute top-2 left-2">
+            <input
+              type="checkbox"
+              checked={taskOptionSelect === option.id}
+              readOnly
+              className={`w-5 h-5 rounded-full ${
+                taskOptionSelect === option.id ? "bg-green-500 border-green-600" : "border-gray-300"
+              }`}
+            />
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              openModal(option.image_url!);
+            }}
+            className="absolute top-2 right-2 p-1 bg-gray-700 rounded-full text-white transition-colors hover:bg-gray-800"
+          >
+            <FaEye size={18} />
+          </button>
+        </div>
+      );
+    }
+    return null; // In case there's no valid option
   };
 
   return (
@@ -53,63 +137,28 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
         isOpen={websiteModal}
         onRequestClose={closeModal}
         style={UrlCustomStyles}
-        contentLabel="Image Courasel"
+        contentLabel="Preview"
       >
-        <div className="flex flex-col gap-3">
-          <div className="flex justify-end">
+        <div className="flex flex-col h-full">
+          <div className="flex justify-between items-center p-2 bg-gray-800 text-white">
+            <h2 className="text-lg font-semibold">Website Preview</h2>
             <button
               onClick={closeModal}
-              className="text-2xl font-bold bg-red-700 w-10 h-10 rounded flex justify-center items-center"
+              className="text-xl font-bold bg-red-700 w-8 h-8 rounded flex justify-center items-center"
             >
               X
             </button>
           </div>
           <iframe
-            src={url}
-            className="w-[60vw] h-[60vh]"
-            frameBorder="0"
-            allowFullScreen
-          ></iframe>
+            src={previewUrl}
+            className="w-full h-full border-0"
+            title="Website Preview"
+          />
         </div>
       </Modal>
-      {option.image_url
-        ? option.image_url.map((url: string, idx) => (
-            <div className="cursor-pointer relative" key={idx}>
-              <input
-                id={`default-checkbox-${idx}`}
-                type="checkbox"
-                name="default-checkbox"
-                value="1"
-                checked={taskOptionSelect === idx} // Checkbox is checked if this is the selected one
-                onChange={() => handleCheckboxChange(idx)}
-                className="w-16 h-16 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 absolute top-1/3 left-1/3 z-50"
-              />
-              <label htmlFor={`default-checkbox-${idx}`}>
-                {category == "UI_UX_Design" ? (
-                  <button
-                    onClick={() => {
-                      setUrl(url);
-                      setUrl(url);
-                      openModal();
-                    }}
-                    className="w-[200px] h-[250px] rounded-[20px] bg-gray-800 shadow-[0_25px_50px_rgba(0,0,0,0.55)] cursor-pointer transition-transform duration-300 hover:scale-90 text-white text-3xl"
-                  >
-                    Preview
-                  </button>
-                ) : (
-                  <TaskImage imageUrl={url} />
-                )}
-              </label>
-            </div>
-          ))
-        : option.votingTypeDetails &&
-          Object.entries(option.votingTypeDetails).map(
-            (detail: any, idx: number) => (
-              <div className="cursor-pointer" key={idx}>
-                {detail}
-              </div>
-            )
-          )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {options.map((option, index) => renderOption(option, index))}
+      </div>
     </>
   );
 };

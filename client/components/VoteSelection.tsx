@@ -1,13 +1,13 @@
 "use client";
 
-import { StarIcon } from "@/utils/StarIcon";
-import { PollIcon } from "@/utils/PollIcon";
 import { DoubleArrowIcon } from "@/utils/DoubleArrowIcon";
-import { Tabs, Tab } from "@nextui-org/react";
 import { EmojiIcon } from "@/utils/EmojiIcon";
 import { PencilIcon } from "@/utils/PencilIcon";
-import Modal from "react-modal";
+import { PollIcon } from "@/utils/PollIcon";
+import { StarIcon } from "@/utils/StarIcon";
+import { Tab, Tabs } from "@nextui-org/react";
 import { useState } from "react";
+import Modal from "react-modal";
 
 interface voteSelectionProps {
   fiveStar: string;
@@ -395,7 +395,7 @@ export default function VoteSelection({
           }
         />
         <Tab
-          key="Multiple_Choice_Poll"
+          key="Poll"
           title={
             <div className="flex items-center space-x-2">
               <div className="flex items-center">

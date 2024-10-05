@@ -1,13 +1,16 @@
 import { Chip } from "@nextui-org/react";
+import React from "react";
 
-const TaskStatement = ({
+interface TaskStatementProps {
+  category: string;
+  title: string;
+  name?: string | null;
+}
+
+const TaskStatement: React.FC<TaskStatementProps> = ({
   category,
   title,
   name = null,
-}: {
-  category: string;
-  title: string;
-  name: any;
 }) => {
   const getCategoryChip = (category: string) => {
     switch (category) {
@@ -26,16 +29,22 @@ const TaskStatement = ({
 
   return (
     <div
-      className="p-4 mb-4 text-sm text-white bg-gray-800 rounded-2xl w-full flex items-center"
+      className="p-3 sm:p-4 mb-4 text-white bg-gray-800 rounded-2xl w-full"
       role="alert"
     >
-      {name && (
-        <span className="text-xl font-medium me-2 px-2.5 py-0.5 rounded bg-green-900 text-green-300">
-          {name}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+        {name && (
+          <span className="text-base sm:text-lg font-medium px-2 py-0.5 rounded bg-green-900 text-green-300 whitespace-nowrap">
+            {name}
+          </span>
+        )}
+        <span className="text-lg sm:text-xl md:text-2xl font-medium flex-grow text-center sm:text-left">
+          {title}
         </span>
-      )}
-      <span className="inline-block text-center text-2xl">{title}</span>
-      <div className="ml-2">{getCategoryChip(category)}</div>
+        <div className="self-center sm:self-auto mt-2 sm:mt-0">
+          {getCategoryChip(category)}
+        </div>
+      </div>
     </div>
   );
 };

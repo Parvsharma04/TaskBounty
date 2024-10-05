@@ -58,7 +58,7 @@ const TesterDash: React.FC<TesterDashProps> = ({
       <motion.li variants={itemVariants}>
         <StatCard
           title="Total Earnings"
-          total={totalEarned.toString()} // Displays 0.000000 SOL if no earnings
+          total={totalEarned.toFixed(4).toString()} // Displays 0.000000 SOL if no earnings
         >
           <div className="flex justify-start w-full items-start">
             <div className="bg-gray-600 p-2 rounded-full">
@@ -85,7 +85,7 @@ const TesterDash: React.FC<TesterDashProps> = ({
       <motion.li variants={itemVariants}>
         <StatCard
           title="Total Payout"
-          total={totalPayout.toString()} // Displays 0.000000 SOL if no payout
+          total={totalPayout.toFixed(4).toString()} // Displays 0.000000 SOL if no payout
         >
           <div className="flex justify-start w-full items-start">
             <div className="bg-gray-600 p-2 rounded-full">

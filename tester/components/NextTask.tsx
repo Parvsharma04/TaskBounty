@@ -8,7 +8,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "./Loading";
-import TaskOptions from "./task/TaskOptions";
+import { TaskOptions } from "./task/TaskCategory";
 import TaskStatement from "./TaskStatement";
 
 interface Task {
@@ -134,11 +134,13 @@ export const NextTask: React.FC<NextTaskProps> = ({
     }
     setLoading(false);
   };
+
   const handleTaskVoteOptionSelect = (idx: number) => {
-    setTaskVoteOptionSelect(idx); // Only the clicked checkbox will be selected
+    setTaskVoteOptionSelect(idx);
   };
+
   const handleTaskOptionSelect = (idx: number) => {
-    setTaskOptionSelect(idx); // Only the clicked checkbox will be selected
+    setTaskOptionSelect(idx);
   };
 
   return (
@@ -179,14 +181,14 @@ export const NextTask: React.FC<NextTaskProps> = ({
         ) : (
           <div className="flex flex-col justify-center items-center min-h-screen md:p-5">
             <motion.div
-              className="flex flex-wrap md:flex-nowrap justify-center gap-10 items-center"
+              className="flex flex-wrap md:flex-nowrap justify-center gap-4 sm:gap-6 items-start"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
               transition={{ duration: 1, ease: "easeInOut" }}
             >
               <motion.div
-                className="bg-gray-900 border p-4 sm:p-6 md:p-10 w-fit max-w-5xl rounded-2xl lg:mt-20"
+                className="bg-gray-900 border p-4 md:p-6 lg:p-8 w-full max-w-xl rounded-2xl"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -198,7 +200,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
                   name="Bounty :"
                 />
                 <motion.ul
-                  className="flex flex-wrap gap-4 sm:gap-5 md:pl-12"
+                  className="flex flex-wrap gap-4 sm:gap-5 md:pl-4 mt-4"
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
@@ -207,7 +209,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
                     <motion.li
                       key={option.id}
                       variants={itemVariants}
-                      className="flex justify-center"
+                      className="flex justify-center w-full sm:w-auto"
                     >
                       <TaskOptions
                         category={currentTask.category}
@@ -219,58 +221,69 @@ export const NextTask: React.FC<NextTaskProps> = ({
                   ))}
                 </motion.ul>
               </motion.div>
-              <motion.div
-                className="bg-gray-900 border p-4 sm:p-6 md:p-10 w-fit max-w-5xl rounded-2xl lg:mt-20"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                transition={{ duration: 1, ease: "easeInOut" }}
-              >
-                <TaskStatement
-                  category="Voting"
-                  title="Options: "
-                  name={null}
-                />
-                <motion.ul
-                  className="flex flex-wrap gap-4 sm:gap-5"
+
+              {currentTask?.category !== "Youtube_Thumbnail" && (
+                <motion.div
+                  className="bg-gray-900 border p-4 md:p-6 lg:p-8 w-full max-w-xl rounded-2xl"
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
+                  transition={{ duration: 1, ease: "easeInOut" }}
                 >
-                  {Object.entries(currentTask?.votingTypeDetails)
-                    ?.slice(1)
-                    .map((val, idx) => (
-                      <motion.li
-                        key={idx}
-                        variants={itemVariants}
-                        className="flex justify-center items-center text-xl w-full bg-gray-700 rounded-md p-2 hover:bg-gray-800 cursor-pointer transition-colors"
-                      >
-                        <input
-                          id={`default-checkbox-${idx}`}
-                          type="checkbox"
-                          name="default-checkbox"
-                          value="1"
-                          checked={taskVoteOptionSelect === idx} // Checkbox is checked if this is the selected one
-                          onChange={() => handleTaskVoteOptionSelect(idx)} // Update selected checkbox
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 absolute top-1/3 left-1/3 z-50"
-                        />
-                        <label
-                          htmlFor={`default-checkbox-${idx}`}
-                        >{`${val[1]}`}</label>
-                      </motion.li>
-                    ))}
-                </motion.ul>
-              </motion.div>
+                  <TaskStatement
+                    category="Voting"
+                    title="Options: "
+                    name={null}
+                  />
+                  <motion.ul
+                    className="flex flex-wrap gap-4 sm:gap-5 mt-4"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                  >
+                    {Object.entries(currentTask?.votingTypeDetails)
+                      ?.slice(1)
+                      .map((val, idx) => (
+                        <motion.li
+                          key={idx}
+                          variants={itemVariants}
+                          className="flex justify-center items-center text-lg sm:text-xl w-full bg-gray-700 rounded-md p-2 hover:bg-gray-800 cursor-pointer transition-colors relative"
+                        >
+                          <input
+                            id={`default-checkbox-${idx}`}
+                            type="checkbox"
+                            name="default-checkbox"
+                            value="1"
+                            checked={taskVoteOptionSelect === idx}
+                            onChange={() => handleTaskVoteOptionSelect(idx)}
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 absolute top-1/3 left-1/3 z-50"
+                          />
+                          <label
+                            htmlFor={`default-checkbox-${idx}`}
+                            className="ml-3"
+                          >
+                            {`${val[1]}`}
+                          </label>
+                        </motion.li>
+                      ))}
+                  </motion.ul>
+                </motion.div>
+              )}
             </motion.div>
-            <motion.div
-              className="bg-gray-900 border p-3 px-5 rounded-lg cursor-pointer hover:bg-gray-800 transition-colors text-xl"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              transition={{ duration: 1, ease: "easeInOut" }}
-            >
-              <button onClick={handleSubmit}>Submit your vote</button>
-            </motion.div>
+            <div className="m-5">
+              <motion.button
+                onClick={handleSubmit}
+                className="wallet-adapter-button-trigger p-4 w-fit bg-blue-600 rounded-[20px] shadow-lg text-lg transition-all duration-300 ease-in-out hover:bg-blue-500 hover:shadow-xl"
+                initial={{ scale: 1 }}
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.3)",
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Submit
+              </motion.button>
+            </div>
           </div>
         )}
       </div>

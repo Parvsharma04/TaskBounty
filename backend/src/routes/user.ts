@@ -327,7 +327,7 @@ router.post("/task", authMiddleware, async (req, res) => {
               });
 
               return votingModel;
-            } else if (parseData.data.votingType === "Multiple_Choice_Poll") {
+            } else if (parseData.data.votingType === "Poll") {
               const multiple_choice_poll_model = await tx.poll.create({
                 data: {
                   option1: parseData.data.votingCustomOptionsArr[0],
