@@ -188,7 +188,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
               transition={{ duration: 1, ease: "easeInOut" }}
             >
               <motion.div
-                className="bg-gray-900 border p-4 md:p-6 lg:p-8 w-full max-w-xl rounded-2xl"
+                className="bg-gray-900  p-4 md:p-6 lg:p-8 w-full max-w-xl rounded-2xl"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -224,7 +224,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
 
               {currentTask?.category !== "Youtube_Thumbnail" && (
                 <motion.div
-                  className="bg-gray-900 border p-4 md:p-6 lg:p-8 w-full max-w-xl rounded-2xl"
+                  className="bg-gray-900  p-4 md:p-6 lg:p-8 w-full max-w-xl rounded-2xl"
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
