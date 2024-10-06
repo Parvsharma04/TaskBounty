@@ -142,7 +142,7 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  openModal(imageUrl);
+                  openModal(imageUrl, true);
                 }}
                 className="absolute top-2 right-2 p-1 bg-gray-700 rounded-full text-white transition-colors hover:bg-gray-800"
               >

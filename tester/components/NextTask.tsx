@@ -59,6 +59,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
 }) => {
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(false);
+  const [limitReached, setLimitReached] = useState(false);
   const wallet = useWallet();
   const router = useRouter();
   const token: string | null = localStorage.getItem("token");
@@ -82,10 +83,13 @@ export const NextTask: React.FC<NextTaskProps> = ({
             Authorization: token,
           },
         });
-        console.log(response.data);
+        if (response.data.message) setLimitReached(true);
         setCurrentTask(response.data.task);
         setNoMoreTasks(false);
       } catch (error: any) {
+        if (error.status === 423) {
+          setLimitReached(true);
+        }
         console.log(error);
         setCurrentTask(null);
         setNoMoreTasks(true);
@@ -121,9 +125,11 @@ export const NextTask: React.FC<NextTaskProps> = ({
           },
         }
       );
+
       if (response.status === 200) {
         toast.success("Task completed successfully!");
       }
+
       const nextTask = response.data.nextTask;
       if (nextTask) {
         setCurrentTask(nextTask);
@@ -131,8 +137,15 @@ export const NextTask: React.FC<NextTaskProps> = ({
         setCurrentTask(null);
         setNoMoreTasks(true);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error submitting task:", err);
+
+      if (err.response && err.response.status === 409) {
+        toast.error(err.response.data.message); // Display the error message from the server
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+
       setCurrentTask(null);
     }
     setLoading(false);
@@ -171,6 +184,13 @@ export const NextTask: React.FC<NextTaskProps> = ({
           <div className="h-screen flex justify-center items-center">
             <Loading />
           </div>
+        ) : limitReached ? (
+          <div className="h-screen flex justify-center items-center px-4">
+            <div className="text-center text-lg sm:text-xl md:text-2xl">
+              You have completed your 5 bounties for today. Come back tomorrow for
+              more.
+            </div>
+          </div>
         ) : currentTask === null ? (
           (!noMoreTasks && getTask(),
           (
@@ -182,7 +202,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
             </div>
           ))
         ) : (
-          <div className="flex flex-col justify-center items-center min-h-screen md:p-5">
+          <div className="flex flex-col w-full justify-center items-center min-h-screen md:p-5">
             <motion.div
               className="flex flex-wrap md:flex-nowrap justify-center gap-4 sm:gap-6 items-start"
               variants={containerVariants}
@@ -191,7 +211,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
               transition={{ duration: 1, ease: "easeInOut" }}
             >
               <motion.div
-                className="bg-gray-900  p-4 md:p-6 lg:p-8 w-full max-w-xl rounded-2xl"
+                className="bg-gray-900  p-4 md:p-6 lg:p-8 w-fit  rounded-2xl"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -218,7 +238,6 @@ export const NextTask: React.FC<NextTaskProps> = ({
                     name="Bounty :"
                   />
                 )}
-
 
                 <motion.ul
                   className="flex flex-wrap gap-4 sm:gap-5 md:pl-4 mt-4"
@@ -295,7 +314,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
             <div className="m-5">
               <motion.button
                 onClick={handleSubmit}
-                className="wallet-adapter-button-trigger p-4 w-fit bg-blue-600 rounded-[20px] shadow-lg text-lg transition-all duration-300 ease-in-out hover:bg-blue-500 hover:shadow-xl"
+                className="wallet-adapter-button-trigger p-4 w-32 bg-blue-600 rounded-[20px] shadow-lg text-lg transition-all duration-300 ease-in-out hover:bg-blue-500 hover:shadow-xl"
                 initial={{ scale: 1 }}
                 whileHover={{
                   scale: 1.05,

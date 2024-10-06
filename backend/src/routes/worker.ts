@@ -28,11 +28,15 @@ router.get("/nextTask", workerMiddleware, async (req, res) => {
 
   const task = await getNextTask(Number(userId));
 
-  if (!task) {
+  if (task?.message) {
+    res.status(423).json({ message: task.message });
+  } else if (!task) {
+    // If no task is found, return a 404 response
     res.status(404).json({
       message: "No more tasks left for you to review",
     });
   } else {
+    // If a task is found, return it in the response
     res.json({
       task,
     });
@@ -52,11 +56,35 @@ router.post("/submission", workerMiddleware, async (req, res) => {
         message: "Incorrect task id",
       });
     }
+
     const taskmodel = await prismaClient.task.findFirst({
       where: {
         id: Number(parsedBody.data.taskId),
       },
     });
+
+    if (!taskmodel) {
+      return res.status(404).json({
+        message: "Task not found",
+      });
+    }
+
+    // Check for existing submission
+    const existingSubmission = await prismaClient.submission.findUnique({
+      where: {
+        worker_id_task_id: {
+          worker_id: Number(userId),
+          task_id: Number(parsedBody.data.taskId),
+        },
+      },
+    });
+
+    if (existingSubmission) {
+      return res.status(409).json({
+        message: "You have already submitted this task.",
+      });
+    }
+
     const taskCategory = taskmodel?.category;
     let categoryModel: any;
 
@@ -96,11 +124,11 @@ router.post("/submission", workerMiddleware, async (req, res) => {
         message: "Worker not found",
       });
     }
+
     const amount = TASK_SUBMISSION_AMT.toString();
     const submission = await prismaClient.$transaction(async (tx) => {
-      //! Create submission
       console.log("Creating submission");
-      const submission = await prismaClient.submission.create({
+      const submission = await tx.submission.create({
         data: {
           worker_id: Number(userId),
           task_id: Number(parsedBody.data.taskId),
@@ -110,7 +138,8 @@ router.post("/submission", workerMiddleware, async (req, res) => {
           postYear: parsedBody.data.postYear,
         },
       });
-      //! Update task
+
+      // Update task
       console.log("Updating task");
       await tx.task.update({
         where: {
@@ -123,7 +152,7 @@ router.post("/submission", workerMiddleware, async (req, res) => {
         },
       });
 
-      //! Update category
+      // Update category
       console.log("Updating category");
       if (taskCategory === "UI_UX_Design") {
         await tx.uI_UX_Design.update({
@@ -141,7 +170,7 @@ router.post("/submission", workerMiddleware, async (req, res) => {
         });
       }
 
-      //! Update worker
+      // Update worker
       console.log("Updating worker");
       await tx.worker.update({
         where: {
@@ -155,6 +184,7 @@ router.post("/submission", workerMiddleware, async (req, res) => {
       });
       return submission;
     });
+
     const nextTask = await getNextTask(Number(userId));
     res.status(200).json({
       nextTask,
