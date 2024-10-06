@@ -87,30 +87,35 @@ export const getNextTask = async (userId: number) => {
   let category = task?.category;
 
   let title;
+  let description;
   if (
     category == "UI_UX_Design" &&
     categoryDetails &&
     "Design_Title" in categoryDetails
   ) {
     title = categoryDetails.Design_Title;
+    description = categoryDetails.Design_Description;
   } else if (
     category == "Idea_Product" &&
     categoryDetails &&
     "Idea_Title" in categoryDetails
   ) {
     title = categoryDetails.Idea_Title;
+    description = categoryDetails.Idea_Description;
   } else if (
     category == "Youtube_Thumbnail" &&
     categoryDetails &&
     "Youtube_Thumbnail_Title" in categoryDetails
   ) {
     title = categoryDetails.Youtube_Thumbnail_Title;
+    description = null;
   } else if (
     category == "Miscellaneous" &&
     categoryDetails &&
     "title" in categoryDetails
   ) {
     title = categoryDetails.title;
+    description = categoryDetails.Description;
   }
 
   let options = [];
@@ -152,6 +157,7 @@ export const getNextTask = async (userId: number) => {
     amount,
     category,
     title,
+    description, // Include the description here
     options,
     votingType,
     votingTypeDetails,

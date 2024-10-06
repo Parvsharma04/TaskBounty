@@ -24,13 +24,15 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
 }) => {
   const [websiteModal, setWebsiteModal] = useState(false);
   const [url, setUrl] = useState("");
+  const [isImage, setIsImage] = useState(true);
 
   const handleOptionSelect = (idx: number) => {
     setTaskOptionSelect(idx);
   };
 
-  const openModal = (imageUrl: string) => {
-    setUrl(imageUrl);
+  const openModal = (contentUrl: string, isImageContent: boolean) => {
+    setUrl(contentUrl);
+    setIsImage(isImageContent);
     setWebsiteModal(true);
   };
 
@@ -60,9 +62,10 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
         isOpen={websiteModal}
         onRequestClose={closeModal}
         style={UrlCustomStyles}
-        contentLabel="Image Preview"
+        contentLabel={isImage ? "Image Preview" : "Website Preview"}
       >
         <div className="flex flex-col gap-3">
+          {/* Close Button */}
           <div className="flex justify-end p-2">
             <button
               onClick={closeModal}
@@ -71,54 +74,94 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
               X
             </button>
           </div>
-          <img
-            src={url}
-            alt="Preview"
-            className="w-full h-auto max-h-[80vh] object-contain"
-          />
+          {isImage ? (
+            <img
+              src={url}
+              alt="Preview"
+              className="w-full h-auto max-h-[80vh] object-contain"
+            />
+          ) : (
+            <iframe
+              src={url}
+              className="w-[60vw] h-[60vh]"
+              frameBorder="0"
+              allowFullScreen
+            ></iframe>
+          )}
         </div>
       </Modal>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {option.image_url && option.image_url.map((imageUrl: string, idx) => (
+      <div className="flex gap-4">
+        {category == "UI_UX_Design" && (
           <div
-            key={idx}
-            className="relative cursor-pointer bg-gray-900 rounded-md overflow-hidden transition-transform duration-300 hover:scale-105 p-2"
-            onClick={() => handleOptionSelect(idx)}
+            className="relative cursor-pointer bg-gray-800 rounded-md p-4 transition-transform duration-300 hover:scale-105"
+            onClick={() => handleOptionSelect(option.id)}
           >
-            <TaskImage imageUrl={imageUrl} />
-            <div className="absolute top-2 left-2">
-              <input
-                type="checkbox"
-                checked={taskOptionSelect === idx}
-                readOnly
-                className={`w-5 h-5 rounded-full ${taskOptionSelect === idx ? "bg-green-500 border-green-600" : "border-gray-300"}`}
-              />
+            <div className="text-white font-medium">
+              <span>Visit: </span>
+              <a
+                href={option.image_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-blue-400"
+              >
+                {option.image_url}
+              </a>
             </div>
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                openModal(imageUrl);
+                openModal(option.image_url[0]!, false);
               }}
               className="absolute top-2 right-2 p-1 bg-gray-700 rounded-full text-white transition-colors hover:bg-gray-800"
             >
               <FaEye size={18} />
             </button>
           </div>
-        ))}
+        )}
+        {category != "UI_UX_Design" &&
+          option.image_url &&
+          option.image_url.map((imageUrl: string, idx) => (
+            <div
+              key={idx}
+              className="relative cursor-pointer bg-gray-900 rounded-md overflow-hidden transition-transform duration-300 hover:scale-105 p-2"
+              onClick={() => handleOptionSelect(idx)}
+            >
+              <TaskImage imageUrl={imageUrl} />
+              <div className="absolute top-2 left-2">
+                <input
+                  type="checkbox"
+                  checked={taskOptionSelect === idx}
+                  readOnly
+                  className={`w-5 h-5 rounded-full ${
+                    taskOptionSelect === idx
+                      ? "bg-green-500 border-green-600"
+                      : "border-gray-300"
+                  }`}
+                />
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openModal(imageUrl);
+                }}
+                className="absolute top-2 right-2 p-1 bg-gray-700 rounded-full text-white transition-colors hover:bg-gray-800"
+              >
+                <FaEye size={18} />
+              </button>
+            </div>
+          ))}
       </div>
       {option.votingTypeDetails && (
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {Object.entries(option.votingTypeDetails).map(
-            ([key, value], idx) => (
-              <div
-                key={idx}
-                className="cursor-pointer bg-gray-800 p-3 rounded-md text-center hover:bg-gray-700 transition-colors"
-                onClick={() => handleOptionSelect(idx)}
-              >
-                {value}
-              </div>
-            )
-          )}
+          {Object.entries(option.votingTypeDetails).map(([key, value], idx) => (
+            <div
+              key={idx}
+              className="cursor-pointer bg-gray-800 p-3 rounded-md text-center hover:bg-gray-700 transition-colors"
+              onClick={() => handleOptionSelect(idx)}
+            >
+              {value}
+            </div>
+          ))}
         </div>
       )}
     </>
@@ -130,7 +173,9 @@ interface TaskTitleProps {
 }
 
 const TaskTitle: React.FC<TaskTitleProps> = ({ title }) => {
-  return <h2 className="text-xl sm:text-2xl font-bold text-center my-4">{title}</h2>;
+  return (
+    <h2 className="text-xl sm:text-2xl font-bold text-center my-4">{title}</h2>
+  );
 };
 
 interface TaskCategoryProps {

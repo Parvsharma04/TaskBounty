@@ -1,5 +1,6 @@
 "use client";
 import { BACKEND_URL } from "@/utils";
+import { Accordion, AccordionItem } from "@nextui-org/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -24,6 +25,7 @@ interface Task {
   }[];
   votingType: string;
   votingTypeDetails?: any;
+  description: string | null;
 }
 
 interface NextTaskProps {
@@ -80,6 +82,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
             Authorization: token,
           },
         });
+        console.log(response.data);
         setCurrentTask(response.data.task);
         setNoMoreTasks(false);
       } catch (error: any) {
@@ -194,11 +197,29 @@ export const NextTask: React.FC<NextTaskProps> = ({
                 animate="visible"
                 transition={{ duration: 1, ease: "easeInOut" }}
               >
-                <TaskStatement
-                  category={currentTask.category}
-                  title={currentTask.title}
-                  name="Bounty :"
-                />
+                {currentTask.description ? (
+                  <Accordion>
+                    <AccordionItem
+                      title={
+                        <TaskStatement
+                          category={currentTask.category}
+                          title={currentTask.title}
+                          name="Bounty :"
+                        />
+                      }
+                    >
+                      {currentTask.description}
+                    </AccordionItem>
+                  </Accordion>
+                ) : (
+                  <TaskStatement
+                    category={currentTask.category}
+                    title={currentTask.title}
+                    name="Bounty :"
+                  />
+                )}
+
+
                 <motion.ul
                   className="flex flex-wrap gap-4 sm:gap-5 md:pl-4 mt-4"
                   variants={containerVariants}
@@ -209,7 +230,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
                     <motion.li
                       key={option.id}
                       variants={itemVariants}
-                      className="flex justify-center w-full sm:w-auto"
+                      className="flex justify-center w-fit sm:w-auto"
                     >
                       <TaskOptions
                         category={currentTask.category}
@@ -270,6 +291,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
                 </motion.div>
               )}
             </motion.div>
+
             <div className="m-5">
               <motion.button
                 onClick={handleSubmit}
