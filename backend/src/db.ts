@@ -9,7 +9,7 @@ export const getNextTask = async (userId: number) => {
   const currentYear = currentDate.getFullYear();
 
   // Count tasks completed today
-  const tasksCompletedToday = await prismaClient.submission.findMany({
+  const tasksCompletedToday = await prismaClient.submission.count({
     where: {
       worker_id: userId,
       postDate: currentDay,
@@ -17,9 +17,9 @@ export const getNextTask = async (userId: number) => {
       postYear: currentYear,
     },
   });
-  console.log(tasksCompletedToday);
+  // console.log(tasksCompletedToday)
   // Check if the worker has completed 5 tasks today
-  if (tasksCompletedToday.length >= 5) {
+  if (tasksCompletedToday >= 5) {
     return {
       message:
         "You have completed your 5 bounties today. Come Back Tomorrow for more",
