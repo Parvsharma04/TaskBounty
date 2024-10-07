@@ -131,7 +131,7 @@ router.post("/submission", workerMiddleware, async (req, res) => {
       const submission = await tx.submission.create({
         data: {
           worker_id: Number(userId),
-          task_id: Number(parsedBody.data.taskId),
+          task_id: parsedBody.data.taskId,
           amount: amount,
           postDate: parsedBody.data.postDate,
           postMonth: parsedBody.data.postMonth,
