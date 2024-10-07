@@ -45,7 +45,7 @@ export const getNextTask = async (userId: number) => {
     }
 
     const task = filteredTasks[0];
-
+    console.log(task)
     let categoryDetails;
     if (task?.category === "UI_UX_Design") {
       categoryDetails = await prismaClient.uI_UX_Design.findFirst({

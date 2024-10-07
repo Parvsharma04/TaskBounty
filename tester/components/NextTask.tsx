@@ -84,6 +84,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
           },
         });
         if (response.data.message) setLimitReached(true);
+        console.log(response.data);
         setCurrentTask(response.data.task);
         setNoMoreTasks(false);
       } catch (error: any) {
@@ -187,8 +188,8 @@ export const NextTask: React.FC<NextTaskProps> = ({
         ) : limitReached ? (
           <div className="h-screen flex justify-center items-center px-4">
             <div className="text-center text-lg sm:text-xl md:text-2xl">
-              You have completed your 5 bounties for today. Come back tomorrow for
-              more.
+              You have completed your 5 bounties for today. Come back tomorrow
+              for more.
             </div>
           </div>
         ) : currentTask === null ? (
@@ -245,20 +246,26 @@ export const NextTask: React.FC<NextTaskProps> = ({
                   initial="hidden"
                   animate="visible"
                 >
-                  {currentTask?.options.map((option) => (
-                    <motion.li
-                      key={option.id}
-                      variants={itemVariants}
-                      className="flex justify-center w-fit sm:w-auto"
-                    >
-                      <TaskOptions
-                        category={currentTask.category}
-                        option={option}
-                        taskOptionSelect={taskOptionSelect}
-                        setTaskOptionSelect={setTaskOptionSelect}
-                      />
-                    </motion.li>
-                  ))}
+                  {currentTask?.options && currentTask.options.length > 0 ? (
+                    currentTask.options.map((option) => (
+                      <motion.li
+                        key={option.id}
+                        variants={itemVariants}
+                        className="flex justify-center w-fit sm:w-auto"
+                      >
+                        <TaskOptions
+                          category={currentTask.category}
+                          option={option}
+                          taskOptionSelect={taskOptionSelect}
+                          setTaskOptionSelect={setTaskOptionSelect}
+                        />
+                      </motion.li>
+                    ))
+                  ) : (
+                    <div className="text-center text-lg">
+                      No options available for this task.
+                    </div>
+                  )}
                 </motion.ul>
               </motion.div>
 
@@ -281,31 +288,32 @@ export const NextTask: React.FC<NextTaskProps> = ({
                     initial="hidden"
                     animate="visible"
                   >
-                    {Object.entries(currentTask?.votingTypeDetails)
-                      ?.slice(1)
-                      .map((val, idx) => (
-                        <motion.li
-                          key={idx}
-                          variants={itemVariants}
-                          className="flex justify-center items-center text-lg sm:text-xl w-full bg-gray-700 rounded-md p-2 hover:bg-gray-800 cursor-pointer transition-colors relative"
-                        >
-                          <input
-                            id={`default-checkbox-${idx}`}
-                            type="checkbox"
-                            name="default-checkbox"
-                            value="1"
-                            checked={taskVoteOptionSelect === idx}
-                            onChange={() => handleTaskVoteOptionSelect(idx)}
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 absolute top-1/3 left-1/3 z-50"
-                          />
-                          <label
-                            htmlFor={`default-checkbox-${idx}`}
-                            className="ml-3"
+                    {currentTask?.votingTypeDetails &&
+                      Object.entries(currentTask.votingTypeDetails)
+                        .slice(1)
+                        .map((val, idx) => (
+                          <motion.li
+                            key={idx}
+                            variants={itemVariants}
+                            className="flex justify-center items-center text-lg sm:text-xl w-full bg-gray-700 rounded-md p-2 hover:bg-gray-800 cursor-pointer transition-colors relative"
                           >
-                            {`${val[1]}`}
-                          </label>
-                        </motion.li>
-                      ))}
+                            <input
+                              id={`default-checkbox-${idx}`}
+                              type="checkbox"
+                              name="default-checkbox"
+                              value="1"
+                              checked={taskVoteOptionSelect === idx}
+                              onChange={() => handleTaskVoteOptionSelect(idx)}
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 absolute top-1/3 left-1/3 z-50"
+                            />
+                            <label
+                              htmlFor={`default-checkbox-${idx}`}
+                              className="ml-3"
+                            >
+                              {`${val[1]}`}
+                            </label>
+                          </motion.li>
+                        ))}
                   </motion.ul>
                 </motion.div>
               )}
