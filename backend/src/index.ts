@@ -5,6 +5,7 @@ import workerRouter from "./routes/worker";
 import cors from "cors";
 import "dotenv/config";
 
+const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use("/v1/user", userRouter);
@@ -16,6 +17,6 @@ app.get("/", (req, res) => {
   res.send("Server is running and up !!!");
 });
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

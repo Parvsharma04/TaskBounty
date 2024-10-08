@@ -210,8 +210,6 @@ const MiscellaneousComponent = () => {
         }
       );
 
-      console.log(response);
-
       router.push(`/task/${response.data.id}`);
     } catch (err) {
       toast.error("Task submission failed");
@@ -468,7 +466,7 @@ const MiscellaneousComponent = () => {
             {images.length > 0 && (
               <button
                 onClick={() => setimageModalIsOpen(true)}
-                className="inline-flex mt-4 h-12 animate-shimmer items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%]  font-medium text-white transition-colors focus:outline-none w-full"
+                className="inline-flex mt-4 h-12 items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%]  font-medium text-white transition-colors focus:outline-none w-full"
               >
                 Preview Images
               </button>

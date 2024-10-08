@@ -3,7 +3,7 @@ import Card from "./Card";
 const TeamPage = () => {
   return (
     <>
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center py-8 pt-28">
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center py-16 md:py-0">
         <h1 className="text-4xl text-white mb-8 text-center">
           Meet Our Dev Team
         </h1>

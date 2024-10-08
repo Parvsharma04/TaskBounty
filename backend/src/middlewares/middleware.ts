@@ -11,7 +11,6 @@ export function authMiddleware(
 
   try {
     const decoded = jwt.verify(authHeader, process.env.JWT_SECRET as string);
-    // console.log(decoded);
     // @ts-ignore
     if (decoded.userId) {
       // @ts-ignore
@@ -36,14 +35,11 @@ export function workerMiddleware(
 ) {
   const authHeader = req.headers["authorization"] ?? "";
 
-  // console.log("Authorization Header:", authHeader);
-
   try {
     const decoded = jwt.verify(
       authHeader,
       process.env.WORKER_JWT_SECRET as string
     );
-    // console.log("Decoded JWT:", decoded);
 
     // @ts-ignore
     if (decoded.userId) {

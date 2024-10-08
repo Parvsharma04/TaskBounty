@@ -299,7 +299,7 @@ const StyledWrapper = styled.div`
 
   .bottom .view-more .svg {
     fill: none;
-    stroke: #00c37b; /* Adjust SVG color */
+    stroke: #00c37b;
     stroke-width: 3px;
     max-height: 15px;
   }
@@ -311,9 +311,9 @@ const StyledWrapper = styled.div`
   }
 
   .bottom .social-buttons-container .social-button {
-    width: 30px;
+    width: 40px; /* Increased button size */
     aspect-ratio: 1;
-    padding: 5px;
+    padding: 7px; /* Adjusted padding */
     background: rgb(255, 255, 255);
     border-radius: 50%;
     border: none;
@@ -322,12 +322,40 @@ const StyledWrapper = styled.div`
     box-shadow: rgba(5, 71, 17, 0.5) 0px 7px 5px -5px;
   }
 
+  .bottom .social-buttons-container .social-button:first-child {
+    transition: transform 0.2s ease-in-out 0.4s,
+      box-shadow 0.2s ease-in-out 0.4s;
+  }
+
+  .bottom .social-buttons-container .social-button:nth-child(2) {
+    transition: transform 0.2s ease-in-out 0.6s,
+      box-shadow 0.2s ease-in-out 0.6s;
+  }
+
+  .bottom .social-buttons-container .social-button:nth-child(3) {
+    transition: transform 0.2s ease-in-out 0.8s,
+      box-shadow 0.2s ease-in-out 0.8s;
+  }
+
+  .bottom .social-buttons-container .social-button .svg {
+    width: 15px;
+    fill: #1a56db;
+  }
+
   .bottom .social-buttons-container .social-button:hover {
-    background: #1a56db; /* New hover color */
+    background: black;
   }
 
   .bottom .social-buttons-container .social-button:hover .svg {
-    fill: white; /* New SVG hover color */
+    fill: white;
+  }
+
+  .bottom .social-buttons-container .social-button:active {
+    background: rgb(255, 234, 0);
+  }
+
+  .bottom .social-buttons-container .social-button:active .svg {
+    fill: black;
   }
 
   .logo {

@@ -109,7 +109,6 @@ const TransactionHistory = () => {
         }
       );
 
-      console.log(res.data.transaction);
       res.data.transaction.reverse();
       setTransactions(res.data.transaction);
     } catch (err) {

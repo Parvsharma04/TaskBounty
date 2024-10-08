@@ -71,7 +71,6 @@ export function UploadImage({
         uploadFile(file);
       });
     } catch (e) {
-      console.log(e);
       setSigninError(true);
     }
     setUploading(false);

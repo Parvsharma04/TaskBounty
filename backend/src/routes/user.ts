@@ -225,8 +225,6 @@ router.get("/task", authMiddleware, async (req, res) => {
     },
   });
 
-  // console.log(responses, taskDetails);
-
   res.json({
     taskDetails,
     categoryDetails,
@@ -245,8 +243,6 @@ router.get("/getAllTask", authMiddleware, async (req, res) => {
       user_id: Number(userId),
     },
   });
-  console.log(userId, tasksDetails);
-
   if (!tasksDetails || tasksDetails.length === 0) {
     return res.status(411).json({
       message: "You don't have access to this task",
@@ -750,8 +746,6 @@ router.post("/signin", async (req, res) => {
     new Uint8Array(signature.data),
     new PublicKey(publicKey).toBytes()
   );
-
-  // console.log(result);
 
   const existingUser = await prismaClient.user.findFirst({
     where: {

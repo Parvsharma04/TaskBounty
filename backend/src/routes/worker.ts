@@ -223,7 +223,6 @@ router.post("/payout", workerMiddleware, async (req, res) => {
       where: { id: Number(userId) },
     });
 
-    // console.log(worker);
     if (!worker) {
       return res.status(403).json({ message: "Worker not found" });
     }
@@ -327,7 +326,6 @@ router.post("/payout", workerMiddleware, async (req, res) => {
 });
 
 router.post("/signin", async (req, res) => {
-  // console.log(req.body);
   const { publicKey, signature } = req.body;
 
   if (!publicKey || !signature) {
@@ -352,8 +350,6 @@ router.post("/signin", async (req, res) => {
       address: hardCodedWalletAddress,
     },
   });
-
-  // console.log(existingUser);
 
   if (existingUser) {
     const token = jwt.sign(

@@ -23,10 +23,8 @@ const TaskSummary = ({
   const calculateRate = (current: number, previous: number) => {
     if (previous === 0) return 0; // Avoid division by zero
     const rate = ((current - previous) / previous) * 100;
-    // console.log(parseFloat(`${rate.toFixed(2)})`));
     return parseFloat(`${rate.toFixed(2)}`);
   };
-  // console.log(amtSpent);
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5 p-6 bg-gray-950 text-white">
