@@ -8,9 +8,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { slide as Menu } from "react-burger-menu";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AnimatedLink from "./AnimatedLink";
+
 const WalletMultiButtonDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
@@ -20,6 +21,7 @@ const WalletMultiButtonDynamic = dynamic(
 const NavBar = () => {
   const wallet = useWallet();
   const [payoutAmt, setPayoutAmt] = useState("0");
+  const [payoutDone, setPayoutDone] = useState(false); // New state variable
   const pathname = usePathname();
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -75,6 +77,7 @@ const NavBar = () => {
 
       console.log("Payout response:", response.data);
       setPayoutAmt(response.data.amount);
+      setPayoutDone(true); // Set payout done to true
 
       // Ensure the success message exists in the response
       if (response.data.message) {
@@ -110,17 +113,17 @@ const NavBar = () => {
   }, []);
 
   const WalletAndPayoutButtons = () => (
-    <>
+    <div>
       <motion.div
-        className="w-full flex flex-col md:flex-row items-center md:space-x-4 space-y-4 md:space-y-0"
+        className="w-full flex flex-col lg:flex-row items-center lg:space-x-4 space-y-4 lg:space-y-0"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         transition={{ duration: 0.3 }}
       >
-        {wallet.connected && Number(payoutAmt) >= 2 && (
+        {wallet.connected && Number(payoutAmt) >= 2 && !payoutDone && (
           <motion.button
             onClick={handlePayoutAmt}
-            className={`bg-blue-700 text-white py-2 px-5 rounded-[20px] shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-600 hover:shadow-xl text-xl w-full md:w-auto ${
+            className={`bg-blue-700 text-white py-2 px-5 rounded-[20px] shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-600 hover:shadow-xl text-xl w-full lg:w-auto ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={loading} // Disable button while loading
@@ -160,31 +163,18 @@ const NavBar = () => {
 
         <WalletMultiButtonDynamic
           onClick={() => getToken()}
-          className="bg-blue-700 text-white py-2 px-5 rounded-[20px] shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-600 hover:shadow-xl text-xl w-full md:w-auto text-center justify-center"
+          className="bg-blue-700 text-white py-2 px-5 rounded-[20px] shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-600 hover:shadow-xl text-xl w-full lg:w-auto text-center justify-center"
         >
           {wallet.connected
             ? `${wallet.publicKey?.toBase58().substring(0, 7)}...`
             : "Connect Wallet"}
         </WalletMultiButtonDynamic>
       </motion.div>
-    </>
+    </div>
   );
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-black shadow-[0_4px_8px_rgba(255,255,255,0.2)] z-50">
-      <ToastContainer
-        position="top-left"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
-
       <div className="mx-auto flex items-center justify-between p-4 w-[100%]">
         <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           <motion.img
@@ -205,7 +195,8 @@ const NavBar = () => {
             TaskBounty
           </motion.span>
         </a>
-        <div className="hidden md:flex md:items-center md:space-x-8">
+        {/* Desktop Menu: Hidden at 1100px or less */}
+        <div className="hidden xl:flex xl:items-center xl:space-x-8">
           {wallet.connected && (
             <>
               <AnimatedLink title="Home" href="/" />
@@ -216,12 +207,14 @@ const NavBar = () => {
           )}
         </div>
 
-        <div className="hidden md:block">
+        {/* Wallet and Payout Buttons for desktop */}
+        <div className="hidden xl:block">
           <WalletAndPayoutButtons />
         </div>
 
+        {/* Hamburger Menu: Visible at 1100px or less */}
         {wallet.connected && (
-          <div className="md:hidden">
+          <div className="xl:hidden">
             <Menu
               right
               isOpen={isMenuOpen}
@@ -257,7 +250,9 @@ const NavBar = () => {
               >
                 Transactions
               </Link>
-              <div className="px-6 mt-4">
+
+              {/* Wallet and Payout Buttons for mobile */}
+              <div className="block mt-5">
                 <WalletAndPayoutButtons />
               </div>
             </Menu>

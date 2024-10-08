@@ -23,23 +23,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-black">
-        <ToastContainer
-          position="top-left"
-          autoClose={2000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
         <GlobalStyles />
         <StyledComponentsRegistry>
           <Wallet>
             <NavBar />
             <Providers>{children}</Providers>
+            <ToastContainer
+              position="top-left"
+              autoClose={2000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
+            />
           </Wallet>
         </StyledComponentsRegistry>
       </body>
