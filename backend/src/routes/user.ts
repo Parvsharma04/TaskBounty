@@ -215,6 +215,7 @@ router.get("/task", authMiddleware, async (req, res) => {
 router.get("/getAllTask", authMiddleware, async (req, res) => {
   // @ts-ignore
   const userId = req.userId;
+  let resTasksDetails: any = [];
 
   const tasksDetails = await prismaClient.task.findMany({
     where: {
@@ -222,17 +223,73 @@ router.get("/getAllTask", authMiddleware, async (req, res) => {
     },
   });
 
-  if (!tasksDetails) {
+  if (!tasksDetails || tasksDetails.length === 0) {
     return res.status(411).json({
-      message: "You dont have access to this task",
+      message: "You don't have access to this task",
     });
   }
 
+  // Use Promise.all to wait for all asynchronous operations to finish
+  await Promise.all(
+    tasksDetails.map(async (task: any) => {
+      let categoryDetails;
+      let title = "No Title";
+      let category = task.category;
+
+      if (category === Category.UI_UX_Design) {
+        if (!task.uiUxDesign_id) {
+          throw new Error("You don't have access to this task");
+        }
+        categoryDetails = await prismaClient.uI_UX_Design.findFirst({
+          where: { id: task.uiUxDesign_id },
+        });
+        title = categoryDetails?.Design_Title ?? "No Title";
+      } else if (category === Category.Idea_Product) {
+        if (!task.ideaProduct_id) {
+          throw new Error("You don't have access to this task");
+        }
+        categoryDetails = await prismaClient.idea_Product.findFirst({
+          where: { id: task.ideaProduct_id },
+        });
+        title = categoryDetails?.Idea_Title ?? "No Title";
+      } else if (category === Category.Youtube_Thumbnail) {
+        if (!task.youtubeThumbnail_id) {
+          throw new Error("You don't have access to this task");
+        }
+        categoryDetails = await prismaClient.youtube_Thumbnail.findFirst({
+          where: { id: task.youtubeThumbnail_id },
+        });
+        title = categoryDetails?.Youtube_Thumbnail_Title ?? "No Title";
+      } else if (category === Category.Miscellaneous) {
+        if (!task.miscellaneous_id) {
+          throw new Error("You don't have access to this task");
+        }
+        categoryDetails = await prismaClient.miscellaneous.findFirst({
+          where: { id: task.miscellaneous_id },
+        });
+        title = categoryDetails?.title ?? "No Title";
+      }
+
+      // Push task details to resTasksDetails array
+      resTasksDetails.push({
+        id: task.id,
+        title: title,
+        category: task.category,
+        amount: task.amount,
+        postDate: task.postDate,
+        postMonth: task.postMonth,
+        postYear: task.postYear,
+        done: task.done,
+      });
+    })
+  );
+
   res.json({
-    tasksDetails,
+    tasksDetails: resTasksDetails,
     message: "All tasks fetched successfully",
   });
 });
+
 router.post("/task", authMiddleware, async (req, res) => {
   //@ts-ignore
   const userId = req.userId;
@@ -311,11 +368,14 @@ router.post("/task", authMiddleware, async (req, res) => {
             if (parseData.data.votingType === "Rating_Scale") {
               const rating_scale_model = await tx.rating_Scale.create({
                 data: {
-                  Five_Star: parseData.data.votingCustomOptionsArr[0],
-                  Four_Star: parseData.data.votingCustomOptionsArr[1],
-                  Three_Star: parseData.data.votingCustomOptionsArr[2],
-                  Two_Star: parseData.data.votingCustomOptionsArr[3],
-                  One_Star: parseData.data.votingCustomOptionsArr[4],
+                  Five_Star:
+                    parseData.data.votingCustomOptionsArr[0] ?? "⭐⭐⭐⭐⭐",
+                  Four_Star:
+                    parseData.data.votingCustomOptionsArr[1] ?? "⭐⭐⭐⭐",
+                  Three_Star:
+                    parseData.data.votingCustomOptionsArr[2] ?? "⭐⭐⭐",
+                  Two_Star: parseData.data.votingCustomOptionsArr[3] ?? "⭐⭐",
+                  One_Star: parseData.data.votingCustomOptionsArr[4] ?? "⭐",
                 },
               });
 
@@ -330,10 +390,11 @@ router.post("/task", authMiddleware, async (req, res) => {
             } else if (parseData.data.votingType === "Poll") {
               const multiple_choice_poll_model = await tx.poll.create({
                 data: {
-                  option1: parseData.data.votingCustomOptionsArr[0],
-                  option2: parseData.data.votingCustomOptionsArr[1],
-                  option3: parseData.data.votingCustomOptionsArr[2],
-                  option4: parseData.data.votingCustomOptionsArr[3],
+                  option1:
+                    parseData.data.votingCustomOptionsArr[0] ?? "Awesome",
+                  option2: parseData.data.votingCustomOptionsArr[1] ?? "Good",
+                  option3: parseData.data.votingCustomOptionsArr[2] ?? "Bad",
+                  option4: parseData.data.votingCustomOptionsArr[3] ?? "Worst",
                 },
               });
 
@@ -348,8 +409,8 @@ router.post("/task", authMiddleware, async (req, res) => {
             } else if (parseData.data.votingType === "Upvote_Downvote") {
               const upvote_downvote_model = await tx.upvote_Downvote.create({
                 data: {
-                  Upvote: parseData.data.votingCustomOptionsArr[0],
-                  Downvote: parseData.data.votingCustomOptionsArr[1],
+                  Upvote: parseData.data.votingCustomOptionsArr[0] ?? "👍",
+                  Downvote: parseData.data.votingCustomOptionsArr[1] ?? "👎",
                 },
               });
 
@@ -364,10 +425,10 @@ router.post("/task", authMiddleware, async (req, res) => {
             } else if (parseData.data.votingType === "Emoji_Reaction") {
               const emoji_reaction_vote_model = await tx.emoji_Reaction.create({
                 data: {
-                  Emoji_1: parseData.data.votingCustomOptionsArr[0],
-                  Emoji_2: parseData.data.votingCustomOptionsArr[1],
-                  Emoji_3: parseData.data.votingCustomOptionsArr[2],
-                  Emoji_4: parseData.data.votingCustomOptionsArr[3],
+                  Emoji_1: parseData.data.votingCustomOptionsArr[0] ?? "😍",
+                  Emoji_2: parseData.data.votingCustomOptionsArr[1] ?? "😂",
+                  Emoji_3: parseData.data.votingCustomOptionsArr[2] ?? "😲",
+                  Emoji_4: parseData.data.votingCustomOptionsArr[3] ?? "😡",
                 },
               });
 
@@ -440,8 +501,11 @@ router.post("/task", authMiddleware, async (req, res) => {
                 postYear: body.postYear,
                 uiUxDesign_id: categoryModel.id,
                 Voting_Type_id: votingModel.id,
+                done: true,
               },
             });
+
+            console.log(task.done + " task done");
 
             return task;
           } else if (category == Category.Idea_Product) {
@@ -480,6 +544,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                 postYear: body.postYear,
                 ideaProduct_id: categoryModel.id,
                 Voting_Type_id: votingModel.id,
+                done: true,
               },
             });
 
@@ -521,6 +586,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                 postYear: body.postYear,
                 youtubeThumbnail_id: categoryModel.id,
                 Voting_Type_id: votingModel.id,
+                done: true,
               },
             });
 
@@ -573,6 +639,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                 postYear: body.postYear,
                 miscellaneous_id: categoryModel.id,
                 Voting_Type_id: votingModel.id,
+                done: true,
               },
             });
             return task;
@@ -625,6 +692,15 @@ router.post("/transactions", authMiddleware, async (req, res) => {
   const transaction = await prismaClient.task.findMany({
     where: {
       user_id: Number(id),
+    },
+    select: {
+      amount: true,
+      category: true,
+      done: true,
+      id: true,
+      postDate: true,
+      postMonth: true,
+      postYear: true,
     },
   });
 

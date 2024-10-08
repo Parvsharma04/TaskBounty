@@ -13,6 +13,8 @@ import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { UploadImage } from "./UploadImage";
 import Image from "next/image";
 import VoteSelection from "./VoteSelection";
+import { Button, useDisclosure } from "@nextui-org/react";
+import AnimatedModal from "./AnimatedModal";
 
 const MiscellaneousComponent = () => {
   const [title, setTitle] = useState("");
@@ -60,6 +62,9 @@ const MiscellaneousComponent = () => {
   const [emoji3, setEmoji3] = useState("");
   const [emoji4, setEmoji4] = useState("");
 
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [disableBtn, setDisableBtn] = useState(false);
+
   function openImageModal() {
     setimageModalIsOpen(true);
   }
@@ -67,6 +72,17 @@ const MiscellaneousComponent = () => {
     setimageModalIsOpen(false);
   }
   function openConfimationModal() {
+    if (
+      title === "" ||
+      images.length === 0 ||
+      description === "" ||
+      urlPreview.length === 0 ||
+      votingType === ""
+    ) {
+      toast.error("Please fill all the fields");
+      return;
+    }
+
     setModalIsOpen(true);
   }
   function closeConfirmationModal() {
@@ -157,11 +173,11 @@ const MiscellaneousComponent = () => {
       });
 
       setTxSignature(signature);
+      toast.success("Transaction successful");
     } catch (err) {
       toast.error("Transaction failed");
     }
     setTransactionLoader(false);
-    toast.success("Transaction successful");
   }
   async function onSubmit() {
     setTaskSubmitLoader(true);
@@ -202,15 +218,59 @@ const MiscellaneousComponent = () => {
     }
     setTaskSubmitLoader(false);
   }
+  const GudelinesArr = [
+    "1. Title should be concise and descriptive.",
+    "2. Description should be detailed and clear.",
+    "3. Upload images of your idea/product.",
+    "4. Kindly upload one URL of your design/website.",
+    "5. Choose the type of voting.",
+  ];
 
   return (
     <div
-      className={`h-screen mb-20 md:mb-36 ${
-        urlPreview && images.length > 0 && "mb-64"
-      }`}
+      className={`${
+        images.length > 0 && urlPreview.length > 0
+          ? "h-[65rem]"
+          : `${
+              images.length > 0 || urlPreview.length > 0
+                ? "h-[60rem]"
+                : "h-[55rem]"
+            }`
+      } flex flex-col justify-center items-center gap-5 w-full md:px-8`}
     >
-      {transactionLoader && <TransactionLoadingPage />}
-      {TaskSubmitLoader && <TaskSubmittingLoader />}
+      {transactionLoader && (
+        <TransactionLoadingPage
+          height={`${
+            images.length > 0 && urlPreview.length > 0
+              ? "[65rem]"
+              : `${
+                  images.length > 0 || urlPreview.length > 0
+                    ? "[60rem]"
+                    : "[55rem]"
+                }`
+          }`}
+        />
+      )}
+      {TaskSubmitLoader && (
+        <TaskSubmittingLoader
+          height={`${
+            images.length > 0 && urlPreview.length > 0
+              ? "[65rem]"
+              : `${
+                  images.length > 0 || urlPreview.length > 0
+                    ? "[60rem]"
+                    : "[55rem]"
+                }`
+          }`}
+        />
+      )}
+      <AnimatedModal
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onOpenChange={onOpenChange}
+        title="Guidelines for Miscellaneous Upload"
+        content={GudelinesArr}
+      />
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeConfirmationModal}
@@ -227,6 +287,27 @@ const MiscellaneousComponent = () => {
             className="w-full p-2 rounded border border-gray-300 bg-gray-800"
             value={tasksAmt}
             onChange={(e) => setTasksAmt(Number(e.target.value))}
+            onKeyDown={(e) => {
+              if (e.key == "Enter") {
+                if (
+                  title === "" ||
+                  images.length === 0 ||
+                  description === "" ||
+                  urlPreview.length === 0 ||
+                  votingType === ""
+                ) {
+                  toast.error("Please fill all the fields");
+                  return;
+                } else if (tasksAmt <= 0) {
+                  toast.error("Amount should be greater than 0");
+                  return;
+                } else if (tasksAmt === 0) {
+                  toast.error("Amount is required");
+                  return;
+                }
+                makePayment();
+              }
+            }}
           />
           <button
             className="capitalize p-2 rounded bg-blue-600 hover:bg-blue-500 text-white"
@@ -355,14 +436,19 @@ const MiscellaneousComponent = () => {
           ></iframe>
         </div>
       </Modal>
-      <div className="flex flex-col gap-10 items-center mt-16 justify-center">
-        <h1 className="text-3xl md:text-5xl px-6 text-center font-bold uppercase">
-          Miscellaneous Upload
-        </h1>
-        <div className="flex flex-col w-full md:px-12 gap-5">
-          <div className="flex flex-col gap-2 justify-center items-start px-6 md:w-full">
+      <div className="flex flex-col gap-10 items-center justify-center w-full">
+        <div className="flex gap-2 justify-center items-center">
+          <h1 className="text-2xl text-center md:text-4xl font-bold uppercase">
+            Miscellaneous Upload
+          </h1>
+          <Button isIconOnly color="primary" onPress={onOpen}>
+            ?
+          </Button>
+        </div>
+        <div className="flex flex-col w-full gap-5">
+          <div className="flex flex-col gap-2 justify-center items-start md:w-full">
             <label htmlFor="designTitle" className="text-base text-start">
-              Title
+              Title *
             </label>
             <input
               type="text"
@@ -372,8 +458,8 @@ const MiscellaneousComponent = () => {
               className="bg-gray-950 rounded-md w-full"
             />
           </div>
-          <div className="flex flex-col justify-center items-start gap-2 px-6 md:w-full">
-            <label className="block font-medium text-base">Images</label>
+          <div className="flex flex-col justify-center items-start gap-2  md:w-full">
+            <label className="block font-medium text-base">Images *</label>
             <UploadImage
               onImageAdded={(imageUrl) => {
                 setImages((i) => [...i, imageUrl]);
@@ -382,15 +468,15 @@ const MiscellaneousComponent = () => {
             {images.length > 0 && (
               <button
                 onClick={() => setimageModalIsOpen(true)}
-                className="inline-flex mt-4 h-12 animate-shimmer items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-white transition-colors focus:outline-none w-full"
+                className="inline-flex mt-4 h-12 animate-shimmer items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%]  font-medium text-white transition-colors focus:outline-none w-full"
               >
                 Preview Images
               </button>
             )}
           </div>
-          <div className="flex flex-col gap-2 justify-start items-start px-6 md:w-full">
+          <div className="flex flex-col gap-2 justify-start items-start  md:w-full">
             <label htmlFor="designDescription" className="text-base">
-              Description
+              Description *
             </label>
             <textarea
               rows={2}
@@ -400,9 +486,9 @@ const MiscellaneousComponent = () => {
               className="bg-gray-950 rounded-md w-full"
             />
           </div>
-          <div className="flex flex-col gap-2 justify-start items-start px-6 md:w-full">
+          <div className="flex flex-col gap-2 justify-start items-start  md:w-full">
             <label htmlFor="designUrl" className="text-lg">
-              Design/Website Url
+              Design/Website Url *
             </label>
             <input
               type="text"
@@ -411,6 +497,10 @@ const MiscellaneousComponent = () => {
               onChange={(e) => setUrl(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
+                  if (urlPreview.length > 0) {
+                    toast.error("Only one URL is allowed");
+                    return;
+                  }
                   setUrlPreview([...urlPreview, url]);
                   setUrl("");
                 }
@@ -419,18 +509,18 @@ const MiscellaneousComponent = () => {
             />
           </div>
           {urlPreview.length > 0 && (
-            <div className="flex justify-center items-center gap-2 flex-wrap">
+            <div className="flex justify-center items-center flex-wrap">
               {urlPreview.map((url, index) => (
                 <div className="flex relative" key={index}>
                   <button
                     key={index}
-                    className="relative h-12 items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:150%_100%] bg-right hover:bg-left px-6 font-medium text-white transition-all duration-1000 ease-in-out focus:outline-none pr-8"
+                    className="relative pl-4 h-12 items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:150%_100%] bg-right hover:bg-left  font-medium text-white transition-all duration-1000 ease-in-out focus:outline-none pr-8"
                     onClick={() => {
                       setWebsiteModal(true);
                       setModalUrl(url);
                     }}
                   >
-                    {`Preview ${index + 1}`}
+                    {`Preview URL`}
                   </button>
                   <button
                     key={index}
@@ -445,9 +535,9 @@ const MiscellaneousComponent = () => {
               ))}
             </div>
           )}
-          <div className="flex flex-col gap-2 justify-start items-start px-6 md:w-full">
+          <div className="flex flex-col gap-2 justify-start items-start  md:w-full">
             <label htmlFor="designDescription" className="text-base">
-              Choose the type of voting
+              Choose the type of voting *
             </label>
             <VoteSelection
               fiveStar={fiveStar}

@@ -3,18 +3,13 @@
 import gsap from "gsap";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { BACKEND_URL } from "@/utils";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 
 export const Hero = () => {
   const comp = useRef(null);
   const { publicKey, disconnect, signMessage, connected } = useWallet();
-  const [hasToken, setHasToken] = useState(false);
-  const navigate = useRouter();
   const WalletMultiButtonDynamic = dynamic(
     async () =>
       (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
@@ -37,38 +32,6 @@ export const Hero = () => {
 
     return () => ctx.revert();
   }, [comp]);
-  useEffect(() => {
-    async function getToken() {
-      try {
-        if (!publicKey) return;
-        //! make the message unique which makes it more secure
-        const message = new TextEncoder().encode(
-          "Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged."
-        );
-        const signature = await signMessage?.(message);
-        let response = await axios.post(`${BACKEND_URL}/v1/user/signin`, {
-          signature,
-          publicKey: publicKey?.toString(),
-        });
-        localStorage.setItem("token", response.data.token);
-        setHasToken(true);
-      } catch (error) {
-        console.error("Error fetching token:", error);
-      }
-    }
-
-    if (publicKey) {
-      getToken();
-    }
-  }, [publicKey, signMessage]);
-
-  useEffect(() => {
-    if (!publicKey) {
-      localStorage.removeItem("token");
-      setHasToken(false);
-      navigate.replace("/");
-    }
-  }, [publicKey, navigate]);
 
   return (
     <div className="relative" ref={comp}>

@@ -1,7 +1,16 @@
+import { useWallet } from "@solana/wallet-adapter-react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 
+const WalletMultiButtonDynamic = dynamic(
+  async () =>
+    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
+  { ssr: false }
+);
+
 const Hero4 = () => {
+  const { publicKey, disconnect, signMessage, connected } = useWallet();
   return (
     <div className="flex flex-wrap md:flex-nowrap justify-between items-center">
       <div className="left flex flex-col justify-start items-center md:items-start gap-8 w-full mb-8 md:mb-0">
@@ -12,12 +21,11 @@ const Hero4 = () => {
           Join a decentralized platform where your skills can earn you Solana
           while contributing to data labeling.
         </p>
-        <Link
-          href="/uploadTask"
-          className="p-3 bg-blue-600 hover:bg-blue-500 rounded-full px-5"
-        >
-          Get Start Now
-        </Link>
+        <WalletMultiButtonDynamic>
+          {publicKey
+            ? `${publicKey.toBase58().substring(0, 7)}...`
+            : "Get Started"}
+        </WalletMultiButtonDynamic>
       </div>
       <div className="right w-full">
         <div className="relative">

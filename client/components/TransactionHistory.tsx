@@ -92,7 +92,8 @@ const TransactionHistory = () => {
     postMonth: string;
     postYear: string;
     amount: string;
-    status: string;
+    done: boolean;
+    category: string;
   }
 
   const helper = async () => {
@@ -108,6 +109,7 @@ const TransactionHistory = () => {
         }
       );
 
+      console.log(res.data.transaction);
       res.data.transaction.reverse();
       setTransactions(res.data.transaction);
     } catch (err) {
@@ -123,6 +125,7 @@ const TransactionHistory = () => {
   const columns = [
     { key: "postDate", label: "Date" },
     { key: "amount", label: "Amount" },
+    { key: "category", label: "Category" },
     { key: "status", label: "Status" },
   ];
   const handlePdfDownload = async () => {
@@ -138,7 +141,7 @@ const TransactionHistory = () => {
         transaction.postDate.toString()
       ),
       (Number(transaction.amount) / 1000_000_000).toFixed(3) + " SOL",
-      transaction.status ? "Success" : "Pending",
+      transaction.done ? "Success" : "Pending",
     ]);
 
     autoTable(doc, {
@@ -293,7 +296,10 @@ const TransactionHistory = () => {
                       {Number(obj.amount) / 1000_000_000} SOL
                     </TableCell>
                     <TableCell className="text-white text-base">
-                      {obj.status ? "Success" : "Pending"}
+                      {obj.category}
+                    </TableCell>
+                    <TableCell className="text-white text-base">
+                      {obj.done ? "Success" : "Pending"}
                     </TableCell>
                   </TableRow>
                 ))}

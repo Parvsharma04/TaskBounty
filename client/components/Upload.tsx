@@ -14,6 +14,8 @@ import TransactionLoadingPage from "./TransactionLoading";
 import { toast } from "react-toastify";
 import TaskSubmittingLoader from "./TaskSubmittingLoader";
 import VoteSelection from "./VoteSelection";
+import { Button, useDisclosure } from "@nextui-org/react";
+import AnimatedModal from "./AnimatedModal";
 
 export const Upload = () => {
   const [images, setImages] = useState<string[]>([]);
@@ -56,6 +58,9 @@ export const Upload = () => {
   const [emoji2, setEmoji2] = useState("");
   const [emoji3, setEmoji3] = useState("");
   const [emoji4, setEmoji4] = useState("");
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [disableBtn, setDisableBtn] = useState(false);
 
   useEffect(() => {
     if (!wallet.connected) {
@@ -127,11 +132,11 @@ export const Upload = () => {
       });
 
       setTxSignature(signature);
+      toast.success("Transaction successful");
     } catch (err) {
       toast.error("Transaction failed");
     }
     setTransactionLoader(false);
-    toast.success("Transaction successful");
   }
 
   const handlePrev = () => {
@@ -175,6 +180,10 @@ export const Upload = () => {
     },
   };
   function openModal() {
+    if (title === "" || images.length === 0) {
+      toast.error("Title and Images are required");
+      return;
+    }
     setIsOpen(true);
   }
   function closeModal() {
@@ -186,11 +195,28 @@ export const Upload = () => {
   function closeImageModal() {
     setimageModalIsOpen(false);
   }
+  const GudelinesArr = [
+    "1. Title and Images are required",
+    "2. Pay the required amount to post the task",
+    "3. Once the task is posted, it cannot be edited",
+    "4. Task will be live after the transaction is confirmed",
+  ];
 
   return (
-    <div className="flex justify-center items-center h-screen w-full bg-black text-white">
-      {transactionLoader && <TransactionLoadingPage />}
-      {TaskSubmitLoader && <TaskSubmittingLoader />}
+    <div
+      className={`${
+        images.length > 0 ? "h-[47rem]" : "h-screen"
+      } flex flex-col justify-center items-center gap-5 w-full md:px-8`}
+    >
+      {transactionLoader && <TransactionLoadingPage height="[47rem]" />}
+      {TaskSubmitLoader && <TaskSubmittingLoader height="[47rem]" />}
+      <AnimatedModal
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onOpenChange={onOpenChange}
+        title="Guidelines for Youtube Thumbnail Upload"
+        content={GudelinesArr}
+      />
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -198,7 +224,7 @@ export const Upload = () => {
         contentLabel="Amount Modal"
       >
         <div className="flex flex-col gap-3">
-          <h1 className="text-lg font-semibold">
+          <h1 className="text-base font-semibold">
             How much would you like to pay?
           </h1>
           <input
@@ -207,6 +233,21 @@ export const Upload = () => {
             className="w-full p-2 rounded border border-gray-300 bg-gray-800"
             value={tasksAmt}
             onChange={(e) => setTasksAmt(Number(e.target.value))}
+            onKeyDown={(e) => {
+              if (e.key == "Enter") {
+                if (title === "" || images.length === 0) {
+                  toast.error("Title and URL are required");
+                  return;
+                } else if (tasksAmt <= 0) {
+                  toast.error("Amount should be greater than 0");
+                  return;
+                } else if (tasksAmt === 0) {
+                  toast.error("Amount is required");
+                  return;
+                }
+                makePayment();
+              }
+            }}
           />
           <button
             className="capitalize p-2 rounded bg-blue-600 hover:bg-blue-500 text-white"
@@ -312,12 +353,17 @@ export const Upload = () => {
           </div>
         </div>
       </Modal>
-      <div className="flex flex-col w-full pl-6 pr-6 md:px-12 gap-5">
-        <div className="flex justify-center items-center mb-10 text-3xl w-full font-bold">
-          POST NEW BOUNTY
+      <div className="flex flex-col w-full gap-5">
+        <div className="flex gap-2 justify-center items-center">
+          <h1 className="text-2xl text-center md:text-4xl font-bold uppercase">
+            POST NEW BOUNTY
+          </h1>
+          <Button isIconOnly color="primary" onPress={onOpen}>
+            ?
+          </Button>
         </div>
         <div className="flex flex-col justify-center items-start gap-3">
-          <label className="block font-medium text-xl">Task details</label>
+          <label className="block font-medium text-base">Task details *</label>
           <input
             onChange={(e) => {
               setTitle(e.target.value);
@@ -331,25 +377,25 @@ export const Upload = () => {
         </div>
 
         <div className="flex flex-col justify-center items-start gap-3">
-          {images.length > 0 && (
-            <button
-              onClick={() => setimageModalIsOpen(true)}
-              className="inline-flex h-12 animate-shimmer items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-white transition-colors focus:outline-none w-full"
-            >
-              Show Images
-            </button>
-          )}
-          <label className="block font-medium text-xl">Add Images</label>
+          <label className="block font-medium text-base">Add Images *</label>
           <UploadImage
             onImageAdded={(imageUrl) => {
               setImages((i) => [...i, imageUrl]);
             }}
           />
+          {images.length > 0 && (
+            <button
+              onClick={() => setimageModalIsOpen(true)}
+              className="inline-flex h-12 animate-shimmer items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-white transition-colors focus:outline-none w-full mt-4"
+            >
+              Show Images
+            </button>
+          )}
         </div>
 
         <div className="flex flex-col gap-2 justify-start items-start md:w-full">
           <label htmlFor="designDescription" className="text-base">
-            Choose the type of voting
+            Choose the type of voting *
           </label>
           <VoteSelection
             fiveStar={fiveStar}

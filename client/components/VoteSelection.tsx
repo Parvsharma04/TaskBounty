@@ -377,7 +377,10 @@ export default function VoteSelection({
         aria-label="Options"
         color="primary"
         variant="bordered"
-        className="block"
+        className="md:block flex flex-wrap"
+        classNames={{
+          tabList: "flex-wrap md:flex-nowrap",
+        }}
         onSelectionChange={(e) => setVotingType(e.toString())}
       >
         <Tab
