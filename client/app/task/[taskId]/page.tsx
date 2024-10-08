@@ -123,7 +123,7 @@ export default function Page({
     return () => {
       clearTimeout(timer);
     };
-  }, [taskId]);
+  }, [taskId, votingArr]);
 
   async function getTaskDetails(taskId: string) {
     setCustomLoader(true);

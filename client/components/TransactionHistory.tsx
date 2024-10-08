@@ -85,7 +85,7 @@ const TransactionHistory = () => {
       }, 1000);
       setLoading(false);
     }
-  }, [requiredPayments]);
+  }, [requiredPayments, transactions]);
 
   interface Transaction {
     postDate: string;

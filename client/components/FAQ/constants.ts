@@ -1,3 +1,5 @@
+"use client";
+
 type FAQItem = {
   question: string;
   answer: string;

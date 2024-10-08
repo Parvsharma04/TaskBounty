@@ -32,8 +32,8 @@ export default function AnimatedModal({
               <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
               <ModalBody>
                 <ul className="list-disc ml-4">
-                  {content.map((val: string) => {
-                    return <li>{val}</li>;
+                  {content.map((val: string, idx: number) => {
+                    return <li key={idx}>{val}</li>;
                   })}
                 </ul>
               </ModalBody>
