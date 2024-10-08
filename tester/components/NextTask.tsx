@@ -1,37 +1,16 @@
 "use client";
-import { BACKEND_URL } from "@/utils";
+import { BACKEND_URL, NextTaskProps, Task } from "@/utils";
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "./Loading";
 import { TaskOptions } from "./task/TaskCategory";
 import TaskStatement from "./TaskStatement";
-
-interface Task {
-  id: number;
-  amount: string;
-  category: string;
-  title: string;
-  options: {
-    votingTypeDetails: any;
-    id: number;
-    image_url: string;
-    task_id: number;
-  }[];
-  votingType: string;
-  votingTypeDetails?: any;
-  description: string | null;
-}
-
-interface NextTaskProps {
-  noMoreTasks: boolean;
-  setNoMoreTasks: Dispatch<SetStateAction<boolean>>;
-}
 
 const containerVariants = {
   hidden: {
@@ -295,7 +274,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
                           <motion.li
                             key={idx}
                             variants={itemVariants}
-                            className="flex justify-center items-center text-lg sm:text-xl w-full bg-gray-700 rounded-md p-2 hover:bg-gray-800 cursor-pointer transition-colors relative"
+                            className="flex justify-start items-center text-lg sm:text-xl w-full bg-gray-700 rounded-md p-2 hover:bg-gray-800 cursor-pointer transition-colors relative"
                           >
                             <input
                               id={`default-checkbox-${idx}`}
@@ -304,11 +283,11 @@ export const NextTask: React.FC<NextTaskProps> = ({
                               value="1"
                               checked={taskVoteOptionSelect === idx}
                               onChange={() => handleTaskVoteOptionSelect(idx)}
-                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 absolute top-1/3 left-1/3 z-50"
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 mr-2"
                             />
                             <label
                               htmlFor={`default-checkbox-${idx}`}
-                              className="ml-3"
+                              className="ml-2"
                             >
                               {`${val[1]}`}
                             </label>

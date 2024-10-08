@@ -1,4 +1,5 @@
 import { ApexOptions } from "apexcharts";
+import { Dispatch, SetStateAction } from "react";
 
 export const BACKEND_URL = "http://localhost:3000";
 export const CLOUDFRONT_URL = "https://d2evdzd5kkyi1f.cloudfront.net";
@@ -200,4 +201,25 @@ export interface Submission {
   _count: { id: number };
   postMonth: number;
   postYear: number;
+}
+
+export interface Task {
+  id: number;
+  amount: string;
+  category: string;
+  title: string;
+  options: {
+    votingTypeDetails: any;
+    id: number;
+    image_url: string;
+    task_id: number;
+  }[];
+  votingType: string;
+  votingTypeDetails?: any;
+  description: string | null;
+}
+
+export interface NextTaskProps {
+  noMoreTasks: boolean;
+  setNoMoreTasks: Dispatch<SetStateAction<boolean>>;
 }

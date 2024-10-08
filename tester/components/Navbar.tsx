@@ -8,9 +8,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { slide as Menu } from "react-burger-menu";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AnimatedLink from "./AnimatedLink";
+
 const WalletMultiButtonDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
@@ -20,6 +21,7 @@ const WalletMultiButtonDynamic = dynamic(
 const NavBar = () => {
   const wallet = useWallet();
   const [payoutAmt, setPayoutAmt] = useState("0");
+  const [payoutDone, setPayoutDone] = useState(false); // New state variable
   const pathname = usePathname();
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -75,6 +77,7 @@ const NavBar = () => {
 
       console.log("Payout response:", response.data);
       setPayoutAmt(response.data.amount);
+      setPayoutDone(true); // Set payout done to true
 
       // Ensure the success message exists in the response
       if (response.data.message) {
@@ -117,7 +120,7 @@ const NavBar = () => {
         whileTap={{ scale: 0.95 }}
         transition={{ duration: 0.3 }}
       >
-        {wallet.connected && Number(payoutAmt) >= 2 && (
+        {wallet.connected && Number(payoutAmt) >= 2 && !payoutDone && ( // Check if payout is not done
           <motion.button
             onClick={handlePayoutAmt}
             className={`bg-blue-700 text-white py-2 px-5 rounded-[20px] shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-600 hover:shadow-xl text-xl w-full md:w-auto ${
@@ -172,7 +175,7 @@ const NavBar = () => {
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-black shadow-[0_4px_8px_rgba(255,255,255,0.2)] z-50">
-      <ToastContainer
+      {/* <ToastContainer
         position="top-left"
         autoClose={2000}
         hideProgressBar={false}
@@ -183,7 +186,7 @@ const NavBar = () => {
         draggable
         pauseOnHover
         theme="colored"
-      />
+      /> */}
 
       <div className="mx-auto flex items-center justify-between p-4 w-[100%]">
         <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
@@ -257,7 +260,7 @@ const NavBar = () => {
               >
                 Transactions
               </Link>
-              <div className="px-6 mt-4">
+              <div className="mt-4">
                 <WalletAndPayoutButtons />
               </div>
             </Menu>
