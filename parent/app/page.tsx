@@ -5,7 +5,9 @@ const Landing = () => {
   return (
     <>
       <Hero />
-      <LongSection />
+      <div className="max-w-full overflow-x-hidden">
+        <LongSection />
+      </div>
     </>
   );
 };

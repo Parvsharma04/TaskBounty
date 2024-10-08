@@ -56,8 +56,10 @@ export function LongSection() {
     },
   ];
   return (
-    <div className="w-full">
-      <Timeline data={data} />
-    </div>
+    <section className="w-full max-w-full overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Timeline data={data} />
+      </div>
+    </section>
   );
 }

@@ -2,6 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
+#__next {
+  width: 100%;
+}
+
+::-webkit-scrollbar {
+  background-color: black;
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #111827;
+  /* background-color: #1a56db; */
+  opacity: 0.5;
+  border-radius: 20px;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
