@@ -62,3 +62,9 @@
   color: white;
   transform: rotateY(180deg);
 }
+
+@media screen and (max-width: 600px) {
+  .flip-card {
+    width: 20rem;
+  }
+}

@@ -120,6 +120,13 @@ router.get("/task", authMiddleware, async (req, res) => {
       where: {
         id: votingDetails.rating_ScaleId,
       },
+      select: {
+        Five_Star: true,
+        Four_Star: true,
+        Three_Star: true,
+        Two_Star: true,
+        One_Star: true,
+      },
     });
 
     if (!ratingScale) {
@@ -139,6 +146,12 @@ router.get("/task", authMiddleware, async (req, res) => {
     const poll = await prismaClient.poll.findFirst({
       where: {
         id: votingDetails.pollId,
+      },
+      select: {
+        option1: true,
+        option2: true,
+        option3: true,
+        option4: true,
       },
     });
 
@@ -160,6 +173,10 @@ router.get("/task", authMiddleware, async (req, res) => {
       where: {
         id: votingDetails.upvote_DownvoteId,
       },
+      select: {
+        Upvote: true,
+        Downvote: true,
+      },
     });
 
     if (!upvoteDownvote) {
@@ -179,6 +196,12 @@ router.get("/task", authMiddleware, async (req, res) => {
     const emojiReaction = await prismaClient.emoji_Reaction.findFirst({
       where: {
         id: votingDetails.emoji_ReactionId,
+      },
+      select: {
+        Emoji_1: true,
+        Emoji_2: true,
+        Emoji_3: true,
+        Emoji_4: true,
       },
     });
 
@@ -503,6 +526,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                 uiUxDesign_id: categoryModel.id,
                 Voting_Type_id: votingModel.id,
                 status: true,
+                done: false,
               },
             });
 
@@ -544,6 +568,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                 ideaProduct_id: categoryModel.id,
                 Voting_Type_id: votingModel.id,
                 status: true,
+                done: false,
               },
             });
 
@@ -586,6 +611,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                 youtubeThumbnail_id: categoryModel.id,
                 Voting_Type_id: votingModel.id,
                 status: true,
+                done: false,
               },
             });
 
@@ -639,6 +665,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                 miscellaneous_id: categoryModel.id,
                 Voting_Type_id: votingModel.id,
                 status: true,
+                done: false,
               },
             });
             return task;
@@ -696,6 +723,7 @@ router.post("/transactions", authMiddleware, async (req, res) => {
       amount: true,
       category: true,
       done: true,
+      status: true,
       id: true,
       postDate: true,
       postMonth: true,

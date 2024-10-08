@@ -154,12 +154,17 @@ const TransactionHistory = () => {
         0: { cellWidth: "auto" },
         1: { cellWidth: "auto" },
         2: { cellWidth: "auto" },
+        3: { cellWidth: "auto" },
       },
       tableWidth: doc.internal.pageSize.getWidth() - 20,
       margin: { left: 10 },
     });
 
-    doc.save(`${localStorage.getItem("token")}-transaction-history.pdf`);
+    doc.save(
+      `${localStorage
+        .getItem("token")
+        ?.substring(0, 8)}-transaction-history.pdf`
+    );
   };
   function getPreviousWeek() {
     const today = new Date();
@@ -185,7 +190,7 @@ const TransactionHistory = () => {
 
   return (
     <div className="h-screen bg-gray-950">
-      <div className="mx-auto mt-8 max-w-screen-lg px-2">
+      <div className="mx-auto mt-8 max-w-screen-lg px-2 flex flex-col gap-12">
         <div className="sm:flex sm:items-center sm:justify-between flex-col sm:flex-row mb-6">
           <p className="flex-1 text-center md:text-start text-4xl md:text-xl font-bold text-white py-8 md:py-0">
             Latest Payments
@@ -225,7 +230,7 @@ const TransactionHistory = () => {
 
               <button
                 type="button"
-                className="flex justify-center items-center bg-gray-700 p-2 rounded-md hover:bg-gray-600 text-xl md:text-lg"
+                className="flex justify-center items-center bg-gray-700 p-2 rounded-md hover:bg-gray-600 text-base md:text-lg"
                 onClick={handlePdfDownload}
               >
                 <svg
@@ -251,13 +256,13 @@ const TransactionHistory = () => {
         {loading ? (
           <LoadingPage />
         ) : (
-          <div className="w-full">
+          <div className="w-full overflow-scroll scrollbar-hide">
             <Table
               aria-label="Client Transaction History"
               classNames={{
-                table: "bg-gray-950",
+                table: "bg-gray-950 w-[35rem] md:w-full gap-0",
                 th: "bg-gray-700 text-white text-md",
-                wrapper: "p-0.5 bg-blue-500 gap-0",
+                wrapper: "p-0.5 w-[35rem] md:w-full bg-blue-500 gap-0",
               }}
               ref={tableRef}
               bottomContent={
@@ -269,7 +274,7 @@ const TransactionHistory = () => {
                     color="primary"
                     className="bg-gray-950 text-white mt-2 mb-2"
                     classNames={{
-                      wrapper: "bg-gray-950 border p-1",
+                      wrapper: "bg-gray-950 border md:p-1",
                       item: "bg-gray-950 text-white",
                       next: "bg-gray-950 text-white",
                       prev: "bg-gray-950 text-white",
