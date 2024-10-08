@@ -8,10 +8,20 @@ import { HoveredLink, Menu } from "./ui/Navbar";
 export default function Navbar({ className }: { className?: string }) {
   const [active, setActive] = useState<string | null>(null);
   const pathname = usePathname();
+
+  // Set active link based on pathname
+  const handleLinkClick = (item: string) => {
+    setActive(item);
+  };
+
   return (
     <div className={cn("sticky inset-x-0 w-full mx-auto z-50", className)}>
       <Menu setActive={setActive}>
-        <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+        <a
+          href="/"
+          className="flex items-center space-x-3 rtl:space-x-reverse"
+          onClick={() => handleLinkClick("Home")}
+        >
           <motion.img
             src="/icon-removebg-preview.png"
             alt="TaskBounty Logo"
@@ -30,14 +40,20 @@ export default function Navbar({ className }: { className?: string }) {
             TaskBounty
           </motion.span>
         </a>
-        {pathname == "/" ? (
+        {pathname === "/" ? (
           <motion.div
             className="absolute right-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeInOut" }}
           >
-            <HoveredLink href="/services">Services</HoveredLink>
+            <HoveredLink
+              href="/services"
+              onClick={() => handleLinkClick("Services")}
+              className={cn(active === "Services" ? "font-bold" : "")} // Change style if active
+            >
+              Services
+            </HoveredLink>
           </motion.div>
         ) : (
           <motion.div
@@ -46,7 +62,13 @@ export default function Navbar({ className }: { className?: string }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeInOut" }}
           >
-            <HoveredLink href="/">Home</HoveredLink>
+            <HoveredLink
+              href="/"
+              onClick={() => handleLinkClick("Home")}
+              className={cn(active === "Home" ? "font-bold" : "")} // Change style if active
+            >
+              Home
+            </HoveredLink>
           </motion.div>
         )}
       </Menu>

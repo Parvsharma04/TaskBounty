@@ -1,5 +1,5 @@
-import { geistMono, geistSans } from "./layout";
-
+import Navbar from "@/components/Navbar";
+// import { geistMono, geistSans } from "./layout";
 
 export default function RootLayout({
   children,
@@ -8,9 +8,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`  antialiased`}>
         <Navbar />
         {children}
       </body>
