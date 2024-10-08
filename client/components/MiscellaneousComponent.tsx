@@ -230,23 +230,23 @@ const MiscellaneousComponent = () => {
     <div
       className={`${
         images.length > 0 && urlPreview.length > 0
-          ? "h-[65rem]"
+          ? "h-[77rem] md:h-[65rem]"
           : `${
               images.length > 0 || urlPreview.length > 0
-                ? "h-[60rem]"
-                : "h-[55rem]"
+                ? "h-[70rem] md:h-[60rem]"
+                : "h-[65rem] md:h-[55rem]"
             }`
-      } flex flex-col justify-center items-center gap-5 w-full md:px-8`}
+      } flex flex-col justify-center items-center gap-5 w-full px-6 md:px-8`}
     >
       {transactionLoader && (
         <TransactionLoadingPage
           height={`${
             images.length > 0 && urlPreview.length > 0
-              ? "[65rem]"
+              ? "h-[77rem] md:h-[65rem]"
               : `${
                   images.length > 0 || urlPreview.length > 0
-                    ? "[60rem]"
-                    : "[55rem]"
+                    ? "h-[70rem] md:h-[60rem]"
+                    : "h-[65rem] md:h-[55rem]"
                 }`
           }`}
         />
@@ -255,11 +255,11 @@ const MiscellaneousComponent = () => {
         <TaskSubmittingLoader
           height={`${
             images.length > 0 && urlPreview.length > 0
-              ? "[65rem]"
+              ? "h-[77rem] md:h-[65rem]"
               : `${
                   images.length > 0 || urlPreview.length > 0
-                    ? "[60rem]"
-                    : "[55rem]"
+                    ? "h-[70rem] md:h-[60rem]"
+                    : "h-[65rem] md:h-[55rem]"
                 }`
           }`}
         />

@@ -222,6 +222,7 @@ router.get("/getAllTask", authMiddleware, async (req, res) => {
       user_id: Number(userId),
     },
   });
+  console.log(userId, tasksDetails);
 
   if (!tasksDetails || tasksDetails.length === 0) {
     return res.status(411).json({
@@ -501,11 +502,9 @@ router.post("/task", authMiddleware, async (req, res) => {
                 postYear: body.postYear,
                 uiUxDesign_id: categoryModel.id,
                 Voting_Type_id: votingModel.id,
-                done: true,
+                status: true,
               },
             });
-
-            console.log(task.done + " task done");
 
             return task;
           } else if (category == Category.Idea_Product) {
@@ -544,7 +543,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                 postYear: body.postYear,
                 ideaProduct_id: categoryModel.id,
                 Voting_Type_id: votingModel.id,
-                done: true,
+                status: true,
               },
             });
 
@@ -586,7 +585,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                 postYear: body.postYear,
                 youtubeThumbnail_id: categoryModel.id,
                 Voting_Type_id: votingModel.id,
-                done: true,
+                status: true,
               },
             });
 
@@ -639,7 +638,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                 postYear: body.postYear,
                 miscellaneous_id: categoryModel.id,
                 Voting_Type_id: votingModel.id,
-                done: true,
+                status: true,
               },
             });
             return task;

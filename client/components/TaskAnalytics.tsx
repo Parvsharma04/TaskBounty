@@ -159,7 +159,7 @@ function TaskAnalytics() {
     id: string;
     title: string;
     amount: string;
-    done: boolean;
+    status: boolean;
     category: string;
   }
 
@@ -182,6 +182,11 @@ function TaskAnalytics() {
     {
       name: "Amount",
       selector: (row: Task) => parseFloat(row.amount) / 1000000000,
+      sortable: true,
+    },
+    {
+      name: "Status",
+      selector: (row: Task) => (row.status ? "Done" : "Pending"),
       sortable: true,
     },
     {

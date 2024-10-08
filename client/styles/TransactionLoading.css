@@ -135,3 +135,13 @@
     transform: translateY(0);
   }
 }
+
+@media screen and (max-width: 768px) {
+  .containerTransaction {
+    width: 40%;
+    margin-left: 2rem;
+  }
+  .new {
+    font-size: 20px;
+  }
+}

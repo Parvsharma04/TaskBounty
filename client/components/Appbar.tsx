@@ -93,6 +93,7 @@ const NavBar = () => {
   return (
     <Navbar
       className="flex justify-center items-center w-full bg-gray-900 text-white pt-1 pb-1 my-auto shadow-lg"
+      style={{ zIndex: 1000 }}
       maxWidth="full"
       isBordered
       isMenuOpen={isMenuOpen}

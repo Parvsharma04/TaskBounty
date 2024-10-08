@@ -203,8 +203,8 @@ export const UploadUiUxPageComponent = () => {
         pauseOnHover
         theme="colored"
       />
-      {transactionLoader && <TransactionLoadingPage />}
-      {TaskSubmitLoader && <TaskSubmittingLoader />}
+      {transactionLoader && <TransactionLoadingPage height="h-screen" />}
+      {TaskSubmitLoader && <TaskSubmittingLoader height="h-screen" />}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeConfirmationModal}

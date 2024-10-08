@@ -92,7 +92,7 @@ const TransactionHistory = () => {
     postMonth: string;
     postYear: string;
     amount: string;
-    done: boolean;
+    status: boolean;
     category: string;
   }
 
@@ -141,7 +141,7 @@ const TransactionHistory = () => {
         transaction.postDate.toString()
       ),
       (Number(transaction.amount) / 1000_000_000).toFixed(3) + " SOL",
-      transaction.done ? "Success" : "Pending",
+      transaction.status ? "Success" : "Pending",
     ]);
 
     autoTable(doc, {
@@ -299,7 +299,7 @@ const TransactionHistory = () => {
                       {obj.category}
                     </TableCell>
                     <TableCell className="text-white text-base">
-                      {obj.done ? "Success" : "Pending"}
+                      {obj.status ? "Success" : "Pending"}
                     </TableCell>
                   </TableRow>
                 ))}

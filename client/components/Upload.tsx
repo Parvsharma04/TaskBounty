@@ -206,10 +206,10 @@ export const Upload = () => {
     <div
       className={`${
         images.length > 0 ? "h-[47rem]" : "h-screen"
-      } flex flex-col justify-center items-center gap-5 w-full md:px-8`}
+      } flex flex-col justify-center items-center gap-5 w-full px-6 md:px-8`}
     >
-      {transactionLoader && <TransactionLoadingPage height="[47rem]" />}
-      {TaskSubmitLoader && <TaskSubmittingLoader height="[47rem]" />}
+      {transactionLoader && <TransactionLoadingPage height="h-[47rem]" />}
+      {TaskSubmitLoader && <TaskSubmittingLoader height="h-[47rem]" />}
       <AnimatedModal
         isOpen={isOpen}
         onOpen={onOpen}
@@ -370,7 +370,7 @@ export const Upload = () => {
             }}
             type="text"
             id="first_name"
-            className="focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-800 rounded"
+            className="focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-950 rounded"
             placeholder="What is your task?"
             required
           />

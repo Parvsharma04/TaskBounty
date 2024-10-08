@@ -4,9 +4,7 @@ const TaskSubmittingLoader = ({ height }: any) => {
   return (
     <>
       <div
-        className={`absolute h-${
-          height ? height : "full"
-        } w-full flex items-center justify-center bg-gray-700 opacity-75 z-50`}
+        className={`absolute ${height} w-full flex items-center justify-center bg-gray-700 opacity-75 z-50`}
       ></div>
       <div className="absolute z-50">
         <div className="container">

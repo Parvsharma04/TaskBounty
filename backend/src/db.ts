@@ -17,7 +17,7 @@ export const getNextTask = async (userId: number) => {
       postYear: currentYear,
     },
   });
-  // console.log(tasksCompletedToday)
+  // console.log(tasksCompletedToday);
   // Check if the worker has completed 5 tasks today
   if (tasksCompletedToday >= 5) {
     return {

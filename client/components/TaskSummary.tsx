@@ -102,7 +102,7 @@ const TaskSummary = ({
         transition={{ duration: 1.5 }}
       >
         <CardDataStats
-          title="Successful Transactions"
+          title="Done Tasks"
           total={`${doneTasks}`}
           rate={`${calculateRate(doneTasks, prevDoneTasks)} %`}
           {...(calculateRate(doneTasks, prevDoneTasks) > 0
@@ -135,7 +135,7 @@ const TaskSummary = ({
         transition={{ duration: 2 }}
       >
         <CardDataStats
-          title="Failed Transactions"
+          title="Pending Tasks"
           total={`${pendingTasks}`}
           rate={`${calculateRate(pendingTasks, prevPendingTasks)} %`}
           {...(calculateRate(pendingTasks, prevPendingTasks) > 0

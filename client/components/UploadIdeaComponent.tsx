@@ -142,11 +142,11 @@ export const UploadIdeaComponent = () => {
       });
 
       setTxSignature(signature);
+      toast.success("Transaction successful");
     } catch (err) {
       toast.error("Transaction failed");
     }
     setTransactionLoader(false);
-    toast.success("Transaction successful");
   }
   async function onSubmit() {
     setTaskSubmitLoader(true);
@@ -193,7 +193,7 @@ export const UploadIdeaComponent = () => {
   ];
 
   return (
-    <div className="h-[50rem] flex flex-col justify-center items-center gap-5 w-full md:px-8">
+    <div className="h-[60rem] md:h-[50rem] flex flex-col justify-center items-center gap-5 w-full px-6 md:px-8">
       <AnimatedModal
         isOpen={isOpen}
         onOpen={onOpen}
@@ -201,8 +201,12 @@ export const UploadIdeaComponent = () => {
         title="Guidelines for Uploading Idea/Product"
         content={GudelinesArr}
       />
-      {transactionLoader && <TransactionLoadingPage height="[50rem]" />}
-      {TaskSubmitLoader && <TaskSubmittingLoader height="[50rem]" />}
+      {transactionLoader && (
+        <TransactionLoadingPage height="h-[60rem] md:h-[50rem]" />
+      )}
+      {TaskSubmitLoader && (
+        <TaskSubmittingLoader height="h-[60rem] md:h-[50rem]" />
+      )}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeConfirmationModal}
@@ -343,7 +347,7 @@ export const UploadIdeaComponent = () => {
         className={`flex flex-col gap-10 items-center justify-center w-full`}
       >
         <div className="flex gap-2 justify-center items-center">
-          <h1 className="text-2xl w-1/2 md:w-full text-center md:text-4xl font-bold uppercase">
+          <h1 className="text-2xl md:w-full text-center md:text-4xl font-bold uppercase">
             Upload your Idea / Product
           </h1>
           <Button isIconOnly color="primary" onPress={onOpen}>
