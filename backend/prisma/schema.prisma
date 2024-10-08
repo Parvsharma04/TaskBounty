@@ -30,6 +30,7 @@ model Task {
   worker_id      Json[]
   signature      String
   amount         String
+  status         Boolean      @default(false)
   done           Boolean      @default(false)
   user           User         @relation(fields: [user_id], references: [id])
   submissions    Submission[]

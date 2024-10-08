@@ -1,17 +1,19 @@
 "use client";
 
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import axios from "axios";
 import { useState } from "react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import { useRouter } from "next/navigation";
+import { BACKEND_URL, PARENT_WALLET_ADDRESS } from "@/utils";
+import axios from "axios";
 import Modal from "react-modal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useRouter } from "next/navigation";
-import { BACKEND_URL, PARENT_WALLET_ADDRESS } from "@/utils";
 import TaskSubmittingLoader from "./TaskSubmittingLoader";
 import TransactionLoadingPage from "./TransactionLoading";
-import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import VoteSelection from "./VoteSelection";
+import { Button, useDisclosure } from "@nextui-org/react";
+import AnimatedModal from "./AnimatedModal";
 
 export const UploadUiUxPageComponent = () => {
   const [title, setTitle] = useState("");
@@ -31,6 +33,8 @@ export const UploadUiUxPageComponent = () => {
   const [votingCustomOptionsArr, setvotingCustomOptionsArr] = useState<
     string[]
   >([]);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [disableBtn, setDisableBtn] = useState(false);
 
   // Voting stars
   const [fiveStar, setFiveStar] = useState("");
@@ -62,6 +66,10 @@ export const UploadUiUxPageComponent = () => {
     setWebsiteModal(false);
   }
   function openConfimationModal() {
+    if (title === "" || urlPreview.length === 0) {
+      toast.error("Title and URL are required");
+      return;
+    }
     setModalIsOpen(true);
   }
   function closeConfirmationModal() {
@@ -122,15 +130,17 @@ export const UploadUiUxPageComponent = () => {
         signature,
       });
 
+      closeConfirmationModal();
       setTxSignature(signature);
+      toast.success("Transaction successful");
     } catch (err) {
       toast.error("Transaction failed");
     }
     setTransactionLoader(false);
-    toast.success("Transaction successful");
   }
   async function onSubmit() {
     setTaskSubmitLoader(true);
+    setDisableBtn(true);
 
     try {
       let d = new Date();
@@ -164,10 +174,23 @@ export const UploadUiUxPageComponent = () => {
       toast.error("Task submission failed");
     }
     setTaskSubmitLoader(false);
+    setDisableBtn(false);
   }
+  const GudelinesArr = [
+    "Please make sure only one website url should be uploaded at a time.",
+    "If you have multiple websites to upload, please upload them one by one.",
+    "Make sure the website is live and accessible to everyone.",
+  ];
 
   return (
     <div className="h-screen flex flex-col justify-center items-center gap-5 w-full md:px-2">
+      <AnimatedModal
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onOpenChange={onOpenChange}
+        title="Gudelines for Uploading UI/UX Design"
+        content={GudelinesArr}
+      />
       <ToastContainer
         position="top-left"
         autoClose={1100}
@@ -180,8 +203,8 @@ export const UploadUiUxPageComponent = () => {
         pauseOnHover
         theme="colored"
       />
-      {transactionLoader && <TransactionLoadingPage />}
-      {TaskSubmitLoader && <TaskSubmittingLoader />}
+      {transactionLoader && <TransactionLoadingPage height="h-screen" />}
+      {TaskSubmitLoader && <TaskSubmittingLoader height="h-screen" />}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeConfirmationModal}
@@ -197,7 +220,24 @@ export const UploadUiUxPageComponent = () => {
             placeholder="Enter some decimal solana amount"
             className="w-full p-2 rounded border border-gray-300 bg-gray-800"
             value={tasksAmt}
-            onChange={(e) => setTasksAmt(Number(e.target.value))}
+            onChange={(e) => {
+              setTasksAmt(parseFloat(e.target.value));
+            }}
+            onKeyDown={(e) => {
+              if (e.key == "Enter") {
+                if (title === "" || urlPreview.length === 0) {
+                  toast.error("Title and URL are required");
+                  return;
+                } else if (tasksAmt <= 0) {
+                  toast.error("Amount should be greater than 0");
+                  return;
+                } else if (tasksAmt === 0) {
+                  toast.error("Amount is required");
+                  return;
+                }
+                makePayment();
+              }
+            }}
           />
           <button
             className="capitalize p-2 rounded bg-blue-600 hover:bg-blue-500 text-white"
@@ -230,16 +270,22 @@ export const UploadUiUxPageComponent = () => {
           ></iframe>
         </div>
       </Modal>
-      <h1 className="text-3xl text-center md:text-5xl font-bold uppercase">
-        Upload your Creativity
-      </h1>
+      <div className="flex gap-2 justify-center items-center">
+        <h1 className="text-2xl w-1/2 md:w-full text-center md:text-4xl font-bold uppercase">
+          Upload your Creativity
+        </h1>
+        <Button isIconOnly color="primary" onPress={onOpen}>
+          ?
+        </Button>
+      </div>
       <div className="flex flex-col gap-1 justify-center items-start px-6 w-full">
         <label htmlFor="designTitle" className="text-lg text-start">
-          Design Title
+          Design Title *
         </label>
         <input
           type="text"
           id="designTitle"
+          disabled={disableBtn}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="bg-gray-950 rounded-md w-full"
@@ -247,17 +293,25 @@ export const UploadUiUxPageComponent = () => {
       </div>
       <div className="flex flex-col gap-1 justify-start items-start px-6 w-full">
         <label htmlFor="designUrl" className="text-lg">
-          Design/Website Url
+          Design/Website Url *
         </label>
         <input
           type="text"
           id="designUrl"
+          max={1}
           value={url}
+          disabled={disableBtn}
           onChange={(e) => setUrl(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              setUrlPreview([...urlPreview, url]);
-              setUrl("");
+              if (urlPreview.length > 0) {
+                toast.error(
+                  "Only one website url should be uploaded at a time."
+                );
+              } else {
+                setUrlPreview([...urlPreview, url]);
+                setUrl("");
+              }
             }
           }}
           className="bg-gray-950 rounded-md w-full"
@@ -265,7 +319,7 @@ export const UploadUiUxPageComponent = () => {
       </div>
       <div
         className={`flex justify-center items-center gap-2 flex-wrap ${
-          urlPreview.length > 0 && "h-20  overflow-scroll"
+          urlPreview.length > 0 && "h-20"
         }`}
       >
         {urlPreview.length > 0 &&
@@ -273,9 +327,9 @@ export const UploadUiUxPageComponent = () => {
             <div className="flex relative" key={index}>
               <button
                 className="h-12 items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:150%_100%] bg-right hover:bg-left px-6 font-medium text-white transition-all duration-1000 ease-in-out focus:outline-none pr-8"
+                disabled={disableBtn}
                 onClick={() => {
                   setWebsiteModal(true);
-                  setUrl(url);
                 }}
               >
                 {`Preview ${index + 1}`}
@@ -298,13 +352,14 @@ export const UploadUiUxPageComponent = () => {
         <textarea
           id="designDescription"
           value={description}
+          disabled={disableBtn}
           onChange={(e) => setDescription(e.target.value)}
           className="bg-gray-950 rounded-md w-full"
         />
       </div>
       <div className="flex flex-col gap-2 justify-start items-start px-6 md:w-full">
         <label htmlFor="designDescription" className="text-base">
-          Choose the type of voting
+          Choose the type of voting *
         </label>
         <VoteSelection
           fiveStar={fiveStar}
@@ -344,8 +399,8 @@ export const UploadUiUxPageComponent = () => {
       <button
         onClick={txSignature ? onSubmit : openConfimationModal}
         type="button"
-        disabled={TaskSubmitLoader || transactionLoader}
-        className="relative rounded px-5 py-2.5 overflow-hidden group bg-blue-700 hover:bg-gradient-to-r hover:from-blue-700 hover:to-blue-600 text-white hover:ring-2 hover:ring-offset-2 hover:ring-blue-500 transition-all ease-out duration-300 text-2xl font-semibold"
+        disabled={disableBtn}
+        className="relative rounded px-5 py-2.5 overflow-hidden group bg-blue-700 hover:bg-gradient-to-r hover:from-blue-700 hover:to-blue-600 text-white hover:ring-2 hover:ring-offset-2 hover:ring-blue-500 transition-all ease-out duration-300 text-2xl font-semibold z"
       >
         <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
         <span className="relative">{txSignature ? "Submit Task" : "Pay"}</span>

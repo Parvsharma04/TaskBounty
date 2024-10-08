@@ -217,7 +217,6 @@ router.post("/payout", workerMiddleware, async (req, res) => {
   try {
     // @ts-ignore
     const userId: string = req.userId;
-    console.log("userid", userId);
     const MIN_AMOUNT_FOR_PAYOUT = 2;
 
     const worker = await prismaClient.worker.findFirst({

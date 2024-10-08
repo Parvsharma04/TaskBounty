@@ -13,6 +13,8 @@ import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { UploadImage } from "./UploadImage";
 import Image from "next/image";
 import VoteSelection from "./VoteSelection";
+import { Button, useDisclosure } from "@nextui-org/react";
+import AnimatedModal from "./AnimatedModal";
 
 export const UploadIdeaComponent = () => {
   const [title, setTitle] = useState("");
@@ -32,6 +34,8 @@ export const UploadIdeaComponent = () => {
   const [votingCustomOptionsArr, setvotingCustomOptionsArr] = useState<
     string[]
   >([]);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [disableBtn, setDisableBtn] = useState(false);
 
   // Voting stars
   const [fiveStar, setFiveStar] = useState("");
@@ -63,6 +67,10 @@ export const UploadIdeaComponent = () => {
     setimageModalIsOpen(false);
   }
   function openConfimationModal() {
+    if (title === "" || images.length === 0) {
+      toast.error("Title and Images are required");
+      return;
+    }
     setModalIsOpen(true);
   }
   function closeConfirmationModal() {
@@ -134,11 +142,11 @@ export const UploadIdeaComponent = () => {
       });
 
       setTxSignature(signature);
+      toast.success("Transaction successful");
     } catch (err) {
       toast.error("Transaction failed");
     }
     setTransactionLoader(false);
-    toast.success("Transaction successful");
   }
   async function onSubmit() {
     setTaskSubmitLoader(true);
@@ -176,11 +184,29 @@ export const UploadIdeaComponent = () => {
     }
     setTaskSubmitLoader(false);
   }
+  const GudelinesArr = [
+    "1. Upload the images of your Idea/Product.",
+    "2. Enter the title of your Idea/Product.",
+    "3. Enter the description of your Idea/Product.",
+    "4. Choose the type of voting you want for your Idea/Product.",
+    "5. Click on Pay to submit your Idea/Product.",
+  ];
 
   return (
-    <div className="h-screen mb-36">
-      {transactionLoader && <TransactionLoadingPage />}
-      {TaskSubmitLoader && <TaskSubmittingLoader />}
+    <div className="h-[60rem] md:h-[50rem] flex flex-col justify-center items-center gap-5 w-full px-6 md:px-8">
+      <AnimatedModal
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onOpenChange={onOpenChange}
+        title="Guidelines for Uploading Idea/Product"
+        content={GudelinesArr}
+      />
+      {transactionLoader && (
+        <TransactionLoadingPage height="h-[60rem] md:h-[50rem]" />
+      )}
+      {TaskSubmitLoader && (
+        <TaskSubmittingLoader height="h-[60rem] md:h-[50rem]" />
+      )}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeConfirmationModal}
@@ -197,6 +223,21 @@ export const UploadIdeaComponent = () => {
             className="w-full p-2 rounded border border-gray-300 bg-gray-800"
             value={tasksAmt}
             onChange={(e) => setTasksAmt(Number(e.target.value))}
+            onKeyDown={(e) => {
+              if (e.key == "Enter") {
+                if (title === "" || images.length === 0) {
+                  toast.error("Title and URL are required");
+                  return;
+                } else if (tasksAmt <= 0) {
+                  toast.error("Amount should be greater than 0");
+                  return;
+                } else if (tasksAmt === 0) {
+                  toast.error("Amount is required");
+                  return;
+                }
+                makePayment();
+              }
+            }}
           />
           <button
             className="capitalize p-2 rounded bg-blue-600 hover:bg-blue-500 text-white"
@@ -302,14 +343,21 @@ export const UploadIdeaComponent = () => {
           </div>
         </div>
       </Modal>
-      <div className="flex flex-col gap-10 items-center mt-16 justify-center">
-        <h1 className="text-3xl md:text-5xl px-6 text-center font-bold uppercase">
-          Upload your Idea / Product
-        </h1>
-        <div className="flex flex-col w-full md:px-12 gap-5">
-          <div className="flex flex-col gap-2 justify-center items-start px-6 md:w-full">
+      <div
+        className={`flex flex-col gap-10 items-center justify-center w-full`}
+      >
+        <div className="flex gap-2 justify-center items-center">
+          <h1 className="text-2xl md:w-full text-center md:text-4xl font-bold uppercase">
+            Upload your Idea / Product
+          </h1>
+          <Button isIconOnly color="primary" onPress={onOpen}>
+            ?
+          </Button>
+        </div>
+        <div className="flex flex-col w-full gap-5">
+          <div className="flex flex-col gap-2 justify-center items-start md:w-full">
             <label htmlFor="designTitle" className="text-base text-start">
-              Idea Title
+              Idea Title *
             </label>
             <input
               type="text"
@@ -319,23 +367,23 @@ export const UploadIdeaComponent = () => {
               className="bg-gray-950 rounded-md w-full"
             />
           </div>
-          <div className="flex flex-col justify-center items-start gap-2 px-6 md:w-full">
-            {images.length > 0 && (
-              <button
-                onClick={() => setimageModalIsOpen(true)}
-                className="inline-flex h-12 items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-white transition-colors focus:outline-none w-full"
-              >
-                Show Images
-              </button>
-            )}
-            <label className="block font-medium text-base">Idea Images</label>
+          <div className="flex flex-col justify-center items-start gap-2  md:w-full">
+            <label className="block font-medium text-base">Idea Images *</label>
             <UploadImage
               onImageAdded={(imageUrl) => {
                 setImages((i) => [...i, imageUrl]);
               }}
             />
+            {images.length > 0 && (
+              <button
+                onClick={() => setimageModalIsOpen(true)}
+                className="inline-flex h-12 items-center justify-center rounded-md border border-slate-400 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%]  font-medium text-white transition-colors focus:outline-none w-full mt-4"
+              >
+                Show Images
+              </button>
+            )}
           </div>
-          <div className="flex flex-col gap-2 justify-start items-start px-6 md:w-full">
+          <div className="flex flex-col gap-2 justify-start items-start  md:w-full">
             <label htmlFor="designDescription" className="text-base">
               Design Description (OPTIONAL)
             </label>
@@ -347,9 +395,9 @@ export const UploadIdeaComponent = () => {
               className="bg-gray-950 rounded-md w-full"
             />
           </div>
-          <div className="flex flex-col gap-2 justify-start items-start px-6 md:w-full">
+          <div className="flex flex-col gap-2 justify-start items-start  md:w-full">
             <label htmlFor="designDescription" className="text-base">
-              Choose the type of voting
+              Choose the type of voting *
             </label>
             <VoteSelection
               fiveStar={fiveStar}

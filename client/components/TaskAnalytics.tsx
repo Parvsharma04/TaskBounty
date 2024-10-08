@@ -46,9 +46,6 @@ function TaskAnalytics() {
           //   theme: "colored",
           // });
         }
-        res.data.tasksDetails.forEach((task: any) => {
-          task.amount = (parseFloat(task.amount) / 1000000000).toString();
-        });
 
         setAllTasks(res.data.tasksDetails);
         DataManipulation(res.data.tasksDetails);
@@ -162,7 +159,7 @@ function TaskAnalytics() {
     id: string;
     title: string;
     amount: string;
-    done: boolean;
+    status: boolean;
     category: string;
   }
 
@@ -178,18 +175,18 @@ function TaskAnalytics() {
       sortable: true,
     },
     {
-      name: "Amount",
-      selector: (row: Task) => row.amount,
-      sortable: true,
-    },
-    {
-      name: "Done",
-      selector: (row: Task) => (row.done == false ? "Not Done" : "Done"),
-      sortable: true,
-    },
-    {
       name: "Category",
       selector: (row: Task) => row.category,
+      sortable: true,
+    },
+    {
+      name: "Amount",
+      selector: (row: Task) => parseFloat(row.amount) / 1000000000,
+      sortable: true,
+    },
+    {
+      name: "Status",
+      selector: (row: Task) => (row.status ? "Done" : "Pending"),
       sortable: true,
     },
     {

@@ -1,8 +1,10 @@
 import "@/styles/TransactionLoading.css";
 
-const TransactionLoadingPage = () => {
+const TransactionLoadingPage = ({ height }: any) => {
   return (
-    <div className="absolute h-screen pl-[35%] w-full flex items-center bg-gray-700 z-40">
+    <div
+      className={`absolute ${height} md:pl-[35%] w-full flex items-center bg-gray-700 z-50`}
+    >
       <div className="containerTransaction">
         <div className="left-side">
           <div className="card">

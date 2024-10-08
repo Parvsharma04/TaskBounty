@@ -17,7 +17,7 @@ export const getNextTask = async (userId: number) => {
       postYear: currentYear,
     },
   });
-  // console.log(tasksCompletedToday)
+  // console.log(tasksCompletedToday);
   // Check if the worker has completed 5 tasks today
   if (tasksCompletedToday >= 5) {
     return {
@@ -45,7 +45,6 @@ export const getNextTask = async (userId: number) => {
     }
 
     const task = filteredTasks[0];
-    console.log(task)
     let categoryDetails;
     if (task?.category === "UI_UX_Design") {
       categoryDetails = await prismaClient.uI_UX_Design.findFirst({

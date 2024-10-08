@@ -92,7 +92,8 @@ const TransactionHistory = () => {
     postMonth: string;
     postYear: string;
     amount: string;
-    status: string;
+    status: boolean;
+    category: string;
   }
 
   const helper = async () => {
@@ -108,6 +109,7 @@ const TransactionHistory = () => {
         }
       );
 
+      console.log(res.data.transaction);
       res.data.transaction.reverse();
       setTransactions(res.data.transaction);
     } catch (err) {
@@ -123,6 +125,7 @@ const TransactionHistory = () => {
   const columns = [
     { key: "postDate", label: "Date" },
     { key: "amount", label: "Amount" },
+    { key: "category", label: "Category" },
     { key: "status", label: "Status" },
   ];
   const handlePdfDownload = async () => {
@@ -291,6 +294,9 @@ const TransactionHistory = () => {
                     </TableCell>
                     <TableCell className="text-white text-base">
                       {Number(obj.amount) / 1000_000_000} SOL
+                    </TableCell>
+                    <TableCell className="text-white text-base">
+                      {obj.category}
                     </TableCell>
                     <TableCell className="text-white text-base">
                       {obj.status ? "Success" : "Pending"}
