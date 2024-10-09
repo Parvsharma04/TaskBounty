@@ -126,74 +126,49 @@ router.post("/submission", workerMiddleware, async (req, res) => {
     }
 
     const amount = TASK_SUBMISSION_AMT.toString();
-    const submission = await prismaClient.$transaction(async (tx) => {
-      console.log("Creating submission");
-      const submission = await tx.submission.create({
-        data: {
-          worker_id: Number(userId),
-          task_id: parsedBody.data.taskId,
-          amount: amount,
-          postDate: parsedBody.data.postDate,
-          postMonth: parsedBody.data.postMonth,
-          postYear: parsedBody.data.postYear,
-        },
-      });
-
-      // Update task
-      console.log("Updating task");
-      await tx.task.update({
-        where: {
-          id: Number(parsedBody.data.taskId),
-        },
-        data: {
-          worker_id: Array.isArray(taskmodel?.worker_id)
-            ? [...(taskmodel.worker_id as any[]), { id: userId }]
-            : [{ id: userId }],
-        },
-      });
-
-      // Update category
-      console.log("Updating category");
-      if (taskCategory === "UI_UX_Design") {
-        await tx.uI_UX_Design.update({
-          where: {
-            id: taskmodel?.uiUxDesign_id!,
-          },
+    try {
+      const submission = await prismaClient.$transaction(async (tx) => {
+        const submission = await tx.submission.create({
           data: {
-            Responses: Array.isArray(categoryModel?.Responses)
-              ? [
-                  ...categoryModel.Responses,
-                  { id: userId, value: parsedBody.data.voteOptionId },
-                ]
-              : [{ id: userId, value: parsedBody.data.voteOptionId }],
+            worker_id: Number(userId),
+            task_id: parsedBody.data.taskId,
+            amount: amount,
+            postDate: parsedBody.data.postDate,
+            postMonth: parsedBody.data.postMonth,
+            postYear: parsedBody.data.postYear,
           },
         });
-      }
 
-      // Update worker
-      console.log("Updating worker");
-      await tx.worker.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          pending_amount: (
-            Number(worker.pending_amount) + Number(amount)
-          ).toString(),
-        },
+        await tx.task.update({
+          where: {
+            id: Number(parsedBody.data.taskId),
+          },
+          data: {
+            worker_id: Array.isArray(taskmodel?.worker_id)
+              ? [...(taskmodel.worker_id as any[]), { id: userId }]
+              : [{ id: userId }],
+          },
+        });
+
+        return submission;
       });
-      return submission;
-    });
-
-    const nextTask = await getNextTask(Number(userId));
-    res.status(200).json({
-      nextTask,
-      amount,
-    });
-  } else {
-    res.status(411).json({
-      message: "Incorrect inputs",
-    });
+      const nextTask = await getNextTask(Number(userId));
+      res.status(200).json({
+        nextTask,
+        amount,
+      });
+    } catch (error: any) {
+      if (error.code === "P2002") {
+        return res.status(409).json({
+          message: "You have already submitted this task.",
+        });
+      } else {
+        console.error("Error creating submission:", error);
+        return res.status(500).json({
+          message: "Internal server error",
+        });
+      }
+    }
   }
 });
 
@@ -467,7 +442,7 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
         postYear: currentYear,
       },
     });
-    console.log(tasksCompletedToday)
+    console.log(tasksCompletedToday);
 
     // Calculate the number of tasks left (maximum of 5 tasks per day)
     const tasksLeft = 5 - tasksCompletedToday;
@@ -482,7 +457,7 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
         submissions: workerData.submissions,
         tasksDoneCount,
         tasksCompletedToday, // Added tasks completed today
-        tasksLeft,           // Added tasks left
+        tasksLeft, // Added tasks left
       },
     });
   } catch (error) {
