@@ -27,7 +27,7 @@
     "jspdf-autotable": "^3.8.3",
     "jwt-decode": "^4.0.0",
     "locomotive-scroll": "^5.0.0-beta.21",
-    "next": "^14.2.7",
+    "next": "^14.2.10",
     "react": "^18",
     "react-apexcharts": "^1.4.1",
     "react-data-table-component": "^7.6.2",
