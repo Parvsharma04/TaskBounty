@@ -5,6 +5,7 @@ interface StatCardProps {
   title: string;
   total: string;
   children: ReactNode;
+  currency: boolean;
 }
 
 const containerVariants = {
@@ -18,7 +19,12 @@ const containerVariants = {
   },
 };
 
-const StatCard: React.FC<StatCardProps> = ({ title, total, children }) => {
+const StatCard: React.FC<StatCardProps> = ({
+  title,
+  total,
+  children,
+  currency,
+}) => {
   return (
     <motion.div
       className="relative w-full max-w-sm rounded-[20px] bg-gray-900 shadow-[0_25px_50px_rgba(0,0,0,0.55)] cursor-pointer transition-transform duration-300 hover:scale-90 text-white p-6"
@@ -33,7 +39,9 @@ const StatCard: React.FC<StatCardProps> = ({ title, total, children }) => {
 
       <div className="mt-4 flex items-end justify-between">
         <div>
-          <h4 className="text-title-md font-bold text-white">{total} {title !== 'Bounties Hunted' ? "SOL" : ""}</h4>
+          <h4 className="text-title-md font-bold text-white">
+            {total} {currency ? "SOL" : ""}
+          </h4>
           <span className="text-sm font-medium">{title}</span>
         </div>
 

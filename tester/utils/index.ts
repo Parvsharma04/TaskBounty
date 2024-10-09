@@ -46,6 +46,7 @@ export interface TesterData {
     pending_amount: number;
     locked_amount: number;
     tasksDoneCount: number;
+    tasksLeft: number;
   };
   submissionCountByMonthYear: SubmissionCount[];
   withdrawn: number;
@@ -56,6 +57,7 @@ export interface TesterDashProps {
   totalEarned: number; // Total earned in SOL
   totalPayout: number; // Total payout in SOL
   pendingAmount: number;
+  tasksLeft: number;
 }
 
 // Animation variants
@@ -195,7 +197,6 @@ export const options: ApexOptions = {
     },
   },
 };
-
 
 export interface Submission {
   _count: { id: number };

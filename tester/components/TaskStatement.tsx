@@ -38,7 +38,7 @@ const TaskStatement: React.FC<TaskStatementProps> = ({
             {name}
           </span>
         )}
-        <span className="text-lg sm:text-xl md:text-2xl font-medium flex-grow text-center sm:text-left">
+        <span className="text-lg sm:text-xl md:text-2xl lg:w-max font-medium flex-grow text-center sm:text-left">
           {title}
         </span>
         <div className="self-center sm:self-auto mt-2 sm:mt-0">

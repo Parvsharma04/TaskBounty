@@ -453,7 +453,26 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
       },
     });
 
-    // Return response with worker's data and calculated task count
+    // Calculate the number of tasks completed today
+    const currentDate = new Date();
+    const currentDay = currentDate.getDate();
+    const currentMonth = currentDate.getMonth(); // Month is zero-indexed
+    const currentYear = currentDate.getFullYear();
+
+    const tasksCompletedToday = await prismaClient.submission.count({
+      where: {
+        worker_id: workerData.id,
+        postDate: currentDay,
+        postMonth: currentMonth,
+        postYear: currentYear,
+      },
+    });
+    console.log(tasksCompletedToday)
+
+    // Calculate the number of tasks left (maximum of 5 tasks per day)
+    const tasksLeft = 5 - tasksCompletedToday;
+
+    // Return response with worker's data, calculated task count, and tasks left
     res.json({
       testerData: {
         pending_amount: workerData.pending_amount,
@@ -462,6 +481,8 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
         payouts: workerData.payouts,
         submissions: workerData.submissions,
         tasksDoneCount,
+        tasksCompletedToday, // Added tasks completed today
+        tasksLeft,           // Added tasks left
       },
     });
   } catch (error) {

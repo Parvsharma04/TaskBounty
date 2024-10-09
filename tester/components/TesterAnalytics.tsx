@@ -24,6 +24,7 @@ export const TesterAnalytics: React.FC = () => {
     },
     submissionCountByMonthYear: [],
     withdrawn: 0,
+    tasksLeft : 5
   });
   const [totalEarned, setTotalEarned] = useState(0);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -42,12 +43,12 @@ export const TesterAnalytics: React.FC = () => {
         }
       );
       const data = response.data;
-      // console.log(data);
       setTotalEarned(
         parseFloat(data.testerData.pending_amount) +
-          parseFloat(data.testerData.locked_amount)
+        parseFloat(data.testerData.locked_amount)
       );
       setTesterData(data);
+      console.log(data);
       processData(data);
     } catch (error: any) {
       console.error("Error fetching tester data:", error);
@@ -101,6 +102,7 @@ export const TesterAnalytics: React.FC = () => {
             totalEarned={totalEarned}
             totalPayout={Number(testerData?.testerData.locked_amount) || 0}
             pendingAmount={Number(testerData?.testerData?.pending_amount) || 0}
+            tasksLeft={testerData?.testerData.tasksLeft || 5}
           />
           <div className="mt-8 sm:mt-12">
             {isMobile ? (

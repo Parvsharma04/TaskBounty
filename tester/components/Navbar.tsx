@@ -11,6 +11,7 @@ import { slide as Menu } from "react-burger-menu";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AnimatedLink from "./AnimatedLink";
+import Loading from "./Loading";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -25,9 +26,12 @@ const NavBar = () => {
   const pathname = usePathname();
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loader, setLoader] = useState(false);
+  const [showLinks, setShowLinks] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   async function getToken() {
+    setLoader(true);
     if (wallet.connected) {
       try {
         const message = new TextEncoder().encode(
@@ -40,12 +44,15 @@ const NavBar = () => {
           publicKey: wallet.publicKey?.toString(),
         });
         localStorage.setItem("token", response.data.token);
-
+        setShowLinks(true);
         setPayoutAmt(response.data.amount);
+        setLoader(false);
       } catch (error) {
         console.error("Error fetching token:", error);
+        setLoader(false);
       }
     } else if (!wallet.connected) {
+      setShowLinks(false)
       localStorage.clear();
     }
   }
@@ -173,6 +180,10 @@ const NavBar = () => {
     </div>
   );
 
+  {
+    loader && <Loading />;
+  }
+
   return (
     <nav className="fixed top-0 left-0 w-full bg-black shadow-[0_4px_8px_rgba(255,255,255,0.2)] z-50">
       <div className="mx-auto flex items-center justify-between p-4 w-[100%]">
@@ -197,7 +208,7 @@ const NavBar = () => {
         </a>
         {/* Desktop Menu: Hidden at 1100px or less */}
         <div className="hidden xl:flex xl:items-center xl:space-x-8">
-          {wallet.connected && (
+          {showLinks && (
             <>
               <AnimatedLink title="Home" href="/" />
               <AnimatedLink title="Hunt Bounties" href="/bounty" />
