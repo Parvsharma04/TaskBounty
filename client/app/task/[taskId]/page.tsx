@@ -158,6 +158,7 @@ export default function Page({
               amount={taskDetails?.amount}
               key={idx}
               imageUrl={url ?? ""}
+              type="website"
               description={categoryDetails?.Design_Description ?? ""}
               votes={MaxVotes}
               category={taskDetails?.category ?? ""}
@@ -175,6 +176,7 @@ export default function Page({
               amount={taskDetails?.amount}
               key={idx}
               imageUrl={url ?? ""}
+              type="image"
               description={categoryDetails?.Idea_Description ?? ""}
               votes={MaxVotes}
               category={taskDetails?.category ?? ""}
@@ -192,6 +194,7 @@ export default function Page({
               amount={taskDetails?.amount}
               key={idx}
               imageUrl={url ?? ""}
+              type="image"
               description={""}
               votes={MaxVotes}
               category={taskDetails?.category ?? ""}
@@ -209,6 +212,7 @@ export default function Page({
               amount={taskDetails?.amount}
               key={idx}
               imageUrl={url ?? ""}
+              type="image"
               description={categoryDetails?.Description ?? ""}
               votes={MaxVotes}
               category={taskDetails?.category ?? ""}
@@ -226,6 +230,7 @@ export default function Page({
               amount={taskDetails?.amount}
               key={idx}
               imageUrl={url ?? ""}
+              type="website"
               description={categoryDetails?.Description ?? ""}
               votes={MaxVotes}
               category={taskDetails?.category ?? ""}
@@ -245,6 +250,7 @@ export default function Page({
 function Task({
   amount,
   imageUrl,
+  type,
   description,
   votes,
   category,
@@ -257,6 +263,7 @@ function Task({
 }: {
   amount: String;
   imageUrl: string;
+  type: string;
   description: string;
   votes: number;
   category: string;
@@ -272,6 +279,7 @@ function Task({
       amount={amount}
       imageUrl={imageUrl}
       votes={votes}
+      type={type}
       description={description}
       category={category}
       postDate={postDate}

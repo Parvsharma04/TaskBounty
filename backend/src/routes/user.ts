@@ -29,285 +29,297 @@ router.get("/task", authMiddleware, async (req, res) => {
   // @ts-ignore
   const userId: string = req.userId;
 
-  const taskDetails = await prismaClient.task.findFirst({
-    where: {
-      user_id: Number(userId),
-      id: Number(taskId),
-    },
-  });
-  if (!taskDetails) {
-    return res.status(411).json({
-      message: "You dont have access to this task",
+  try {
+    const taskDetails = await prismaClient.task.findFirst({
+      where: {
+        user_id: Number(userId),
+        id: Number(taskId),
+      },
     });
-  }
-
-  let categoryDetails;
-  let category = taskDetails?.category;
-  if (category == Category.UI_UX_Design) {
-    if (!taskDetails?.uiUxDesign_id) {
+    if (!taskDetails) {
       return res.status(411).json({
         message: "You dont have access to this task",
       });
     }
-    categoryDetails = await prismaClient.uI_UX_Design.findFirst({
-      where: {
-        id: taskDetails?.uiUxDesign_id,
-      },
-    });
-  } else if (category == Category.Idea_Product) {
-    if (!taskDetails?.ideaProduct_id) {
-      return res.status(411).json({
-        message: "You dont have access to this task",
+
+    let categoryDetails;
+    let category = taskDetails?.category;
+    if (category == Category.UI_UX_Design) {
+      if (!taskDetails?.uiUxDesign_id) {
+        return res.status(411).json({
+          message: "You dont have access to this task",
+        });
+      }
+      categoryDetails = await prismaClient.uI_UX_Design.findFirst({
+        where: {
+          id: taskDetails?.uiUxDesign_id,
+        },
+      });
+    } else if (category == Category.Idea_Product) {
+      if (!taskDetails?.ideaProduct_id) {
+        return res.status(411).json({
+          message: "You dont have access to this task",
+        });
+      }
+      categoryDetails = await prismaClient.idea_Product.findFirst({
+        where: {
+          id: taskDetails?.ideaProduct_id,
+        },
+      });
+    } else if (category == Category.Youtube_Thumbnail) {
+      if (!taskDetails?.youtubeThumbnail_id) {
+        return res.status(411).json({
+          message: "You dont have access to this task",
+        });
+      }
+      categoryDetails = await prismaClient.youtube_Thumbnail.findFirst({
+        where: {
+          id: taskDetails?.youtubeThumbnail_id,
+        },
+      });
+    } else if (category == Category.Miscellaneous) {
+      if (!taskDetails?.miscellaneous_id) {
+        return res.status(411).json({
+          message: "You dont have access to this task",
+        });
+      }
+      categoryDetails = await prismaClient.miscellaneous.findFirst({
+        where: {
+          id: taskDetails?.miscellaneous_id,
+        },
       });
     }
-    categoryDetails = await prismaClient.idea_Product.findFirst({
-      where: {
-        id: taskDetails?.ideaProduct_id,
-      },
-    });
-  } else if (category == Category.Youtube_Thumbnail) {
-    if (!taskDetails?.youtubeThumbnail_id) {
+
+    if (taskDetails.Voting_Type_id === null) {
       return res.status(411).json({
-        message: "You dont have access to this task",
+        message: "Voting type not found",
       });
     }
-    categoryDetails = await prismaClient.youtube_Thumbnail.findFirst({
+
+    let votingDetails;
+    let votingTypeDetails;
+    votingDetails = await prismaClient.voting_Type.findFirst({
       where: {
-        id: taskDetails?.youtubeThumbnail_id,
+        id: taskDetails?.Voting_Type_id,
       },
     });
-  } else if (category == Category.Miscellaneous) {
-    if (!taskDetails?.miscellaneous_id) {
+
+    if (!votingDetails) {
       return res.status(411).json({
-        message: "You dont have access to this task",
+        message: "Voting type not found",
       });
     }
-    categoryDetails = await prismaClient.miscellaneous.findFirst({
+
+    if (votingDetails.type === "Rating_Scale") {
+      if (votingDetails.rating_ScaleId === null) {
+        return res.status(411).json({
+          message: "Rating scale not found",
+        });
+      }
+
+      const ratingScale = await prismaClient.rating_Scale.findFirst({
+        where: {
+          id: votingDetails.rating_ScaleId,
+        },
+        select: {
+          Five_Star: true,
+          Four_Star: true,
+          Three_Star: true,
+          Two_Star: true,
+          One_Star: true,
+        },
+      });
+
+      if (!ratingScale) {
+        return res.status(411).json({
+          message: "Rating scale not found",
+        });
+      }
+
+      votingTypeDetails = ratingScale;
+    } else if (votingDetails.type === "Poll") {
+      if (votingDetails.pollId === null) {
+        return res.status(411).json({
+          message: "Poll not found",
+        });
+      }
+
+      const poll = await prismaClient.poll.findFirst({
+        where: {
+          id: votingDetails.pollId,
+        },
+        select: {
+          option1: true,
+          option2: true,
+          option3: true,
+          option4: true,
+        },
+      });
+
+      if (!poll) {
+        return res.status(411).json({
+          message: "Poll not found",
+        });
+      }
+
+      votingTypeDetails = poll;
+    } else if (votingDetails.type === "Upvote_Downvote") {
+      if (votingDetails.upvote_DownvoteId === null) {
+        return res.status(411).json({
+          message: "Upvote downvote not found",
+        });
+      }
+
+      const upvoteDownvote = await prismaClient.upvote_Downvote.findFirst({
+        where: {
+          id: votingDetails.upvote_DownvoteId,
+        },
+        select: {
+          Upvote: true,
+          Downvote: true,
+        },
+      });
+
+      if (!upvoteDownvote) {
+        return res.status(411).json({
+          message: "Upvote downvote not found",
+        });
+      }
+
+      votingTypeDetails = upvoteDownvote;
+    } else if (votingDetails.type === "Emoji_Reaction") {
+      if (votingDetails.emoji_ReactionId === null) {
+        return res.status(411).json({
+          message: "Emoji reaction not found",
+        });
+      }
+
+      const emojiReaction = await prismaClient.emoji_Reaction.findFirst({
+        where: {
+          id: votingDetails.emoji_ReactionId,
+        },
+        select: {
+          Emoji_1: true,
+          Emoji_2: true,
+          Emoji_3: true,
+          Emoji_4: true,
+        },
+      });
+
+      if (!emojiReaction) {
+        return res.status(411).json({
+          message: "Emoji reaction not found",
+        });
+      }
+
+      votingTypeDetails = emojiReaction;
+    } else {
+      return res.status(411).json({
+        message: "Voting type not found",
+      });
+    }
+
+    // Todo: Can u make this faster?
+    const responses = await prismaClient.submission.findMany({
       where: {
-        id: taskDetails?.miscellaneous_id,
+        task_id: Number(taskId),
       },
+    });
+    res.json({
+      taskDetails,
+      categoryDetails,
+      votingDetails,
+      votingTypeDetails,
+      responses,
+    });
+  } catch (error) {
+    console.error("Error creating task:", error);
+    res.status(500).json({
+      message: "Internal server error",
     });
   }
-
-  if (taskDetails.Voting_Type_id === null) {
-    return res.status(411).json({
-      message: "Voting type not found",
-    });
-  }
-
-  let votingDetails;
-  let votingTypeDetails;
-  votingDetails = await prismaClient.voting_Type.findFirst({
-    where: {
-      id: taskDetails?.Voting_Type_id,
-    },
-  });
-
-  if (!votingDetails) {
-    return res.status(411).json({
-      message: "Voting type not found",
-    });
-  }
-
-  if (votingDetails.type === "Rating_Scale") {
-    if (votingDetails.rating_ScaleId === null) {
-      return res.status(411).json({
-        message: "Rating scale not found",
-      });
-    }
-
-    const ratingScale = await prismaClient.rating_Scale.findFirst({
-      where: {
-        id: votingDetails.rating_ScaleId,
-      },
-      select: {
-        Five_Star: true,
-        Four_Star: true,
-        Three_Star: true,
-        Two_Star: true,
-        One_Star: true,
-      },
-    });
-
-    if (!ratingScale) {
-      return res.status(411).json({
-        message: "Rating scale not found",
-      });
-    }
-
-    votingTypeDetails = ratingScale;
-  } else if (votingDetails.type === "Poll") {
-    if (votingDetails.pollId === null) {
-      return res.status(411).json({
-        message: "Poll not found",
-      });
-    }
-
-    const poll = await prismaClient.poll.findFirst({
-      where: {
-        id: votingDetails.pollId,
-      },
-      select: {
-        option1: true,
-        option2: true,
-        option3: true,
-        option4: true,
-      },
-    });
-
-    if (!poll) {
-      return res.status(411).json({
-        message: "Poll not found",
-      });
-    }
-
-    votingTypeDetails = poll;
-  } else if (votingDetails.type === "Upvote_Downvote") {
-    if (votingDetails.upvote_DownvoteId === null) {
-      return res.status(411).json({
-        message: "Upvote downvote not found",
-      });
-    }
-
-    const upvoteDownvote = await prismaClient.upvote_Downvote.findFirst({
-      where: {
-        id: votingDetails.upvote_DownvoteId,
-      },
-      select: {
-        Upvote: true,
-        Downvote: true,
-      },
-    });
-
-    if (!upvoteDownvote) {
-      return res.status(411).json({
-        message: "Upvote downvote not found",
-      });
-    }
-
-    votingTypeDetails = upvoteDownvote;
-  } else if (votingDetails.type === "Emoji_Reaction") {
-    if (votingDetails.emoji_ReactionId === null) {
-      return res.status(411).json({
-        message: "Emoji reaction not found",
-      });
-    }
-
-    const emojiReaction = await prismaClient.emoji_Reaction.findFirst({
-      where: {
-        id: votingDetails.emoji_ReactionId,
-      },
-      select: {
-        Emoji_1: true,
-        Emoji_2: true,
-        Emoji_3: true,
-        Emoji_4: true,
-      },
-    });
-
-    if (!emojiReaction) {
-      return res.status(411).json({
-        message: "Emoji reaction not found",
-      });
-    }
-
-    votingTypeDetails = emojiReaction;
-  } else {
-    return res.status(411).json({
-      message: "Voting type not found",
-    });
-  }
-
-  // Todo: Can u make this faster?
-  const responses = await prismaClient.submission.findMany({
-    where: {
-      task_id: Number(taskId),
-    },
-  });
-
-  res.json({
-    taskDetails,
-    categoryDetails,
-    votingDetails,
-    votingTypeDetails,
-    responses,
-  });
 });
 router.get("/getAllTask", authMiddleware, async (req, res) => {
   // @ts-ignore
   const userId = req.userId;
-  let resTasksDetails: any = [];
+  try {
+    let resTasksDetails: any = [];
+    const tasksDetails = await prismaClient.task.findMany({
+      where: {
+        user_id: Number(userId),
+      },
+    });
+    if (!tasksDetails || tasksDetails.length === 0) {
+      return res.status(411).json({
+        message: "You don't have access to this task",
+      });
+    }
 
-  const tasksDetails = await prismaClient.task.findMany({
-    where: {
-      user_id: Number(userId),
-    },
-  });
-  if (!tasksDetails || tasksDetails.length === 0) {
-    return res.status(411).json({
-      message: "You don't have access to this task",
+    // Use Promise.all to wait for all asynchronous operations to finish
+    await Promise.all(
+      tasksDetails.map(async (task: any) => {
+        let categoryDetails;
+        let title = "No Title";
+        let category = task.category;
+
+        if (category === Category.UI_UX_Design) {
+          if (!task.uiUxDesign_id) {
+            throw new Error("You don't have access to this task");
+          }
+          categoryDetails = await prismaClient.uI_UX_Design.findFirst({
+            where: { id: task.uiUxDesign_id },
+          });
+          title = categoryDetails?.Design_Title ?? "No Title";
+        } else if (category === Category.Idea_Product) {
+          if (!task.ideaProduct_id) {
+            throw new Error("You don't have access to this task");
+          }
+          categoryDetails = await prismaClient.idea_Product.findFirst({
+            where: { id: task.ideaProduct_id },
+          });
+          title = categoryDetails?.Idea_Title ?? "No Title";
+        } else if (category === Category.Youtube_Thumbnail) {
+          if (!task.youtubeThumbnail_id) {
+            throw new Error("You don't have access to this task");
+          }
+          categoryDetails = await prismaClient.youtube_Thumbnail.findFirst({
+            where: { id: task.youtubeThumbnail_id },
+          });
+          title = categoryDetails?.Youtube_Thumbnail_Title ?? "No Title";
+        } else if (category === Category.Miscellaneous) {
+          if (!task.miscellaneous_id) {
+            throw new Error("You don't have access to this task");
+          }
+          categoryDetails = await prismaClient.miscellaneous.findFirst({
+            where: { id: task.miscellaneous_id },
+          });
+          title = categoryDetails?.title ?? "No Title";
+        }
+
+        // Push task details to resTasksDetails array
+        resTasksDetails.push({
+          id: task.id,
+          title: title,
+          category: task.category,
+          amount: task.amount,
+          postDate: task.postDate,
+          postMonth: task.postMonth,
+          postYear: task.postYear,
+          done: task.done,
+        });
+      })
+    );
+
+    res.json({
+      tasksDetails: resTasksDetails,
+      message: "All tasks fetched successfully",
+    });
+  } catch (error) {
+    console.error("Error creating task:", error);
+    res.status(500).json({
+      message: "Internal server error",
     });
   }
-
-  // Use Promise.all to wait for all asynchronous operations to finish
-  await Promise.all(
-    tasksDetails.map(async (task: any) => {
-      let categoryDetails;
-      let title = "No Title";
-      let category = task.category;
-
-      if (category === Category.UI_UX_Design) {
-        if (!task.uiUxDesign_id) {
-          throw new Error("You don't have access to this task");
-        }
-        categoryDetails = await prismaClient.uI_UX_Design.findFirst({
-          where: { id: task.uiUxDesign_id },
-        });
-        title = categoryDetails?.Design_Title ?? "No Title";
-      } else if (category === Category.Idea_Product) {
-        if (!task.ideaProduct_id) {
-          throw new Error("You don't have access to this task");
-        }
-        categoryDetails = await prismaClient.idea_Product.findFirst({
-          where: { id: task.ideaProduct_id },
-        });
-        title = categoryDetails?.Idea_Title ?? "No Title";
-      } else if (category === Category.Youtube_Thumbnail) {
-        if (!task.youtubeThumbnail_id) {
-          throw new Error("You don't have access to this task");
-        }
-        categoryDetails = await prismaClient.youtube_Thumbnail.findFirst({
-          where: { id: task.youtubeThumbnail_id },
-        });
-        title = categoryDetails?.Youtube_Thumbnail_Title ?? "No Title";
-      } else if (category === Category.Miscellaneous) {
-        if (!task.miscellaneous_id) {
-          throw new Error("You don't have access to this task");
-        }
-        categoryDetails = await prismaClient.miscellaneous.findFirst({
-          where: { id: task.miscellaneous_id },
-        });
-        title = categoryDetails?.title ?? "No Title";
-      }
-
-      // Push task details to resTasksDetails array
-      resTasksDetails.push({
-        id: task.id,
-        title: title,
-        category: task.category,
-        amount: task.amount,
-        postDate: task.postDate,
-        postMonth: task.postMonth,
-        postYear: task.postYear,
-        done: task.done,
-      });
-    })
-  );
-
-  res.json({
-    tasksDetails: resTasksDetails,
-    message: "All tasks fetched successfully",
-  });
 });
 
 router.post("/task", authMiddleware, async (req, res) => {
@@ -338,48 +350,52 @@ router.post("/task", authMiddleware, async (req, res) => {
   console.log("dummy delay for 10 sec active");
   //! add dummy delay for 10 sec
   setTimeout(async () => {
-    const transaction = await connection.getTransaction(
-      parseData.data.signature,
-      {
-        maxSupportedTransactionVersion: 1,
-      }
-    );
-
-    if (!transaction) {
-      return res.status(411).json({
-        message: "Transaction not found",
-      });
-    }
-
-    const amountTransferred = (
-      (transaction.meta?.postBalances[1] ?? 0) -
-      (transaction.meta?.preBalances[1] ?? 0)
-    ).toString();
-
-    // console.log(transaction.transaction.message.getAccountKeys());
-
-    const recipientAddress = transaction.transaction.message
-      .getAccountKeys()
-      .get(0)
-      ?.toString();
-    const senderAddress = transaction.transaction.message
-      .getAccountKeys()
-      .get(0)
-      ?.toString();
-
-    // if (recipientAddress !== process.env.PARENT_WALLET_ADDRESS) {
-    //   return res.status(411).json({
-    //     message: "Transaction sent to the wrong address",
-    //   });
-    // }
-
-    // if (senderAddress !== user.address) {
-    //   return res.status(411).json({
-    //     message: "Transaction sent from the wrong address",
-    //   });
-    // }
-
     try {
+      const transaction = await connection.getTransaction(
+        parseData.data.signature,
+        {
+          maxSupportedTransactionVersion: 1,
+        }
+      );
+
+      if (!transaction) {
+        return res.status(411).json({
+          message: "Transaction not found",
+        });
+      }
+
+      const amountTransferred = (
+        (transaction.meta?.postBalances[1] ?? 0) -
+        (transaction.meta?.preBalances[1] ?? 0)
+      ).toString();
+
+      // console.log(transaction.transaction.message.getAccountKeys());
+
+      const recipientAddress = transaction.transaction.message
+        .getAccountKeys()
+        .get(1)
+        ?.toString();
+      const senderAddress = transaction.transaction.message
+        .getAccountKeys()
+        .get(0)
+        ?.toString();
+
+      // console.log(recipientAddress, senderAddress);
+
+      if (recipientAddress !== process.env.PARENT_WALLET_ADDRESS) {
+        return res.status(411).json({
+          message: "Transaction sent to the wrong address",
+        });
+      }
+
+      // console.log(senderAddress, user.address);
+
+      if (senderAddress !== user.address) {
+        return res.status(411).json({
+          message: "Transaction sent from the wrong address",
+        });
+      }
+
       const response = await prismaClient.$transaction(
         async (tx) => {
           let category: Category = parseData.data.category as Category;
