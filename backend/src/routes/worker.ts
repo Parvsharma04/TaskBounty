@@ -142,6 +142,7 @@ router.post("/submission", workerMiddleware, async (req, res) => {
 
         // Update task
         console.log("Updating task");
+
         await tx.task.update({
           where: {
             id: Number(parsedBody.data.taskId),
@@ -152,8 +153,29 @@ router.post("/submission", workerMiddleware, async (req, res) => {
               : [{ id: userId }],
           },
         });
+        const task = await tx.task.findFirst({
+          where: {
+            id: Number(parsedBody.data.taskId),
+          },
+        });
+        // Check if task votes are complete
+        console.log("Checking if task votes are complete");
+        let totalVotes =
+          parseFloat(task?.amount ?? "0") / 1000_000_000 / TASK_SUBMISSION_AMT;
+        if (task?.worker_id.length === totalVotes) {
+          await tx.task.update({
+            where: {
+              id: Number(parsedBody.data.taskId),
+            },
+            data: {
+              done: true,
+            },
+          });
+        }
+
         // Update category
         console.log("Updating category");
+
         if (taskCategory === "UI_UX_Design") {
           await tx.uI_UX_Design.update({
             where: {

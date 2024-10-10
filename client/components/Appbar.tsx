@@ -100,12 +100,12 @@ const NavBar = () => {
       onMenuOpenChange={setIsMenuOpen}
     >
       <NavbarContent className="sm:hidden" justify="start">
-        {wallet.connected && (
+        {hasToken && (
           <NavbarMenuToggle
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           />
         )}
-        {!wallet.connected && (
+        {!hasToken && (
           <NavbarBrand>
             <Link
               href="/"
@@ -140,7 +140,7 @@ const NavBar = () => {
           </span>
         </Link>
       </NavbarBrand>
-      {wallet.connected && (
+      {hasToken && (
         <NavbarContent className="hidden sm:flex gap-5" justify="center">
           <NavbarItem>
             <AnimatedLink title="Home" href="/" key="home" />
@@ -226,99 +226,101 @@ const NavBar = () => {
         </NavbarItem>
       </NavbarContent>
 
-      <NavbarMenu className="bg-gray-800 pt-5">
-        <NavbarMenuItem key="Home">
-          <Link className="w-full" href="/" onClick={() => setIsMenuOpen()}>
-            Home
-          </Link>
-        </NavbarMenuItem>
-        <NavbarMenuItem key="Features">
-          <Dropdown>
-            <NavbarItem>
-              <DropdownTrigger>
-                <Button
-                  disableRipple
-                  className="p-0 bg-transparent data-[hover=true]:bg-transparent text-white text-md"
-                  endContent={icons.chevron}
-                  radius="sm"
-                  variant="light"
+      {hasToken && (
+        <NavbarMenu className="bg-gray-800 pt-5">
+          <NavbarMenuItem key="Home">
+            <Link className="w-full" href="/" onClick={() => setIsMenuOpen()}>
+              Home
+            </Link>
+          </NavbarMenuItem>
+          <NavbarMenuItem key="Features">
+            <Dropdown>
+              <NavbarItem>
+                <DropdownTrigger>
+                  <Button
+                    disableRipple
+                    className="p-0 bg-transparent data-[hover=true]:bg-transparent text-white text-md"
+                    endContent={icons.chevron}
+                    radius="sm"
+                    variant="light"
+                  >
+                    Features
+                  </Button>
+                </DropdownTrigger>
+              </NavbarItem>
+              <DropdownMenu
+                aria-label="Features"
+                className="w-[340px] bg-gray-800 border-none outline-none p-0"
+                itemClasses={{
+                  base: "gap-4",
+                }}
+              >
+                <DropdownItem
+                  onClick={() => navigate.push("/uploadUiUx")}
+                  key="UI/UX Design"
+                  description="label your tasks and get them done by the best designers in the world."
+                  startContent={icons.scale}
                 >
-                  Features
-                </Button>
-              </DropdownTrigger>
-            </NavbarItem>
-            <DropdownMenu
-              aria-label="Features"
-              className="w-[340px] bg-gray-800 border-none outline-none p-0"
-              itemClasses={{
-                base: "gap-4",
-              }}
+                  <Link href="/uploadUiUx" onClick={() => setIsMenuOpen()}>
+                    UI/UX Design
+                  </Link>
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => navigate.push("/uploadIdea")}
+                  key="idea / product"
+                  description="Get your ideas and products to the market faster with our platform."
+                  startContent={icons.activity}
+                >
+                  <Link href="/uploadIdea" onClick={() => setIsMenuOpen()}>
+                    Idea / Product
+                  </Link>
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => navigate.push("/uploadTask")}
+                  key="Youtube thumbnail"
+                  description="Get your youtube thumbnails rated by the best designers in the world."
+                  startContent={icons.flash}
+                >
+                  <Link href="/uploadTask" onClick={() => setIsMenuOpen()}>
+                    Youtube Thumbnail
+                  </Link>
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => navigate.push("/miscellaneousUpload")}
+                  key="miscellaneous"
+                  description="rate your miscellaneous tasks and get them done by the humans of the world."
+                  startContent={icons.server}
+                >
+                  <Link
+                    href="/miscellaneousUpload"
+                    onClick={() => setIsMenuOpen()}
+                  >
+                    Miscellaneous
+                  </Link>
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </NavbarMenuItem>
+          <NavbarMenuItem key="taskAnalytics" className="mb-2">
+            <Link
+              className="w-full"
+              href="/taskAnalytics"
+              onClick={() => setIsMenuOpen()}
             >
-              <DropdownItem
-                onClick={() => navigate.push("/uploadUiUx")}
-                key="UI/UX Design"
-                description="label your tasks and get them done by the best designers in the world."
-                startContent={icons.scale}
-              >
-                <Link href="/uploadUiUx" onClick={() => setIsMenuOpen()}>
-                  UI/UX Design
-                </Link>
-              </DropdownItem>
-              <DropdownItem
-                onClick={() => navigate.push("/uploadIdea")}
-                key="idea / product"
-                description="Get your ideas and products to the market faster with our platform."
-                startContent={icons.activity}
-              >
-                <Link href="/uploadIdea" onClick={() => setIsMenuOpen()}>
-                  Idea / Product
-                </Link>
-              </DropdownItem>
-              <DropdownItem
-                onClick={() => navigate.push("/uploadTask")}
-                key="Youtube thumbnail"
-                description="Get your youtube thumbnails rated by the best designers in the world."
-                startContent={icons.flash}
-              >
-                <Link href="/uploadTask" onClick={() => setIsMenuOpen()}>
-                  Youtube Thumbnail
-                </Link>
-              </DropdownItem>
-              <DropdownItem
-                onClick={() => navigate.push("/miscellaneousUpload")}
-                key="miscellaneous"
-                description="rate your miscellaneous tasks and get them done by the humans of the world."
-                startContent={icons.server}
-              >
-                <Link
-                  href="/miscellaneousUpload"
-                  onClick={() => setIsMenuOpen()}
-                >
-                  Miscellaneous
-                </Link>
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </NavbarMenuItem>
-        <NavbarMenuItem key="taskAnalytics" className="mb-2">
-          <Link
-            className="w-full"
-            href="/taskAnalytics"
-            onClick={() => setIsMenuOpen()}
-          >
-            Task Analytics
-          </Link>
-        </NavbarMenuItem>
-        <NavbarMenuItem key="transactionHistory">
-          <Link
-            className="w-full"
-            href="/transactionHistory"
-            onClick={() => setIsMenuOpen()}
-          >
-            Transaction History
-          </Link>
-        </NavbarMenuItem>
-      </NavbarMenu>
+              Task Analytics
+            </Link>
+          </NavbarMenuItem>
+          <NavbarMenuItem key="transactionHistory">
+            <Link
+              className="w-full"
+              href="/transactionHistory"
+              onClick={() => setIsMenuOpen()}
+            >
+              Transaction History
+            </Link>
+          </NavbarMenuItem>
+        </NavbarMenu>
+      )}
     </Navbar>
   );
 };

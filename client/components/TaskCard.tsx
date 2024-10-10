@@ -16,7 +16,7 @@ interface TaskCardProps {
   postDate?: number;
   postMonth?: number;
   postYear?: number;
-  TaskStatus?: string;
+  TaskStatus?: boolean;
   VotingType?: string;
   votingTypeDetails?: any;
   type: string;
@@ -42,6 +42,9 @@ const TaskCard = ({
   const [url, setUrl] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const [imageModalIsOpen, setimageModalIsOpen] = useState(false);
+  const [votesLeft, setVotesLeft] = useState(0);
+
+  console.log(TaskStatus);
 
   useEffect(() => {
     if (postYear && postMonth && postDate) {
@@ -49,6 +52,9 @@ const TaskCard = ({
     }
     if (amount) {
       setcurrAmt(parseFloat(amount.toString()) / 1000_000_000);
+      setVotesLeft(
+        parseFloat(amount.toString()) / 1000_000_000 / 0.0002 - votes
+      );
     }
   }, [postYear, postMonth, postDate, amount]);
 
@@ -228,9 +234,12 @@ const TaskCard = ({
                 Description: {description ? description : "No Description"}
               </h1>
               <h1 className="text-xl text-black font-semibold flex justify-center items-center gap-2">
+                Votes Left: <Chip color="default">{votesLeft}</Chip>
+              </h1>
+              <h1 className="text-xl text-black font-semibold flex justify-center items-center gap-2">
                 Task Status:{" "}
                 <Chip color="success" className="text-white">
-                  {TaskStatus === "true" ? "Completed" : "Open"}
+                  {TaskStatus === true ? "Completed" : "Open"}
                 </Chip>
               </h1>
             </div>

@@ -158,7 +158,7 @@ function TaskAnalytics() {
     id: string;
     title: string;
     amount: string;
-    status: boolean;
+    done: boolean;
     category: string;
   }
 
@@ -185,7 +185,7 @@ function TaskAnalytics() {
     },
     {
       name: "Status",
-      selector: (row: Task) => (row.status ? "Done" : "Pending"),
+      selector: (row: Task) => (row.done ? "Done" : "Pending"),
       sortable: true,
     },
     {

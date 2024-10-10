@@ -31,7 +31,7 @@ export default function Page({
   interface TaskDetailsProps {
     amount: String;
     category: string;
-    done: string;
+    done: boolean;
     postDate: number;
     postMonth: number;
     postYear: number;
@@ -41,7 +41,7 @@ export default function Page({
   const [taskDetails, setTaskDetails] = useState<TaskDetailsProps>({
     amount: "",
     category: "",
-    done: "",
+    done: false,
     postDate: 0,
     postMonth: 0,
     postYear: 0,
@@ -270,7 +270,7 @@ function Task({
   postDate: number;
   postMonth: number;
   postYear: number;
-  TaskStatus: string;
+  TaskStatus: boolean;
   VotingType: string;
   votingTypeDetails: any;
 }) {

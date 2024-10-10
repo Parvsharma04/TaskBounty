@@ -28,6 +28,7 @@ model Task {
   category       Category     @default(Miscellaneous)
   user_id        Int
   worker_id      Json[]
+  votes          Int          @default(0)
   signature      String
   amount         String
   status         Boolean      @default(false)
