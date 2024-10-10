@@ -538,7 +538,6 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
         postYear: currentYear,
       },
     });
-    console.log(tasksCompletedToday);
 
     // Calculate the number of tasks left (maximum of 5 tasks per day)
     const tasksLeft = 5 - tasksCompletedToday;

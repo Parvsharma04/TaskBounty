@@ -63,7 +63,6 @@ export const NextTask: React.FC<NextTaskProps> = ({
           },
         });
         if (response.data.message) setLimitReached(true);
-        // console.log(response.data);
         setCurrentTask(response.data.task);
         setNoMoreTasks(false);
       } catch (error: any) {

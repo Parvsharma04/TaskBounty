@@ -65,7 +65,6 @@ const NavBar = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      console.log("Authorization Header Sent:", token); // Log the token
 
       if (!token) {
         toast.error("You must be signed in to request a payout.");
@@ -82,7 +81,6 @@ const NavBar = () => {
         }
       );
 
-      console.log("Payout response:", response.data);
       setPayoutAmt(response.data.amount);
       setPayoutDone(true); // Set payout done to true
 

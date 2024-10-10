@@ -44,8 +44,6 @@ const TaskCard = ({
   const [imageModalIsOpen, setimageModalIsOpen] = useState(false);
   const [votesLeft, setVotesLeft] = useState(0);
 
-  console.log(TaskStatus);
-
   useEffect(() => {
     if (postYear && postMonth && postDate) {
       setCurrentDate(new Date(postYear, postMonth, postDate));
