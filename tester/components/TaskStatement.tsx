@@ -32,15 +32,17 @@ const TaskStatement: React.FC<TaskStatementProps> = ({
       className="p-3 sm:p-4 mb-4 text-white bg-gray-800 rounded-2xl w-full"
       role="alert"
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
-        {name && (
-          <span className="text-base sm:text-lg font-medium px-2 py-0.5 rounded bg-green-900 text-green-300 whitespace-nowrap">
-            {name}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 md:gap-0">
+        <div className="flex gap-3">
+          {name && (
+            <span className="text-base sm:text-lg font-medium px-2 py-0.5 rounded bg-green-900 text-green-300 whitespace-nowrap">
+              {name}
+            </span>
+          )}
+          <span className="text-xl md:text-2xl lg:w-max font-medium flex-grow text-center sm:text-left">
+            {title}
           </span>
-        )}
-        <span className="text-lg sm:text-xl md:text-2xl lg:w-max font-medium flex-grow text-center sm:text-left">
-          {title}
-        </span>
+        </div>
         <div className="self-center sm:self-auto mt-2 sm:mt-0">
           {getCategoryChip(category)}
         </div>

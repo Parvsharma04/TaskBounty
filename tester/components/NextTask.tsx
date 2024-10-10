@@ -1,4 +1,5 @@
 "use client";
+
 import { BACKEND_URL, NextTaskProps, Task } from "@/utils";
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -26,7 +27,6 @@ const containerVariants = {
     },
   },
 };
-
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
   visible: { y: 0, opacity: 1 },
@@ -63,7 +63,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
           },
         });
         if (response.data.message) setLimitReached(true);
-        console.log(response.data);
+        // console.log(response.data);
         setCurrentTask(response.data.task);
         setNoMoreTasks(false);
       } catch (error: any) {
@@ -78,7 +78,6 @@ export const NextTask: React.FC<NextTaskProps> = ({
       }
     }
   };
-
   const handleSubmit = async () => {
     let d = new Date();
     let currDate = d.getUTCDate();
@@ -130,11 +129,9 @@ export const NextTask: React.FC<NextTaskProps> = ({
     }
     setLoading(false);
   };
-
   const handleTaskVoteOptionSelect = (idx: number) => {
     setTaskVoteOptionSelect(idx);
   };
-
   const handleTaskOptionSelect = (idx: number) => {
     setTaskOptionSelect(idx);
   };
@@ -153,7 +150,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
         pauseOnHover
         theme="colored"
       />
-      <div className="min-h-screen bg-black text-white p-4 mt-16 sm:mt-0">
+      <div className="min-h-screen bg-black text-white mt-16 sm:mt-0 w-full">
         {!wallet.connected ? (
           <div className="h-screen flex justify-center items-center px-4">
             <div className="text-center text-lg sm:text-xl md:text-2xl">
@@ -182,16 +179,16 @@ export const NextTask: React.FC<NextTaskProps> = ({
             </div>
           ))
         ) : (
-          <div className="flex flex-col w-full justify-center items-center min-h-screen md:p-5">
+          <div className="flex flex-col flex-wrap w-full justify-center items-center min-h-screen md:px-20 md:pt-24 px-10 pt-16">
             <motion.div
-              className="flex flex-wrap md:flex-nowrap justify-center gap-4 sm:gap-6 items-start"
+              className="flex flex-wrap md:flex-nowrap justify-center gap-4 sm:gap-6 items-center"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
               transition={{ duration: 1, ease: "easeInOut" }}
             >
               <motion.div
-                className="bg-gray-900  p-4 md:p-6 lg:p-8 w-fit  rounded-2xl"
+                className="bg-gray-900 p-4 md:p-6 lg:p-8 rounded-2xl flex justify-center items-center flex-wrap"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -230,7 +227,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
                       <motion.li
                         key={option.id}
                         variants={itemVariants}
-                        className="flex justify-center w-fit sm:w-auto"
+                        className="flex justify-center"
                       >
                         <TaskOptions
                           category={currentTask.category}
@@ -250,7 +247,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
 
               {currentTask?.category !== "Youtube_Thumbnail" && (
                 <motion.div
-                  className="bg-gray-900  p-4 md:p-6 lg:p-8 w-full max-w-xl rounded-2xl"
+                  className="bg-gray-900 p-4 md:p-6 lg:p-8 rounded-2xl flex flex-col justify-between items-center h-[26.6rem]"
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
@@ -258,7 +255,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
                 >
                   <TaskStatement
                     category="Voting"
-                    title="Options: "
+                    title="Options: Your Voice, Your Rating"
                     name={null}
                   />
                   <motion.ul
@@ -275,6 +272,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
                             key={idx}
                             variants={itemVariants}
                             className="flex justify-start items-center text-lg sm:text-xl w-full bg-gray-700 rounded-md p-2 hover:bg-gray-800 cursor-pointer transition-colors relative"
+                            onClick={() => handleTaskVoteOptionSelect(idx)}
                           >
                             <input
                               id={`default-checkbox-${idx}`}

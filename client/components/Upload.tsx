@@ -393,7 +393,7 @@ export const Upload = () => {
           )}
         </div>
 
-        <div className="flex flex-col gap-2 justify-start items-start md:w-full">
+        {/* <div className="flex flex-col gap-2 justify-start items-start md:w-full">
           <label htmlFor="designDescription" className="text-base">
             Choose the type of voting *
           </label>
@@ -431,7 +431,7 @@ export const Upload = () => {
             setEmoji4={setEmoji4}
             setvotingCustomOptionsArr={setvotingCustomOptionsArr}
           />
-        </div>
+        </div> */}
 
         <div className="flex justify-center mt-4">
           <button

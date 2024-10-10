@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { v4 as uuidv4 } from "uuid";
 
 const prismaClient = new PrismaClient();
 
@@ -151,33 +152,70 @@ export const getNextTask = async (userId: number) => {
       categoryDetails &&
       "Design_Url" in categoryDetails
     ) {
-      options.push({ id: 1, image_url: categoryDetails.Design_Url });
+      const images = categoryDetails.Design_Url;
+      const modifiedImages = images.map((image) => {
+        return {
+          type: "image_url",
+          image_url: image,
+        };
+      });
+      options.push({ id: uuidv4(), image_url: modifiedImages });
     } else if (
       category === "Idea_Product" &&
       categoryDetails &&
       "Idea_Images" in categoryDetails
     ) {
-      options.push({ id: 1, image_url: categoryDetails.Idea_Images });
+      const images = categoryDetails.Idea_Images;
+      const modifiedImages = images.map((image) => {
+        return {
+          type: "image_url",
+          image_url: image,
+        };
+      });
+
+      options.push({ id: uuidv4(), image_url: modifiedImages });
     } else if (
       category === "Youtube_Thumbnail" &&
       categoryDetails &&
       "Youtube_Thumbnail_Images" in categoryDetails
     ) {
+      const images = categoryDetails.Youtube_Thumbnail_Images;
+      const modifiedImages = images.map((image) => {
+        return {
+          type: "image_url",
+          image_url: image,
+        };
+      });
+
       options.push({
-        id: 1,
-        image_url: categoryDetails.Youtube_Thumbnail_Images,
+        id: uuidv4(),
+        image_url: modifiedImages,
       });
     } else if (
       category === "Miscellaneous" &&
       categoryDetails &&
       ("Images" in categoryDetails || "Design_Url" in categoryDetails)
     ) {
+      const images = "Images" in categoryDetails ? categoryDetails.Images : [];
+      const modifiedImages = images.map((image) => {
+        return {
+          type: "image_url",
+          image_url: image,
+        };
+      });
+      const designUrl = categoryDetails.Design_Url
+        ? categoryDetails.Design_Url
+        : [];
+      designUrl.forEach((url) => {
+        modifiedImages.push({
+          type: "design_url",
+          image_url: url,
+        });
+      });
+
       options.push({
-        id: 1,
-        image_url: "Images" in categoryDetails ? categoryDetails.Images : [],
-        Design_Url: categoryDetails.Design_Url
-          ? categoryDetails.Design_Url
-          : [],
+        id: uuidv4(),
+        image_url: modifiedImages,
       });
     }
 

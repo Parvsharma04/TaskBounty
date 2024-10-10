@@ -127,6 +127,7 @@ router.post("/submission", workerMiddleware, async (req, res) => {
 
     const amount = TASK_SUBMISSION_AMT.toString();
     try {
+      console.log("Creating submission");
       const submission = await prismaClient.$transaction(async (tx) => {
         const submission = await tx.submission.create({
           data: {
@@ -139,6 +140,8 @@ router.post("/submission", workerMiddleware, async (req, res) => {
           },
         });
 
+        // Update task
+        console.log("Updating task");
         await tx.task.update({
           where: {
             id: Number(parsedBody.data.taskId),
@@ -149,7 +152,78 @@ router.post("/submission", workerMiddleware, async (req, res) => {
               : [{ id: userId }],
           },
         });
+        // Update category
+        console.log("Updating category");
+        if (taskCategory === "UI_UX_Design") {
+          await tx.uI_UX_Design.update({
+            where: {
+              id: taskmodel?.uiUxDesign_id!,
+            },
+            data: {
+              Responses: Array.isArray(categoryModel?.Responses)
+                ? [
+                    ...categoryModel.Responses,
+                    { id: userId, value: parsedBody.data.voteOptionId },
+                  ]
+                : [{ id: userId, value: parsedBody.data.voteOptionId }],
+            },
+          });
+        } else if (taskCategory === "Idea_Product") {
+          await tx.idea_Product.update({
+            where: {
+              id: taskmodel?.ideaProduct_id!,
+            },
+            data: {
+              Responses: Array.isArray(categoryModel?.Responses)
+                ? [
+                    ...categoryModel.Responses,
+                    { id: userId, value: parsedBody.data.voteOptionId },
+                  ]
+                : [{ id: userId, value: parsedBody.data.voteOptionId }],
+            },
+          });
+        } else if (taskCategory === "Youtube_Thumbnail") {
+          await tx.youtube_Thumbnail.update({
+            where: {
+              id: taskmodel?.youtubeThumbnail_id!,
+            },
+            data: {
+              Responses: Array.isArray(categoryModel?.Responses)
+                ? [
+                    ...categoryModel.Responses,
+                    { id: userId, value: parsedBody.data.voteOptionId },
+                  ]
+                : [{ id: userId, value: parsedBody.data.voteOptionId }],
+            },
+          });
+        } else if (taskCategory === "Miscellaneous") {
+          await tx.miscellaneous.update({
+            where: {
+              id: taskmodel?.miscellaneous_id!,
+            },
+            data: {
+              Responses: Array.isArray(categoryModel?.Responses)
+                ? [
+                    ...categoryModel.Responses,
+                    { id: userId, value: parsedBody.data.voteOptionId },
+                  ]
+                : [{ id: userId, value: parsedBody.data.voteOptionId }],
+            },
+          });
+        }
 
+        // Update worker
+        console.log("Updating worker");
+        await tx.worker.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            pending_amount: (
+              Number(worker.pending_amount) + Number(amount)
+            ).toString(),
+          },
+        });
         return submission;
       });
       const nextTask = await getNextTask(Number(userId));

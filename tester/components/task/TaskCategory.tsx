@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { FaEye } from "react-icons/fa";
 import Modal from "react-modal";
 import TaskImage from "../TaskImage";
+import Link from "next/link";
 
 interface Option {
   votingTypeDetails: Record<string, any>;
   id: number;
-  image_url: string[];
+  image_url: any;
 }
 
 interface TaskOptionsProps {
@@ -90,27 +91,29 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
           )}
         </div>
       </Modal>
-      <div className="flex gap-4">
+      <div className="flex flex-wrap justify-center items-center gap-4">
         {category == "UI_UX_Design" && (
           <div
             className="relative cursor-pointer bg-gray-800 rounded-md p-4 transition-transform duration-300 hover:scale-105"
-            onClick={() => handleOptionSelect(option.id)}
+            onClick={() => {
+              handleOptionSelect(option.id);
+            }}
           >
             <div className="text-white font-medium">
               <span>Visit: </span>
-              <a
-                href={option.image_url}
+              <Link
+                href={option.image_url[0].image_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline text-blue-400"
               >
-                {option.image_url}
-              </a>
+                {option.image_url[0].image_url}
+              </Link>
             </div>
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                openModal(option.image_url[0]!, false);
+                openModal(option.image_url[0].image_url!, false);
               }}
               className="absolute top-2 right-2 p-1 bg-gray-700 rounded-full text-white transition-colors hover:bg-gray-800"
             >
@@ -120,13 +123,27 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
         )}
         {category != "UI_UX_Design" &&
           option.image_url &&
-          option.image_url.map((imageUrl: string, idx) => (
+          option.image_url.map((imageUrl: any, idx: number) => (
             <div
               key={idx}
-              className="relative cursor-pointer bg-gray-900 rounded-md overflow-hidden transition-transform duration-300 hover:scale-105 p-2"
+              className="relative flex-wrap flex justify-center items-center cursor-pointer bg-gray-900 rounded-md overflow-hidden transition-transform duration-300 hover:scale-105 p-2"
               onClick={() => handleOptionSelect(idx)}
             >
-              <TaskImage imageUrl={imageUrl} />
+              {imageUrl.type == "image_url" ? (
+                <TaskImage
+                  handleOptionSelect={handleOptionSelect}
+                  idx={idx}
+                  type="image_url"
+                  imageUrl={imageUrl.image_url}
+                />
+              ) : (
+                <TaskImage
+                  handleOptionSelect={handleOptionSelect}
+                  idx={idx}
+                  type="design_url"
+                  imageUrl={imageUrl.image_url}
+                />
+              )}
               <div className="absolute top-2 left-2">
                 <input
                   type="checkbox"
@@ -142,7 +159,11 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  openModal(imageUrl, true);
+                  {
+                    imageUrl.type == "image_url"
+                      ? openModal(imageUrl.image_url, true)
+                      : openModal(imageUrl.design_url, false);
+                  }
                 }}
                 className="absolute top-2 right-2 p-1 bg-gray-700 rounded-full text-white transition-colors hover:bg-gray-800"
               >
@@ -154,13 +175,18 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
       {option.votingTypeDetails && (
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
           {Object.entries(option.votingTypeDetails).map(([key, value], idx) => (
-            <div
+            <button
               key={idx}
-              className="cursor-pointer bg-gray-800 p-3 rounded-md text-center hover:bg-gray-700 transition-colors"
+              className="cursor-pointer bg-gray-800 p-3 rounded-md text-center hover:bg-gray-700 transition-colors w-full flex justify-center items-center"
               onClick={() => handleOptionSelect(idx)}
             >
-              {value}
-            </div>
+              <span
+                className="cursor-pointer"
+                onClick={() => handleOptionSelect(idx)}
+              >
+                {value}
+              </span>
+            </button>
           ))}
         </div>
       )}

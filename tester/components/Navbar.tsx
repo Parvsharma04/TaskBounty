@@ -52,7 +52,7 @@ const NavBar = () => {
         setLoader(false);
       }
     } else if (!wallet.connected) {
-      setShowLinks(false)
+      setShowLinks(false);
       localStorage.clear();
     }
   }
@@ -231,7 +231,6 @@ const NavBar = () => {
               isOpen={isMenuOpen}
               onStateChange={({ isOpen }) => setMenuOpen(isOpen)}
               className="bm-menu"
-              ref={menuRef}
             >
               <Link
                 href="/"

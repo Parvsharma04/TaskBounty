@@ -35,6 +35,21 @@ router.get("/task", authMiddleware, async (req, res) => {
         user_id: Number(userId),
         id: Number(taskId),
       },
+      select: {
+        id: true,
+        category: true,
+        amount: true,
+        status: true,
+        postDate: true,
+        postMonth: true,
+        postYear: true,
+        done: true,
+        uiUxDesign_id: true,
+        ideaProduct_id: true,
+        youtubeThumbnail_id: true,
+        miscellaneous_id: true,
+        Voting_Type_id: true,
+      },
     });
     if (!taskDetails) {
       return res.status(411).json({
@@ -219,18 +234,17 @@ router.get("/task", authMiddleware, async (req, res) => {
       });
     }
 
-    // Todo: Can u make this faster?
-    const responses = await prismaClient.submission.findMany({
-      where: {
-        task_id: Number(taskId),
-      },
-    });
+    // // Todo: Can u make this faster?
+    // const responses = await prismaClient.submission.findMany({
+    //   where: {
+    //     task_id: Number(taskId),
+    //   },
+    // });
     res.json({
       taskDetails,
       categoryDetails,
       votingDetails,
       votingTypeDetails,
-      responses,
     });
   } catch (error) {
     console.error("Error creating task:", error);

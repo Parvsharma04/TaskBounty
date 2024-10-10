@@ -23,7 +23,7 @@ export default function VotingTypeTable({ votingTypeDetails }: any) {
         <TableColumn>VOTES</TableColumn>
       </TableHeader>
       <TableBody emptyContent={"No rows to display."}>
-        {votingTypeDetails.map((val: any, idx: number) => {
+        {votingTypeDetails.slice(1).map((val: any, idx: number) => {
           return (
             <TableRow key={idx}>
               <TableCell>{val.type}</TableCell>

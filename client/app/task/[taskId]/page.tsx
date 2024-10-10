@@ -59,7 +59,7 @@ export default function Page({
   const [votingTypeDetails, setVotingTypeDetails] = useState(null);
   const [customLoader, setCustomLoader] = useState(false);
   const [votingArr, setVotingArr] = useState<{ type: string; votes: number }[]>(
-    []
+    [{ type: "", votes: 0 }]
   );
   const [MaxVotes, setMaxVotes] = useState(0);
 
@@ -140,7 +140,7 @@ export default function Page({
   }
 
   return (
-    <div className="bg-gray-950 text-white h-screen w-full flex flex-col justify-center items-center">
+    <div className="bg-gray-950 min-h-screen text-white pt-16 pb-10 h-full w-full flex flex-col justify-center items-center gap-10">
       {customLoader && <LoadingPage />}
       <div className="capitalize font-semibold text-3xl flex justify-center items-center gap-2">
         {taskDetails.category == "UI_UX_Design" &&
@@ -151,7 +151,7 @@ export default function Page({
         {taskDetails.category == "Miscellaneous" && categoryDetails?.title}
         <Chip color="primary">{taskDetails?.category}</Chip>
       </div>
-      <div className="flex flex-wrap justify-center pt-8 gap-5">
+      <div className="flex flex-wrap justify-center items-center gap-5">
         {taskDetails.category === "UI_UX_Design" &&
           categoryDetails?.Design_Url.map((url, idx) => (
             <Task
