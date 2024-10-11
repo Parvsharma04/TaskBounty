@@ -1,8 +1,16 @@
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
+} from "@nextui-org/react"; // Updated imports
+import Link from "next/link";
 import React, { useState } from "react";
 import { FaEye } from "react-icons/fa";
-import Modal from "react-modal";
 import TaskImage from "../TaskImage";
-import Link from "next/link";
 
 interface Option {
   votingTypeDetails: Record<string, any>;
@@ -23,7 +31,7 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
   setTaskOptionSelect,
   category,
 }) => {
-  const [websiteModal, setWebsiteModal] = useState(false);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure(); // Use NextUI's useDisclosure
   const [url, setUrl] = useState("");
   const [isImage, setIsImage] = useState(true);
 
@@ -34,65 +42,13 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
   const openModal = (contentUrl: string, isImageContent: boolean) => {
     setUrl(contentUrl);
     setIsImage(isImageContent);
-    setWebsiteModal(true);
-  };
-
-  const closeModal = () => {
-    setWebsiteModal(false);
-  };
-
-  const UrlCustomStyles = {
-    overlay: {
-      backgroundColor: "rgba(0, 0, 0, 0.75)",
-    },
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      transform: "translate(-50%, -50%)",
-      padding: 0,
-      maxWidth: "90vw",
-      maxHeight: "90vh",
-    },
+    onOpen(); // Open the modal
   };
 
   return (
     <>
-      <Modal
-        isOpen={websiteModal}
-        onRequestClose={closeModal}
-        style={UrlCustomStyles}
-        contentLabel={isImage ? "Image Preview" : "Website Preview"}
-      >
-        <div className="flex flex-col gap-3">
-          {/* Close Button */}
-          <div className="flex justify-end p-2">
-            <button
-              onClick={closeModal}
-              className="text-xl font-bold bg-red-700 w-8 h-8 rounded flex justify-center items-center"
-            >
-              X
-            </button>
-          </div>
-          {isImage ? (
-            <img
-              src={url}
-              alt="Preview"
-              className="w-full h-auto max-h-[80vh] object-contain"
-            />
-          ) : (
-            <iframe
-              src={url}
-              className="w-[60vw] h-[60vh]"
-              frameBorder="0"
-              allowFullScreen
-            ></iframe>
-          )}
-        </div>
-      </Modal>
       <div className="flex flex-wrap justify-center items-center gap-4">
-        {category == "UI_UX_Design" && (
+        {category === "UI_UX_Design" && (
           <div
             className="relative cursor-pointer bg-gray-800 rounded-md p-4 transition-transform duration-300 hover:scale-105"
             onClick={() => {
@@ -113,7 +69,7 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                openModal(option.image_url[0].image_url!, false);
+                openModal(option.image_url[0].image_url, false);
               }}
               className="absolute top-2 right-2 p-1 bg-gray-700 rounded-full text-white transition-colors hover:bg-gray-800"
             >
@@ -121,7 +77,7 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
             </button>
           </div>
         )}
-        {category != "UI_UX_Design" &&
+        {category !== "UI_UX_Design" &&
           option.image_url &&
           option.image_url.map((imageUrl: any, idx: number) => (
             <div
@@ -129,21 +85,12 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
               className="relative flex-wrap flex justify-center items-center cursor-pointer bg-gray-900 rounded-md overflow-hidden transition-transform duration-300 hover:scale-105 p-2"
               onClick={() => handleOptionSelect(idx)}
             >
-              {imageUrl.type == "image_url" ? (
-                <TaskImage
-                  handleOptionSelect={handleOptionSelect}
-                  idx={idx}
-                  type="image_url"
-                  imageUrl={imageUrl.image_url}
-                />
-              ) : (
-                <TaskImage
-                  handleOptionSelect={handleOptionSelect}
-                  idx={idx}
-                  type="design_url"
-                  imageUrl={imageUrl.image_url}
-                />
-              )}
+              <TaskImage
+                handleOptionSelect={handleOptionSelect}
+                idx={idx}
+                type={imageUrl.type}
+                imageUrl={imageUrl.image_url}
+              />
               <div className="absolute top-2 left-2">
                 <input
                   type="checkbox"
@@ -159,11 +106,7 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  {
-                    imageUrl.type == "image_url"
-                      ? openModal(imageUrl.image_url, true)
-                      : openModal(imageUrl.design_url, false);
-                  }
+                  openModal(imageUrl.image_url, imageUrl.type === "image_url");
                 }}
                 className="absolute top-2 right-2 p-1 bg-gray-700 rounded-full text-white transition-colors hover:bg-gray-800"
               >
@@ -172,54 +115,44 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
             </div>
           ))}
       </div>
-      {option.votingTypeDetails && (
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {Object.entries(option.votingTypeDetails).map(([key, value], idx) => (
-            <button
-              key={idx}
-              className="cursor-pointer bg-gray-800 p-3 rounded-md text-center hover:bg-gray-700 transition-colors w-full flex justify-center items-center"
-              onClick={() => handleOptionSelect(idx)}
-            >
-              <span
-                className="cursor-pointer"
-                onClick={() => handleOptionSelect(idx)}
-              >
-                {value}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
+
+      {/* NextUI Modal for Image/Website Preview */}
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent className="bg-gray-700 backdrop-blur-md p-5 w-fit">
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1 text-right text-white">
+                {" "}
+                {/* Adjust text color for better visibility */}
+                {isImage ? "Image Preview" : "Website Preview"}
+              </ModalHeader>
+              <ModalBody>
+                {isImage ? (
+                  <img
+                    src={url}
+                    alt="Preview"
+                    className="w-full h-auto max-h-[80vh] object-contain"
+                  />
+                ) : (
+                  <iframe
+                    src={url}
+                    className="w-[60vw] h-[60vh]"
+                    frameBorder="0"
+                    allowFullScreen
+                  ></iframe>
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" onPress={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 };
 
-interface TaskTitleProps {
-  title: string;
-}
-
-const TaskTitle: React.FC<TaskTitleProps> = ({ title }) => {
-  return (
-    <h2 className="text-xl sm:text-2xl font-bold text-center my-4">{title}</h2>
-  );
-};
-
-interface TaskCategoryProps {
-  category: string;
-  title: string;
-}
-
-const TaskCategory: React.FC<TaskCategoryProps> = ({ category, title }) => {
-  return (
-    <div className="text-center mb-6">
-      <span className="text-base sm:text-lg bg-blue-500 px-3 py-1 sm:px-4 sm:py-2 rounded-md inline-block">
-        Bounty: {category}
-      </span>
-      <h2 className="mt-3 text-xl sm:text-2xl md:text-3xl font-semibold">
-        {title}
-      </h2>
-    </div>
-  );
-};
-
-export { TaskCategory, TaskOptions, TaskTitle };
+export default TaskOptions;

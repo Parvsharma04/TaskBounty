@@ -1,6 +1,6 @@
 "use client";
 
-import { BACKEND_URL, NextTaskProps, Task } from "@/utils";
+import { BACKEND_URL, Task } from "@/utils";
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "./Loading";
-import { TaskOptions } from "./task/TaskCategory";
+import TaskOptions from "./task/TaskCategory";
 import TaskStatement from "./TaskStatement";
 
 const containerVariants = {
@@ -32,12 +32,10 @@ const itemVariants = {
   visible: { y: 0, opacity: 1 },
 };
 
-export const NextTask: React.FC<NextTaskProps> = ({
-  noMoreTasks,
-  setNoMoreTasks,
-}) => {
+export const NextTask = () => {
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(false);
+  const [noTasks, setNoTasks] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
   const wallet = useWallet();
   const router = useRouter();
@@ -64,14 +62,14 @@ export const NextTask: React.FC<NextTaskProps> = ({
         });
         if (response.data.message) setLimitReached(true);
         setCurrentTask(response.data.task);
-        setNoMoreTasks(false);
+        setNoTasks(false);
       } catch (error: any) {
         if (error.status === 423) {
           setLimitReached(true);
         }
         console.log(error);
         setCurrentTask(null);
-        setNoMoreTasks(true);
+        setNoTasks(true);
       } finally {
         setLoading(false);
       }
@@ -113,7 +111,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
         setCurrentTask(nextTask);
       } else {
         setCurrentTask(null);
-        setNoMoreTasks(true);
+        setNoTasks(true);
       }
     } catch (err: any) {
       console.error("Error submitting task:", err);
@@ -168,7 +166,7 @@ export const NextTask: React.FC<NextTaskProps> = ({
             </div>
           </div>
         ) : currentTask === null ? (
-          (!noMoreTasks && getTask(),
+          (!noTasks && getTask(),
           (
             <div className="h-screen flex justify-center items-center px-4">
               <div className="text-center text-lg sm:text-xl md:text-2xl">
