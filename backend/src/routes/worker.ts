@@ -23,265 +23,279 @@ const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 config();
 
 router.get("/nextTask", workerMiddleware, async (req, res) => {
-  // @ts-ignore
-  const userId: string = req.userId;
+  try {
+    // @ts-ignore
+    const userId: string = req.userId;
 
-  const task = await getNextTask(Number(userId));
+    const task = await getNextTask(Number(userId));
 
-  if (task?.message) {
-    res.status(423).json({ message: task.message });
-  } else if (!task) {
-    // If no task is found, return a 404 response
-    res.status(404).json({
-      message: "No more tasks left for you to review",
-    });
-  } else {
-    // If a task is found, return it in the response
-    res.json({
-      task,
-    });
+    if (task?.message) {
+      res.status(423).json({ message: task.message });
+    } else if (!task) {
+      // If no task is found, return a 404 response
+      res.status(404).json({
+        message: "No more tasks left for you to review",
+      });
+    } else {
+      // If a task is found, return it in the response
+      res.json({
+        task,
+      });
+    }
+  } catch (error) {
+    res.status(500).json(error)
   }
 });
 
 router.post("/submission", workerMiddleware, async (req, res) => {
-  // @ts-ignore
-  const userId = req.userId;
-  const body = req.body;
-  const parsedBody = createSubmissionInput.safeParse(body);
+  try {
+    // @ts-ignore
+    const userId = req.userId;
+    const body = req.body;
+    const parsedBody = createSubmissionInput.safeParse(body);
 
-  if (parsedBody.success) {
-    const task = await getNextTask(Number(userId));
-    if (!task || task?.id !== Number(parsedBody.data.taskId)) {
-      return res.status(411).json({
-        message: "Incorrect task id",
-      });
-    }
+    if (parsedBody.success) {
+      const task = await getNextTask(Number(userId));
+      if (!task || task?.id !== Number(parsedBody.data.taskId)) {
+        return res.status(411).json({
+          message: "Incorrect task id",
+        });
+      }
 
-    const taskmodel = await prismaClient.task.findFirst({
-      where: {
-        id: Number(parsedBody.data.taskId),
-      },
-    });
-
-    if (!taskmodel) {
-      return res.status(404).json({
-        message: "Task not found",
-      });
-    }
-
-    // Check for existing submission
-    const existingSubmission = await prismaClient.submission.findUnique({
-      where: {
-        worker_id_task_id: {
-          worker_id: Number(userId),
-          task_id: Number(parsedBody.data.taskId),
-        },
-      },
-    });
-
-    if (existingSubmission) {
-      return res.status(409).json({
-        message: "You have already submitted this task.",
-      });
-    }
-
-    const taskCategory = taskmodel?.category;
-    let categoryModel: any;
-
-    if (taskCategory === "UI_UX_Design") {
-      categoryModel = await prismaClient.uI_UX_Design.findFirst({
+      const taskmodel = await prismaClient.task.findFirst({
         where: {
-          id: taskmodel?.uiUxDesign_id!,
+          id: Number(parsedBody.data.taskId),
         },
       });
-    } else if (taskCategory === "Idea_Product") {
-      categoryModel = await prismaClient.idea_Product.findFirst({
+
+      if (!taskmodel) {
+        return res.status(404).json({
+          message: "Task not found",
+        });
+      }
+
+      // Check for existing submission
+      const existingSubmission = await prismaClient.submission.findUnique({
         where: {
-          id: taskmodel?.ideaProduct_id!,
+          worker_id_task_id: {
+            worker_id: Number(userId),
+            task_id: Number(parsedBody.data.taskId),
+          },
         },
       });
-    } else if (taskCategory === "Youtube_Thumbnail") {
-      categoryModel = await prismaClient.youtube_Thumbnail.findFirst({
+
+      if (existingSubmission) {
+        return res.status(409).json({
+          message: "You have already submitted this task.",
+        });
+      }
+
+      const taskCategory = taskmodel?.category;
+      let categoryModel: any;
+
+      if (taskCategory === "UI_UX_Design") {
+        categoryModel = await prismaClient.uI_UX_Design.findFirst({
+          where: {
+            id: taskmodel?.uiUxDesign_id!,
+          },
+        });
+      } else if (taskCategory === "Idea_Product") {
+        categoryModel = await prismaClient.idea_Product.findFirst({
+          where: {
+            id: taskmodel?.ideaProduct_id!,
+          },
+        });
+      } else if (taskCategory === "Youtube_Thumbnail") {
+        categoryModel = await prismaClient.youtube_Thumbnail.findFirst({
+          where: {
+            id: taskmodel?.youtubeThumbnail_id!,
+          },
+        });
+      } else if (taskCategory === "Miscellaneous") {
+        categoryModel = await prismaClient.miscellaneous.findFirst({
+          where: {
+            id: taskmodel?.miscellaneous_id!,
+          },
+        });
+      }
+
+      const worker = await prismaClient.worker.findFirst({
         where: {
-          id: taskmodel?.youtubeThumbnail_id!,
+          id: Number(userId),
         },
       });
-    } else if (taskCategory === "Miscellaneous") {
-      categoryModel = await prismaClient.miscellaneous.findFirst({
-        where: {
-          id: taskmodel?.miscellaneous_id!,
-        },
-      });
+      if (!worker) {
+        return res.status(403).json({
+          message: "Worker not found",
+        });
+      }
+
+      const amount = TASK_SUBMISSION_AMT.toString();
+      try {
+        console.log("Creating submission");
+        const submission = await prismaClient.$transaction(async (tx) => {
+          const submission = await tx.submission.create({
+            data: {
+              worker_id: Number(userId),
+              task_id: parsedBody.data.taskId,
+              amount: amount,
+              postDate: parsedBody.data.postDate,
+              postMonth: parsedBody.data.postMonth,
+              postYear: parsedBody.data.postYear,
+            },
+          });
+
+          // Update task
+          console.log("Updating task");
+
+          await tx.task.update({
+            where: {
+              id: Number(parsedBody.data.taskId),
+            },
+            data: {
+              worker_id: Array.isArray(taskmodel?.worker_id)
+                ? [...(taskmodel.worker_id as any[]), { id: userId }]
+                : [{ id: userId }],
+            },
+          });
+          const task = await tx.task.findFirst({
+            where: {
+              id: Number(parsedBody.data.taskId),
+            },
+          });
+          // Check if task votes are complete
+          console.log("Checking if task votes are complete");
+          let totalVotes =
+            parseFloat(task?.amount ?? "0") /
+            1000_000_000 /
+            TASK_SUBMISSION_AMT;
+          if (task?.worker_id.length === totalVotes) {
+            await tx.task.update({
+              where: {
+                id: Number(parsedBody.data.taskId),
+              },
+              data: {
+                done: true,
+              },
+            });
+          }
+
+          // Update category
+          console.log("Updating category");
+
+          if (taskCategory === "UI_UX_Design") {
+            await tx.uI_UX_Design.update({
+              where: {
+                id: taskmodel?.uiUxDesign_id!,
+              },
+              data: {
+                Responses: Array.isArray(categoryModel?.Responses)
+                  ? [
+                      ...categoryModel.Responses,
+                      { id: userId, value: parsedBody.data.voteOptionId },
+                    ]
+                  : [{ id: userId, value: parsedBody.data.voteOptionId }],
+              },
+            });
+          } else if (taskCategory === "Idea_Product") {
+            await tx.idea_Product.update({
+              where: {
+                id: taskmodel?.ideaProduct_id!,
+              },
+              data: {
+                Responses: Array.isArray(categoryModel?.Responses)
+                  ? [
+                      ...categoryModel.Responses,
+                      { id: userId, value: parsedBody.data.voteOptionId },
+                    ]
+                  : [{ id: userId, value: parsedBody.data.voteOptionId }],
+              },
+            });
+          } else if (taskCategory === "Youtube_Thumbnail") {
+            await tx.youtube_Thumbnail.update({
+              where: {
+                id: taskmodel?.youtubeThumbnail_id!,
+              },
+              data: {
+                Responses: Array.isArray(categoryModel?.Responses)
+                  ? [
+                      ...categoryModel.Responses,
+                      { id: userId, value: parsedBody.data.voteOptionId },
+                    ]
+                  : [{ id: userId, value: parsedBody.data.voteOptionId }],
+              },
+            });
+          } else if (taskCategory === "Miscellaneous") {
+            await tx.miscellaneous.update({
+              where: {
+                id: taskmodel?.miscellaneous_id!,
+              },
+              data: {
+                Responses: Array.isArray(categoryModel?.Responses)
+                  ? [
+                      ...categoryModel.Responses,
+                      { id: userId, value: parsedBody.data.voteOptionId },
+                    ]
+                  : [{ id: userId, value: parsedBody.data.voteOptionId }],
+              },
+            });
+          }
+
+          // Update worker
+          console.log("Updating worker");
+          await tx.worker.update({
+            where: {
+              id: userId,
+            },
+            data: {
+              pending_amount: (
+                Number(worker.pending_amount) + Number(amount)
+              ).toString(),
+            },
+          });
+          return submission;
+        });
+        const nextTask = await getNextTask(Number(userId));
+        res.status(200).json({
+          nextTask,
+          amount,
+        });
+      } catch (error: any) {
+        if (error.code === "P2002") {
+          return res.status(409).json({
+            message: "You have already submitted this task.",
+          });
+        } else {
+          console.error("Error creating submission:", error);
+          return res.status(500).json({
+            message: "Internal server error",
+          });
+        }
+      }
     }
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+});
+
+router.get("/balance", workerMiddleware, async (req, res) => {
+  try {
+    // @ts-ignore
+    const userId: string = req.userId;
 
     const worker = await prismaClient.worker.findFirst({
       where: {
         id: Number(userId),
       },
     });
-    if (!worker) {
-      return res.status(403).json({
-        message: "Worker not found",
-      });
-    }
 
-    const amount = TASK_SUBMISSION_AMT.toString();
-    try {
-      console.log("Creating submission");
-      const submission = await prismaClient.$transaction(async (tx) => {
-        const submission = await tx.submission.create({
-          data: {
-            worker_id: Number(userId),
-            task_id: parsedBody.data.taskId,
-            amount: amount,
-            postDate: parsedBody.data.postDate,
-            postMonth: parsedBody.data.postMonth,
-            postYear: parsedBody.data.postYear,
-          },
-        });
-
-        // Update task
-        console.log("Updating task");
-
-        await tx.task.update({
-          where: {
-            id: Number(parsedBody.data.taskId),
-          },
-          data: {
-            worker_id: Array.isArray(taskmodel?.worker_id)
-              ? [...(taskmodel.worker_id as any[]), { id: userId }]
-              : [{ id: userId }],
-          },
-        });
-        const task = await tx.task.findFirst({
-          where: {
-            id: Number(parsedBody.data.taskId),
-          },
-        });
-        // Check if task votes are complete
-        console.log("Checking if task votes are complete");
-        let totalVotes =
-          parseFloat(task?.amount ?? "0") / 1000_000_000 / TASK_SUBMISSION_AMT;
-        if (task?.worker_id.length === totalVotes) {
-          await tx.task.update({
-            where: {
-              id: Number(parsedBody.data.taskId),
-            },
-            data: {
-              done: true,
-            },
-          });
-        }
-
-        // Update category
-        console.log("Updating category");
-
-        if (taskCategory === "UI_UX_Design") {
-          await tx.uI_UX_Design.update({
-            where: {
-              id: taskmodel?.uiUxDesign_id!,
-            },
-            data: {
-              Responses: Array.isArray(categoryModel?.Responses)
-                ? [
-                    ...categoryModel.Responses,
-                    { id: userId, value: parsedBody.data.voteOptionId },
-                  ]
-                : [{ id: userId, value: parsedBody.data.voteOptionId }],
-            },
-          });
-        } else if (taskCategory === "Idea_Product") {
-          await tx.idea_Product.update({
-            where: {
-              id: taskmodel?.ideaProduct_id!,
-            },
-            data: {
-              Responses: Array.isArray(categoryModel?.Responses)
-                ? [
-                    ...categoryModel.Responses,
-                    { id: userId, value: parsedBody.data.voteOptionId },
-                  ]
-                : [{ id: userId, value: parsedBody.data.voteOptionId }],
-            },
-          });
-        } else if (taskCategory === "Youtube_Thumbnail") {
-          await tx.youtube_Thumbnail.update({
-            where: {
-              id: taskmodel?.youtubeThumbnail_id!,
-            },
-            data: {
-              Responses: Array.isArray(categoryModel?.Responses)
-                ? [
-                    ...categoryModel.Responses,
-                    { id: userId, value: parsedBody.data.voteOptionId },
-                  ]
-                : [{ id: userId, value: parsedBody.data.voteOptionId }],
-            },
-          });
-        } else if (taskCategory === "Miscellaneous") {
-          await tx.miscellaneous.update({
-            where: {
-              id: taskmodel?.miscellaneous_id!,
-            },
-            data: {
-              Responses: Array.isArray(categoryModel?.Responses)
-                ? [
-                    ...categoryModel.Responses,
-                    { id: userId, value: parsedBody.data.voteOptionId },
-                  ]
-                : [{ id: userId, value: parsedBody.data.voteOptionId }],
-            },
-          });
-        }
-
-        // Update worker
-        console.log("Updating worker");
-        await tx.worker.update({
-          where: {
-            id: userId,
-          },
-          data: {
-            pending_amount: (
-              Number(worker.pending_amount) + Number(amount)
-            ).toString(),
-          },
-        });
-        return submission;
-      });
-      const nextTask = await getNextTask(Number(userId));
-      res.status(200).json({
-        nextTask,
-        amount,
-      });
-    } catch (error: any) {
-      if (error.code === "P2002") {
-        return res.status(409).json({
-          message: "You have already submitted this task.",
-        });
-      } else {
-        console.error("Error creating submission:", error);
-        return res.status(500).json({
-          message: "Internal server error",
-        });
-      }
-    }
+    res.json({
+      pendingAmount: worker?.pending_amount,
+      lockedAmount: worker?.locked_amount,
+    });
+  } catch (error) {
+    res.status(500).json(error);
   }
-});
-
-router.get("/balance", workerMiddleware, async (req, res) => {
-  // @ts-ignore
-  const userId: string = req.userId;
-
-  const worker = await prismaClient.worker.findFirst({
-    where: {
-      id: Number(userId),
-    },
-  });
-
-  res.json({
-    pendingAmount: worker?.pending_amount,
-    lockedAmount: worker?.locked_amount,
-  });
 });
 
 router.post("/payout", workerMiddleware, async (req, res) => {
@@ -397,56 +411,62 @@ router.post("/payout", workerMiddleware, async (req, res) => {
 });
 
 router.post("/signin", async (req, res) => {
-  const { publicKey, signature } = req.body;
+  try {
+    const { publicKey, signature } = req.body;
 
-  if (!publicKey || !signature) {
-    return res.status(400).json({ message: "Missing publicKey or signature" });
-  }
+    if (!publicKey || !signature) {
+      return res
+        .status(400)
+        .json({ message: "Missing publicKey or signature" });
+    }
 
-  const message = new TextEncoder().encode(
-    "Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged."
-  );
-  const signedString =
-    "Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged.";
-  const result = nacl.sign.detached.verify(
-    message,
-    new Uint8Array(signature.data),
-    new PublicKey(publicKey).toBytes()
-  );
-
-  const hardCodedWalletAddress = publicKey;
-
-  const existingUser = await prismaClient.worker.findFirst({
-    where: {
-      address: hardCodedWalletAddress,
-    },
-  });
-
-  if (existingUser) {
-    const token = jwt.sign(
-      {
-        userId: existingUser.id,
-      },
-      process.env.WORKER_JWT_SECRET as string
+    const message = new TextEncoder().encode(
+      "Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged."
     );
-    res.json({ token, amount: existingUser.pending_amount });
-  } else {
-    const user = await prismaClient.worker.create({
-      data: {
+    const signedString =
+      "Wallet confirmation 🌓🚀\n\nI have read and agreed to the Terms and Conditions.\n\nNo amount will be charged.";
+    const result = nacl.sign.detached.verify(
+      message,
+      new Uint8Array(signature.data),
+      new PublicKey(publicKey).toBytes()
+    );
+
+    const hardCodedWalletAddress = publicKey;
+
+    const existingUser = await prismaClient.worker.findFirst({
+      where: {
         address: hardCodedWalletAddress,
-        locked_amount: "0",
-        pending_amount: "0",
       },
     });
 
-    const token = jwt.sign(
-      {
-        userId: user.id,
-      },
-      process.env.WORKER_JWT_SECRET as string
-    );
+    if (existingUser) {
+      const token = jwt.sign(
+        {
+          userId: existingUser.id,
+        },
+        process.env.WORKER_JWT_SECRET as string
+      );
+      res.json({ token, amount: existingUser.pending_amount });
+    } else {
+      const user = await prismaClient.worker.create({
+        data: {
+          address: hardCodedWalletAddress,
+          locked_amount: "0",
+          pending_amount: "0",
+        },
+      });
 
-    res.json({ token, amount: 0 });
+      const token = jwt.sign(
+        {
+          userId: user.id,
+        },
+        process.env.WORKER_JWT_SECRET as string
+      );
+
+      res.json({ token, amount: 0 });
+    }
+  } catch (error) {
+    res.status(500).json(error);
   }
 });
 
