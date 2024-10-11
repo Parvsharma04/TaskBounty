@@ -65,7 +65,7 @@ const Transactions = () => {
 
   return (
     <div className="min-h-screen bg-black text-white p-10 mt-16">
-      {data.map((transaction) => (
+      {data.map((transaction : any) => (
         <TransactionCard
           key={transaction.id}
           amount={transaction.amount}

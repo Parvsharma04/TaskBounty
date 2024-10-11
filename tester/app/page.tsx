@@ -1,24 +1,8 @@
-"use client"
-import Featured from "@/components/Featured";
-import Footer from "@/components/Footer";
-import { useEffect } from "react";
-import FAQ from "../components/FAQ/index";
-import HeroSection from "../components/HeroSection/index";
-export default function LandingPage() {
+import dynamic from 'next/dynamic';
 
-  useEffect(() => {
-    (async () => {
-      const LocomotiveScroll = (await import("locomotive-scroll")).default;
-      const locomotiveScroll = new LocomotiveScroll();
-    })();
-  }, []);
+// Dynamically import the LandingPage component with SSR disabled
+const LandingPage = dynamic(() => import('@/components/Home'), { ssr: false });
 
-  return (
-    <main className="bg-black">
-      <HeroSection />
-      <Featured />
-      <FAQ />
-      <Footer />
-    </main>
-  );
+export default function Home() {
+  return <LandingPage />;
 }

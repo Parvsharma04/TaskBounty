@@ -1,3 +1,4 @@
+import { ApexOptions } from 'apexcharts'; // Import ApexOptions for TypeScript
 import { motion } from 'framer-motion';
 import React from 'react';
 import ApexCharts from 'react-apexcharts';
@@ -24,9 +25,9 @@ const MobileGraph: React.FC<MobileGraphProps> = ({ submissions }) => {
   ];
 
   // Define dark mode theme options
-  const options = {
+  const options: ApexOptions = { // Specify the type for options
     chart: {
-      type: 'line',
+      type: 'line' as const, // Explicitly cast to string literal
       height: 300,
       background: '#111827', // Dark background for the chart
       dropShadow: {
@@ -45,7 +46,7 @@ const MobileGraph: React.FC<MobileGraphProps> = ({ submissions }) => {
       categories: submissions.map(sub => `${sub.postMonth}-${sub.postYear}`),
       labels: {
         style: {
-          colors: '#fff', // X-axis label color for dark mode
+          colors: ['#fff'], // X-axis label color for dark mode
         },
       },
     },
@@ -59,7 +60,7 @@ const MobileGraph: React.FC<MobileGraphProps> = ({ submissions }) => {
     yaxis: {
       labels: {
         style: {
-          colors: '#fff', // Y-axis label color for dark mode
+          colors: ['#fff'], // Y-axis label color for dark mode
         },
       },
     },
@@ -70,10 +71,10 @@ const MobileGraph: React.FC<MobileGraphProps> = ({ submissions }) => {
       theme: 'dark', // Ensure tooltips use dark theme
       style: {
         fontSize: '12px',
-        color: '#fff', // Color for tooltip text
+        // color: '#fff', // Color for tooltip text
       },
       y: {
-        formatter: (value) => value.toString(),
+        formatter: (value: number) => value.toString(), // Formatter for Y-axis values in tooltips
       },
     },
     legend: {
@@ -84,13 +85,6 @@ const MobileGraph: React.FC<MobileGraphProps> = ({ submissions }) => {
     },
     markers: {
       size: 0, // Hide markers
-    },
-    plotOptions: {
-      line: {
-        dataLabels: {
-          enabled: false, // Disable data labels for line charts
-        },
-      },
     },
   };
 

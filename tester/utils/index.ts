@@ -45,6 +45,7 @@ export interface TesterData {
     pending_amount: number;
     locked_amount: number;
     tasksDoneCount: number;
+    tasksLeft: number;
   };
   submissionCountByMonthYear: SubmissionCount[];
   withdrawn: number;
@@ -55,6 +56,7 @@ export interface TesterDashProps {
   totalEarned: number; // Total earned in SOL
   totalPayout: number; // Total payout in SOL
   pendingAmount: number;
+  tasksLeft: number;
 }
 
 // Animation variants
@@ -127,13 +129,13 @@ export const options: ApexOptions = {
     xaxis: {
       lines: {
         show: true,
-        color: "#444",
+        // color: "#444",
       },
     },
     yaxis: {
       lines: {
         show: true,
-        color: "#444",
+        // color: "#444",
       },
     },
   },
@@ -187,7 +189,7 @@ export const options: ApexOptions = {
     theme: "dark",
     style: {
       fontSize: "12px",
-      color: "#fff",
+      // color: "#fff",
     },
     y: {
       formatter: (value) => value.toString(),
@@ -195,7 +197,7 @@ export const options: ApexOptions = {
   },
 };
 
-export interface Submission {
+export interface SubmissionProp {
   _count: { id: number };
   postMonth: number;
   postYear: number;

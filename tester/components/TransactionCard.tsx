@@ -1,4 +1,5 @@
 import { Card, CardHeader } from "@nextui-org/react";
+import Image from "next/image";
 
 export default function TransactionCard({
   amount,
@@ -15,7 +16,7 @@ export default function TransactionCard({
     <div className="p-2">
       <Card className="relative w-full rounded-[20px] p-4 bg-gray-900 shadow-[0_25px_50px_rgba(0,0,0,0.55)] cursor-pointer transition-transform duration-300 hover:scale-95 text-white">
         <CardHeader className="flex gap-3">
-          <img
+          <Image
             alt="transaction status"
             height={40}
             src={

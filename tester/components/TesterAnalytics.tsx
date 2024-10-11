@@ -1,6 +1,6 @@
 "use client";
 
-import { BACKEND_URL, Submission, TesterData } from "@/utils";
+import { BACKEND_URL, SubmissionProp, TesterData } from "@/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -21,13 +21,13 @@ export const TesterAnalytics: React.FC = () => {
       pending_amount: 0,
       locked_amount: 0,
       tasksDoneCount: 0,
+      tasksLeft: 5,
     },
     submissionCountByMonthYear: [],
     withdrawn: 0,
-    tasksLeft: 5,
   });
   const [totalEarned, setTotalEarned] = useState(0);
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [submissions, setSubmissions] = useState<SubmissionProp[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

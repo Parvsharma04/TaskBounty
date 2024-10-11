@@ -49,5 +49,7 @@ export const calculateFormattedPending = (pendingAmount: number): string => {
 };
 
 export const getToken: any = () => {
-  return localStorage.getItem("token");
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("token");
+  } else return null;
 };

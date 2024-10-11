@@ -1,9 +1,27 @@
-const Home = () => {
-  return (
-    <div className="bg-black text-white h-screen">
-      <h1>HOME</h1>
-    </div>
-  );
-};
+"use client"
+import Featured from "@/components/Featured";
+import Footer from "@/components/Footer";
+import { useEffect } from "react";
+import FAQ from "../components/FAQ/index";
+import HeroSection from "../components/HeroSection/index";
 
-export default Home;
+export default function Home() {
+
+  useEffect(() => {
+    if (typeof window !== "undefined") { // Check if window is available
+      (async () => {
+        const LocomotiveScroll = (await import("locomotive-scroll")).default;
+        const locomotiveScroll = new LocomotiveScroll();
+      })();
+    }
+  }, []);
+
+  return (
+    <main className="bg-black">
+      <HeroSection />
+      <Featured />
+      <FAQ />
+      <Footer />
+    </main>
+  );
+}

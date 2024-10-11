@@ -1,6 +1,7 @@
-"use client";
+import dynamic from 'next/dynamic';
 
-import { NextTask } from "@/components/NextTask";
+// Dynamically import NextTask with SSR disabled
+const NextTask = dynamic(() => import('../../components/NextTask'), { ssr: false });
 
 const Bounty = () => {
   return (

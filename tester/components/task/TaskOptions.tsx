@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState } from "react";
 import { FaEye } from "react-icons/fa";
 import Modal from "react-modal";
@@ -101,9 +102,11 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
           className="relative cursor-pointer bg-gray-900 rounded-md overflow-hidden transition-transform duration-300 hover:scale-105 p-2"
           onClick={() => handleOptionSelect(option.id)}
         >
-          <img
+          <Image
             src={option.image_url}
             alt={`Option ${index + 1}`}
+            layout="fill"
+            objectFit="cover"
             className="w-full h-40 object-cover"
           />
           <div className="absolute top-2 left-2">

@@ -66,7 +66,6 @@ const NavBar = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-
       if (!token) {
         toast.error("You must be signed in to request a payout.");
         return;
@@ -186,7 +185,10 @@ const NavBar = () => {
   return (
     <nav className="fixed top-0 left-0 w-full bg-black shadow-[0_4px_8px_rgba(255,255,255,0.2)] z-50">
       <div className="mx-auto flex items-center justify-between p-4 w-[100%]">
-        <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+        <Link
+          href="/"
+          className="flex items-center space-x-3 rtl:space-x-reverse"
+        >
           <motion.img
             src="images/icon-removebg-preview.png"
             alt="TaskBounty Logo"
@@ -205,7 +207,7 @@ const NavBar = () => {
             TaskBounty{"  "}
             <Chip color="secondary">Beta</Chip>
           </motion.span>
-        </a>
+        </Link>
         {/* Desktop Menu: Hidden at 1100px or less */}
         <div className="hidden xl:flex xl:items-center xl:space-x-8">
           {showLinks && (
@@ -224,7 +226,7 @@ const NavBar = () => {
         </div>
 
         {/* Hamburger Menu: Visible at 1100px or less */}
-        {wallet.connected && (
+        {wallet.connected && showLinks && (
           <div className="xl:hidden">
             <Menu
               right

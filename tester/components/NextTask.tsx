@@ -32,7 +32,7 @@ const itemVariants = {
   visible: { y: 0, opacity: 1 },
 };
 
-export const NextTask = () => {
+export default function NextTask() {
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(false);
   const [noTasks, setNoTasks] = useState(false);
@@ -312,4 +312,4 @@ export const NextTask = () => {
       </div>
     </>
   );
-};
+}

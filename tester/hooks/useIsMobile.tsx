@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from 'react';
 
 export const useIsMobile = () => {
@@ -5,9 +6,12 @@ export const useIsMobile = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      const isMobileView = window.innerWidth <= 768; // Adjust this breakpoint as needed
-      setIsMobile(isMobileView);
-      console.log('Window width:', window.innerWidth, 'Is mobile:', isMobileView);
+      // Check if window is defined to avoid ReferenceError during SSR
+      if (typeof window !== 'undefined') {
+        const isMobileView = window.innerWidth <= 768; // Adjust this breakpoint as needed
+        setIsMobile(isMobileView);
+        console.log('Window width:', window.innerWidth, 'Is mobile:', isMobileView);
+      }
     };
 
     handleResize(); // Check on initial render
