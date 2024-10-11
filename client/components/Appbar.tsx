@@ -129,7 +129,7 @@ const NavBar = () => {
       <NavbarBrand>
         <Link
           href="/"
-          className="hidden md:flex items-center space-x-1 rtl:space-x-reverse -mt-1"
+          className="hidden md:flex items-center justify-center space-x-1 rtl:space-x-reverse -mt-1"
         >
           <Image
             src="/icon-removebg-preview.png"
@@ -216,6 +216,9 @@ const NavBar = () => {
               href="/transactionHistory"
               key="transaction-history"
             />
+          </NavbarItem>
+          <NavbarItem>
+            <AnimatedLink title="Free SOLs" href="/freeSols" key="free-sols" />
           </NavbarItem>
         </NavbarContent>
       )}
@@ -320,6 +323,15 @@ const NavBar = () => {
               onClick={() => setIsMenuOpen()}
             >
               Transaction History
+            </Link>
+          </NavbarMenuItem>
+          <NavbarMenuItem key="freeSols">
+            <Link
+              className="w-full"
+              href="/freeSols"
+              onClick={() => setIsMenuOpen()}
+            >
+              Free SOLs
             </Link>
           </NavbarMenuItem>
         </NavbarMenu>
