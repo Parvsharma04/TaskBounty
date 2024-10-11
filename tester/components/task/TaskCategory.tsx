@@ -134,12 +134,15 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
                     className="w-full h-auto max-h-[80vh] object-contain"
                   />
                 ) : (
-                  <iframe
-                    src={url}
-                    className="w-[60vw] h-[60vh]"
-                    frameBorder="0"
-                    allowFullScreen
-                  ></iframe>
+                  <>
+                    <iframe
+                      src={url}
+                      className="w-[60vw] h-[60vh]"
+                      frameBorder="0"
+                      allowFullScreen
+                    ></iframe>
+                    <Link href={url} className="text-blue-500 hover:text-blue-600 text-xl">Link</Link>
+                  </>
                 )}
               </ModalBody>
               <ModalFooter>
