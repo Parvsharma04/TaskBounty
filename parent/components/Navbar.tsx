@@ -15,7 +15,7 @@ export default function Navbar({ className }: { className?: string }) {
   };
 
   return (
-    <div className={cn("sticky inset-x-0 w-full mx-auto z-50", className)}>
+    <div className={cn("sticky inset-x-0 w-full mx-auto z-50 bg-black", className)}>
       <Menu setActive={setActive}>
         <a
           href="/"

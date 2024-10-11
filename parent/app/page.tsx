@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import { Hero } from "@/components/Hero";
 import { LongSection } from "@/components/LongSection";
 
@@ -8,6 +9,7 @@ const Landing = () => {
       <div className="max-w-full overflow-x-hidden">
         <LongSection />
       </div>
+      <Footer />
     </>
   );
 };
