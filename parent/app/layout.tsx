@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import type { Metadata } from "next";
 import { Providers } from "../../tester/components/Providers";
@@ -31,6 +32,7 @@ export default function RootLayout({
           <Providers>
             <Navbar />
             <main className="w-full overflow-x-hidden">{children}</main>
+            <Footer />
           </Providers>
         </div>
       </body>

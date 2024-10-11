@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const ParentPage = () => {
   return (
-    <section className="xl:pt-10 lg:pt-10 flex flex-col justify-center items-center gap-16 my-20 md:my-auto pgl">
+    <section className="xl:pt-10 lg:pt-10 flex flex-col justify-center items-center gap-16 my-20 md:my-auto py-32">
       <h1 className="text-4xl text-center">
         Get Started with <span className="text-blue-600">TaskBounty</span>
       </h1>
