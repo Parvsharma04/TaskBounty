@@ -32,7 +32,6 @@ router.get("/nextTask", workerMiddleware, async (req, res) => {
     if (task?.message) {
       res.status(423).json({ message: task.message });
     } else if (!task) {
-      // If no task is found, return a 404 response
       res.status(404).json({
         message: "No more tasks left for you to review",
       });
