@@ -1,4 +1,5 @@
 "use client";
+import { Chip } from '@nextui-org/react';
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -15,7 +16,9 @@ export default function Navbar({ className }: { className?: string }) {
   };
 
   return (
-    <div className={cn("sticky inset-x-0 w-full mx-auto z-50 bg-black", className)}>
+    <div
+      className={cn("sticky inset-x-0 w-full mx-auto z-50 bg-black", className)}
+    >
       <Menu setActive={setActive}>
         <a
           href="/"
@@ -37,7 +40,8 @@ export default function Navbar({ className }: { className?: string }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeInOut" }}
           >
-            TaskBounty
+            TaskBounty{"  "}
+            <Chip color="secondary">Beta</Chip>
           </motion.span>
         </a>
         {pathname === "/" ? (

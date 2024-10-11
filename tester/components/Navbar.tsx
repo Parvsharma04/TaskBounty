@@ -1,5 +1,6 @@
 "use client";
 import { BACKEND_URL } from "@/utils";
+import { Chip } from "@nextui-org/chip";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -201,7 +202,8 @@ const NavBar = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeInOut" }}
           >
-            TaskBounty
+            TaskBounty{"  "}
+            <Chip color="secondary">Beta</Chip>
           </motion.span>
         </a>
         {/* Desktop Menu: Hidden at 1100px or less */}

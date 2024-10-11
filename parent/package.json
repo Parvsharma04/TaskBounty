@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@nextui-org/chip": "^2.0.33",
+    "@nextui-org/react": "^2.4.8",
     "@tabler/icons-react": "^3.19.0",
     "clsx": "^2.1.1",
-    "framer-motion": "^11.11.1",
+    "framer-motion": "^11.11.8",
     "next": "14.2.13",
     "react": "^18",
     "react-dom": "^18",

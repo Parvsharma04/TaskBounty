@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import type { Metadata } from "next";
+import { Providers } from "../../tester/components/Providers";
 import "./globals.css";
 
 // export const geistSans = localFont({
@@ -27,8 +28,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={` antialiased`}>
         <div className="max-w-full overflow-x-hidden">
-          <Navbar />
-          <main className="w-full overflow-x-hidden">{children}</main>
+          <Providers>
+            <Navbar />
+            <main className="w-full overflow-x-hidden">{children}</main>
+          </Providers>
         </div>
       </body>
     </html>

@@ -10,18 +10,19 @@ import {
   TagUser,
 } from "@/utils/icons";
 import {
+  Button,
+  Chip,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
   Navbar,
   NavbarBrand,
-  NavbarMenuToggle,
-  NavbarMenuItem,
-  NavbarMenu,
   NavbarContent,
   NavbarItem,
-  Button,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
+  NavbarMenu,
+  NavbarMenuItem,
+  NavbarMenuToggle,
 } from "@nextui-org/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
@@ -118,7 +119,8 @@ const NavBar = () => {
                 width={40}
               />
               <span className="self-center md:text-2xl font-semibold whitespace-nowrap dark:text-white">
-                TaskBounty
+                TaskBounty{"  "}
+                <Chip color="secondary">Beta</Chip>
               </span>
             </Link>
           </NavbarBrand>
@@ -136,7 +138,8 @@ const NavBar = () => {
             width={40}
           />
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-            TaskBounty
+            TaskBounty{"  "}
+            <Chip color="secondary">Beta</Chip>
           </span>
         </Link>
       </NavbarBrand>
