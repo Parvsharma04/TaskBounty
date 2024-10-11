@@ -126,12 +126,12 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
                 {/* Adjust text color for better visibility */}
                 {isImage ? "Image Preview" : "Website Preview"}
               </ModalHeader>
-              <ModalBody>
+              <ModalBody className="p-5">
                 {isImage ? (
                   <img
                     src={url}
                     alt="Preview"
-                    className="w-full h-auto max-h-[80vh] object-contain"
+                    className="w-full h-auto max-h-[80vh] object-contain "
                   />
                 ) : (
                   <>
@@ -141,11 +141,18 @@ const TaskOptions: React.FC<TaskOptionsProps> = ({
                       frameBorder="0"
                       allowFullScreen
                     ></iframe>
-                    <Link href={url} className="text-blue-500 hover:text-blue-600 text-xl">Link</Link>
                   </>
                 )}
               </ModalBody>
-              <ModalFooter>
+              <ModalFooter className="flex justify-between">
+                {!isImage && (
+                  <Link
+                    href={url}
+                    className="text-blue-500 hover:text-blue-600 text-left text-xl"
+                  >
+                    Link
+                  </Link>
+                )}
                 <Button color="danger" onPress={onClose}>
                   Close
                 </Button>
