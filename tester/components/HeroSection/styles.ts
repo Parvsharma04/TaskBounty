@@ -118,14 +118,10 @@ export const Column = styled.div`
 // `;
 
 export const ColumnRobot = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
   height: 95%;
-  padding: 1rem;
+  padding-bottom: 2rem;
   width: 100%;
   position: relative; // Add this line
-
   @media (max-width: 768px) {
     display: none; // Hide this column on mobile screens
   }

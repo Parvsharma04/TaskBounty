@@ -18,7 +18,8 @@ import {
   ColumnRobot,
   FlexWrapper,
   HeroTextContainer,
-  Inner, Overlay, Pill,
+  Inner,
+  Pill,
   Wrapper
 } from './styles';
 
@@ -58,9 +59,9 @@ const HeroSection = () => {
       </Column>
       <ColumnRobot>
         <Hero />
-        <Overlay>
+        {/* <Overlay>
           TaskBounty
-        </Overlay>
+        </Overlay> */}
       </ColumnRobot>
     </FlexWrapper>
   );

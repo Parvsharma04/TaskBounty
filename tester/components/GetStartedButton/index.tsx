@@ -1,4 +1,4 @@
-import getToken from "@/utils";
+import { getToken } from "@/utils/functions";
 import { useWallet } from "@solana/wallet-adapter-react";
 import dynamic from "next/dynamic";
 

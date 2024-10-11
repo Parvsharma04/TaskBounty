@@ -47,3 +47,7 @@ export const formatNumberToSOL = (amount: number): string => {
 export const calculateFormattedPending = (pendingAmount: number): string => {
   return parseFloat(((pendingAmount / 2) * 100).toFixed(2)).toString();
 };
+
+export const getToken: any = () => {
+  return localStorage.getItem("token");
+};
