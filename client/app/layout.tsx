@@ -1,6 +1,6 @@
 import NavBar from "@/components/Appbar";
 import FooterPage from "@/components/Footer";
-import { Wallet } from "@/components/Wallet";
+import { Wallet } from "./wallet/Wallet";
 import type { Metadata } from "next";
 import { Baloo_Bhai_2, Inter } from "next/font/google";
 import localFont from "next/font/local";
