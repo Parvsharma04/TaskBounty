@@ -12,7 +12,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Loading from "./Loading";
 import TaskOptions from "./task/TaskCategory";
 import TaskStatement from "./TaskStatement";
-
+import { useDispatch, useSelector } from "react-redux";
+import { decrement } from "@/redux/slices/BountiesLeftSlice";
 const containerVariants = {
   hidden: {
     opacity: 0,
@@ -42,6 +43,8 @@ export default function NextTask() {
   const token: string | null = localStorage.getItem("token");
   const [taskOptionSelect, setTaskOptionSelect] = useState(0);
   const [taskVoteOptionSelect, setTaskVoteOptionSelect] = useState(0);
+  const dispatch = useDispatch();
+  const tasksLeft = useSelector((state: RootState) => state.BountiesLeft.value);
 
   useEffect(() => {
     if (!wallet.connected) {
@@ -104,6 +107,7 @@ export default function NextTask() {
 
       if (response.status === 200) {
         toast.success("Task completed successfully!");
+        dispatch(decrement())
       }
 
       const nextTask = response.data.nextTask;

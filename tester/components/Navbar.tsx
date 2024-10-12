@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { BACKEND_URL } from "@/utils";
 import { Chip } from "@nextui-org/chip";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -13,6 +13,9 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AnimatedLink from "./AnimatedLink";
 import Loading from "./Loading";
+import { RootState } from "../redux/store";
+import { useSelector } from "react-redux";
+import { Badge } from "@nextui-org/react";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -30,6 +33,7 @@ const NavBar = () => {
   const [loader, setLoader] = useState(false);
   const [showLinks, setShowLinks] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const tasksLeft = useSelector((state: RootState) => state.BountiesLeft.value);
 
   async function getToken() {
     setLoader(true);
@@ -184,7 +188,7 @@ const NavBar = () => {
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-black shadow-[0_4px_8px_rgba(255,255,255,0.2)] z-50">
-      <div className="mx-auto flex items-center justify-between p-4 w-[100%]">
+      <div className="mx-auto flex items-center justify-between p-4">
         <Link
           href="/"
           className="flex items-center space-x-3 rtl:space-x-reverse"
@@ -207,17 +211,21 @@ const NavBar = () => {
             TaskBounty{"  "}
             <Chip color="secondary">Beta</Chip>
           </motion.span>
-        </Link>
-        {/* Desktop Menu: Hidden at 1100px or less */}
+       </Link>
         <div className="hidden xl:flex xl:items-center xl:space-x-8">
-          {showLinks && (
-            <>
-              <AnimatedLink title="Home" href="/" />
+        {showLinks && (
+          <>
+            <AnimatedLink title="Home" href="/" />
+            {tasksLeft > 0 ?
+              < Badge content={tasksLeft} color="secondary" className="absolute top-0 right-0 px-[0.35rem] transform translate-x-1/2 -translate-y-1/2">
+                <AnimatedLink title="Hunt Bounties" href="/bounty" />
+              </Badge> :
               <AnimatedLink title="Hunt Bounties" href="/bounty" />
-              <AnimatedLink title="Tester Analytics" href="/tester-analytics" />
-              <AnimatedLink title="Transactions" href="/transactions" />
-            </>
-          )}
+            }
+            <AnimatedLink title="Tester Analytics" href="/tester-analytics" />
+            <AnimatedLink title="Transactions" href="/transactions" />
+          </>
+        )}
         </div>
 
         {/* Wallet and Payout Buttons for desktop */}

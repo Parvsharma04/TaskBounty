@@ -9,10 +9,13 @@ import { useIsMobile } from "../libs/useIsMobile";
 import Graph from "./charts/Graph";
 import Loading from "./Loading";
 import TesterDash from "./TesterDash";
+import { useDispatch } from "react-redux";
+import { setValue } from "@/redux/slices/BountiesLeftSlice";
 
 export const TesterAnalytics: React.FC = () => {
   const wallet = useWallet();
   const router = useRouter();
+  const dispatch = useDispatch();
   const isMobile = useIsMobile();
   const [testerData, setTesterData] = useState<TesterData | null>({
     testerData: {
@@ -43,6 +46,7 @@ export const TesterAnalytics: React.FC = () => {
         }
       );
       const data = response.data;
+      dispatch(setValue(data.testerData.tasksLeft))
       setTotalEarned(
         parseFloat(data.testerData.pending_amount) +
           parseFloat(data.testerData.locked_amount)
