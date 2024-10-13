@@ -8,6 +8,7 @@ import {
 } from "@nextui-org/react";
 
 export default function VotingTypeTable({ votingTypeDetails }: any) {
+  // console.log(votingTypeDetails);
   return (
     <Table
       aria-label="Example empty table"
@@ -23,7 +24,7 @@ export default function VotingTypeTable({ votingTypeDetails }: any) {
         <TableColumn>VOTES</TableColumn>
       </TableHeader>
       <TableBody emptyContent={"No rows to display."}>
-        {votingTypeDetails.slice(1).map((val: any, idx: number) => {
+        {votingTypeDetails.map((val: any, idx: number) => {
           return (
             <TableRow key={idx}>
               <TableCell>{val.type}</TableCell>

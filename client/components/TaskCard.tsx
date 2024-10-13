@@ -9,52 +9,52 @@ import Modal from "react-modal";
 
 interface TaskCardProps {
   imageUrl: string;
-  description: string;
   votes: number;
   category: string;
   amount: String;
-  postDate?: number;
-  postMonth?: number;
-  postYear?: number;
-  TaskStatus?: boolean;
   VotingType?: string;
   votingTypeDetails?: any;
   type: string;
+  responses?: any;
+  idx?: number;
 }
 
 const TaskCard = ({
   amount,
   imageUrl,
   type,
-  description,
   votes,
   category,
-  postDate,
-  postMonth,
-  postYear,
-  TaskStatus,
   VotingType,
   votingTypeDetails,
+  responses,
+  idx = 0,
 }: TaskCardProps) => {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [currAmt, setcurrAmt] = useState(0.0);
   const [websiteModal, setWebsiteModal] = useState(false);
   const [url, setUrl] = useState("");
-  const [activeIndex, setActiveIndex] = useState(0);
   const [imageModalIsOpen, setimageModalIsOpen] = useState(false);
   const [votesLeft, setVotesLeft] = useState(0);
+  const [votingArr, setVotingArr] = useState<{ type: string; votes: number }[]>(
+    []
+  );
 
   useEffect(() => {
-    if (postYear && postMonth && postDate) {
-      setCurrentDate(new Date(postYear, postMonth, postDate));
-    }
-    if (amount) {
-      setcurrAmt(parseFloat(amount.toString()) / 1000_000_000);
-      setVotesLeft(
-        parseFloat(amount.toString()) / 1000_000_000 / 0.0002 - votes
-      );
-    }
-  }, [postYear, postMonth, postDate, amount]);
+    setVotesLeft(parseFloat(amount.toString()) / 1000_000_000 / 0.0002 - votes);
+
+    votingTypeDetails?.map((obj: any) => {
+      setVotingArr((prev) => [...prev, { type: obj.type, votes: 0 }]);
+    });
+
+    responses?.slice(1).map((obj: any) => {
+      if (idx + 1 == obj.taskOption) {
+        setVotingArr((prev) => {
+          const newArr = [...prev];
+          newArr[obj.value - 1].votes += 1;
+          return newArr;
+        });
+      }
+    });
+  }, [amount, votes]);
 
   function openModal() {
     setWebsiteModal(true);
@@ -75,16 +75,6 @@ const TaskCard = ({
       padding: 0,
     },
   };
-  // const handlePrev = () => {
-  //   setActiveIndex((prevIndex) =>
-  //     prevIndex === 0 ? images.length - 1 : prevIndex - 1
-  //   );
-  // };
-  // const handleNext = () => {
-  //   setActiveIndex((prevIndex) =>
-  //     prevIndex === images.length - 1 ? 0 : prevIndex + 1
-  //   );
-  // };
   const imageCustomStyles = {
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.25)",
@@ -216,35 +206,38 @@ const TaskCard = ({
           </div>
         </div>
       </Modal>
+
       <div className="flip-card-inner">
-        <div className="flip-card-front px-2">
-          <div className="flex justify-between items-center flex-col md:flex-row flex-wrap h-1/6 w-full mt-2 md:mt-0">
-            <Chip color="secondary" className="md:text-lg font-semibold">
-              Amount: {currAmt} SOL
-            </Chip>
-            <Chip color="danger" className="md:text-lg font-semibold">
-              Task Date: {currentDate.toLocaleDateString()}
-            </Chip>
-          </div>
-          <div className="flex flex-col justify-evenly items-center h-5/6">
-            <div className="flex flex-col justify-start items-center gap-5">
-              <h1 className="text-xl text-black font-semibold text-start w-full">
-                Description: {description ? description : "No Description"}
-              </h1>
-              <h1 className="text-xl text-black font-semibold flex justify-center items-center gap-2">
-                Votes Left: <Chip color="default">{votesLeft}</Chip>
-              </h1>
-              <h1 className="text-xl text-black font-semibold flex justify-center items-center gap-2">
-                Task Status:{" "}
-                <Chip color="success" className="text-white">
-                  {TaskStatus === true ? "Completed" : "Open"}
+        <div className="flip-card-front pb-4">
+          <div className="flex flex-col justify-evenly items-center rounded-xl">
+            <div className="flex flex-col justify-start items-center gap-2">
+              {type == "image" ? (
+                <img
+                  src={imageUrl}
+                  alt="Avatar"
+                  className="w-60 h-60 rounded-full"
+                />
+              ) : (
+                <iframe
+                  src={imageUrl}
+                  className="w-60 h-60 rounded-full"
+                  frameBorder="0"
+                  allowFullScreen
+                ></iframe>
+              )}
+              <span className="text-xl text-black font-semibold flex justify-center items-center gap-2">
+                Type of Category:{" "}
+                <Chip className="text-lg" color="default">
+                  {type}
                 </Chip>
-              </h1>
+              </span>
+              <span className="text-xl text-black font-semibold flex justify-center items-center gap-2">
+                Votes Left:{" "}
+                <Chip className="text-lg" color="default">
+                  {votesLeft}
+                </Chip>
+              </span>
             </div>
-            <p className="title mt-3 text-black">
-              <span>MaxVotes: </span>
-              {votes}
-            </p>
           </div>
         </div>
         <div className="flip-card-back">
@@ -294,7 +287,7 @@ const TaskCard = ({
             </button>
           </div>
           <div className="px-2 overflow-scroll h-72">
-            <VotingTypeTable votingTypeDetails={votingTypeDetails} />
+            <VotingTypeTable votingTypeDetails={votingArr} />
           </div>
         </div>
       </div>

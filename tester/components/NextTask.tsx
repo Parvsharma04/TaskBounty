@@ -64,6 +64,7 @@ export default function NextTask() {
           },
         });
         if (response.data.message) setLimitReached(true);
+        console.log(response.data.task);
         setCurrentTask(response.data.task);
         setNoTasks(false);
       } catch (error: any) {
@@ -107,7 +108,7 @@ export default function NextTask() {
 
       if (response.status === 200) {
         toast.success("Task completed successfully!");
-        dispatch(decrement())
+        dispatch(decrement());
       }
 
       const nextTask = response.data.nextTask;

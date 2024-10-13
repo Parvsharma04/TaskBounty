@@ -42,7 +42,7 @@ router.get("/nextTask", workerMiddleware, async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json(error)
+    res.status(500).json(error);
   }
 });
 
@@ -191,9 +191,19 @@ router.post("/submission", workerMiddleware, async (req, res) => {
                 Responses: Array.isArray(categoryModel?.Responses)
                   ? [
                       ...categoryModel.Responses,
-                      { id: userId, value: parsedBody.data.voteOptionId },
+                      {
+                        id: userId,
+                        value: parsedBody.data.voteOptionId,
+                        taskOption: parsedBody.data.optionId,
+                      },
                     ]
-                  : [{ id: userId, value: parsedBody.data.voteOptionId }],
+                  : [
+                      {
+                        id: userId,
+                        value: parsedBody.data.voteOptionId,
+                        taskOption: parsedBody.data.optionId,
+                      },
+                    ],
               },
             });
           } else if (taskCategory === "Idea_Product") {
@@ -205,9 +215,19 @@ router.post("/submission", workerMiddleware, async (req, res) => {
                 Responses: Array.isArray(categoryModel?.Responses)
                   ? [
                       ...categoryModel.Responses,
-                      { id: userId, value: parsedBody.data.voteOptionId },
+                      {
+                        id: userId,
+                        value: parsedBody.data.voteOptionId,
+                        taskOption: parsedBody.data.optionId,
+                      },
                     ]
-                  : [{ id: userId, value: parsedBody.data.voteOptionId }],
+                  : [
+                      {
+                        id: userId,
+                        value: parsedBody.data.voteOptionId,
+                        taskOption: parsedBody.data.optionId,
+                      },
+                    ],
               },
             });
           } else if (taskCategory === "Youtube_Thumbnail") {
@@ -219,9 +239,19 @@ router.post("/submission", workerMiddleware, async (req, res) => {
                 Responses: Array.isArray(categoryModel?.Responses)
                   ? [
                       ...categoryModel.Responses,
-                      { id: userId, value: parsedBody.data.voteOptionId },
+                      {
+                        id: userId,
+                        value: parsedBody.data.voteOptionId,
+                        taskOption: parsedBody.data.optionId,
+                      },
                     ]
-                  : [{ id: userId, value: parsedBody.data.voteOptionId }],
+                  : [
+                      {
+                        id: userId,
+                        value: parsedBody.data.voteOptionId,
+                        taskOption: parsedBody.data.optionId,
+                      },
+                    ],
               },
             });
           } else if (taskCategory === "Miscellaneous") {
@@ -233,9 +263,19 @@ router.post("/submission", workerMiddleware, async (req, res) => {
                 Responses: Array.isArray(categoryModel?.Responses)
                   ? [
                       ...categoryModel.Responses,
-                      { id: userId, value: parsedBody.data.voteOptionId },
+                      {
+                        id: userId,
+                        value: parsedBody.data.voteOptionId,
+                        taskOption: parsedBody.data.optionId,
+                      },
                     ]
-                  : [{ id: userId, value: parsedBody.data.voteOptionId }],
+                  : [
+                      {
+                        id: userId,
+                        value: parsedBody.data.voteOptionId,
+                        taskOption: parsedBody.data.optionId,
+                      },
+                    ],
               },
             });
           }

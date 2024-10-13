@@ -8,6 +8,8 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import AnimatedModal from "@/components/AnimatedModal";
+import { Button, useDisclosure } from "@nextui-org/react";
 
 export default function Page({
   params: { taskId },
@@ -56,15 +58,19 @@ export default function Page({
   const [votingDetails, setVotingDetails] = useState<VotingDetails | null>(
     null
   );
-  const [votingTypeDetails, setVotingTypeDetails] = useState(null);
+  const [votingTypeDetails, setVotingTypeDetails] = useState([]);
   const [customLoader, setCustomLoader] = useState(false);
-  const [votingArr, setVotingArr] = useState<{ type: string; votes: number }[]>(
-    [{ type: "", votes: 0 }]
-  );
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [MaxVotes, setMaxVotes] = useState(0);
-
   const wallet = useWallet();
   const router = useRouter();
+  const [particularVotingArr, setParticularVotingArr] = useState<
+    {
+      type: string;
+      votes: number;
+      taskOption: number;
+    }[]
+  >([]);
 
   useEffect(() => {
     if (!wallet.connected) {
@@ -83,30 +89,22 @@ export default function Page({
       setVotingDetails(data.votingDetails);
       setVotingTypeDetails(data.votingTypeDetails);
 
-      // for voting types
-      {
-        data.votingTypeDetails &&
-          Object.entries(data.votingTypeDetails).forEach(
-            (val: any, idx: number) => {
-              return votingArr.push({
+      data.categoryDetails &&
+        setMaxVotes(data.categoryDetails.Responses.length - 1);
+
+      votingTypeDetails &&
+        Object.entries(data.votingTypeDetails).forEach(
+          (val: any, idx: number) => {
+            setParticularVotingArr((prev) => [
+              ...prev,
+              {
                 type: val[1],
                 votes: 0,
-              });
-            }
-          );
-      }
-      // for voting count
-      if (data.categoryDetails && data.categoryDetails.Responses) {
-        for (let i = 1; i < data.categoryDetails.Responses.length; i++) {
-          votingArr[data.categoryDetails.Responses[i].value].votes += 1;
-          setMaxVotes((prevMaxVotes) =>
-            Math.max(
-              prevMaxVotes,
-              votingArr[data.categoryDetails.Responses[i].value].votes
-            )
-          );
-        }
-      }
+                taskOption: 0,
+              },
+            ]);
+          }
+        );
     });
 
     const timer = setTimeout(() => {
@@ -123,7 +121,7 @@ export default function Page({
     return () => {
       clearTimeout(timer);
     };
-  }, [taskId, votingArr]);
+  }, [taskId]);
 
   async function getTaskDetails(taskId: string) {
     setCustomLoader(true);
@@ -138,110 +136,146 @@ export default function Page({
     setCustomLoader(false);
     return response.data;
   }
+  const GudelinesArr = [categoryDetails?.Description ?? "No Description"];
 
   return (
     <div className="bg-gray-950 min-h-screen text-white pt-16 pb-10 h-full w-full flex flex-col justify-center items-center gap-10">
       {customLoader && <LoadingPage />}
-      <div className="capitalize font-semibold text-3xl flex justify-center items-center gap-2">
-        {taskDetails.category == "UI_UX_Design" &&
-          categoryDetails?.Design_Title}
-        {taskDetails.category == "Idea_Product" && categoryDetails?.Idea_Title}
-        {taskDetails.category == "Youtube_Thumbnail" &&
-          categoryDetails?.Youtube_Thumbnail_Title}
-        {taskDetails.category == "Miscellaneous" && categoryDetails?.title}
-        <Chip color="primary">{taskDetails?.category}</Chip>
+      <AnimatedModal
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onOpenChange={onOpenChange}
+        title="Description"
+        content={GudelinesArr}
+      />
+      <div className="capitalize font-semibold text-3xl flex flex-wrap justify-center md:justify-between items-center gap-8 md:gap-2 bg-slate-700 w-full px-10 py-4 rounded-xl">
+        <div className="flex justify-center items-center gap-2">
+          <Chip color="danger" className="md:text-lg font-semibold">
+            Task Date:{" "}
+            {new Date(
+              taskDetails?.postYear,
+              taskDetails?.postMonth,
+              taskDetails?.postDate
+            ).toLocaleDateString()}
+          </Chip>
+          <Chip color="secondary" className="md:text-lg font-semibold">
+            Amount: {parseFloat(taskDetails?.amount.toString()) / 1000_000_000}{" "}
+            SOL
+          </Chip>
+        </div>
+        <div className="flex justify-center items-center gap-2">
+          <Button
+            isIconOnly
+            color="default"
+            onPress={onOpen}
+            className="text-xl"
+          >
+            ?
+          </Button>
+          {taskDetails.category == "UI_UX_Design" &&
+            categoryDetails?.Design_Title}
+          {taskDetails.category == "Idea_Product" &&
+            categoryDetails?.Idea_Title}
+          {taskDetails.category == "Youtube_Thumbnail" &&
+            categoryDetails?.Youtube_Thumbnail_Title}
+          {taskDetails.category == "Miscellaneous" && categoryDetails?.title}
+          <Chip color="primary">{taskDetails?.category}</Chip>
+        </div>
+        <div className="flex justify-center items-center gap-2">
+          <Chip color="success" className="text-black text-lg">
+            Task Status: {taskDetails?.done === true ? "Completed" : "Open"}
+          </Chip>
+          <Chip color="warning" className="text-lg text-black">
+            MaxVotes: {MaxVotes}
+          </Chip>
+        </div>
       </div>
       <div className="flex flex-wrap justify-center items-center gap-5">
         {taskDetails.category === "UI_UX_Design" &&
-          categoryDetails?.Design_Url.map((url, idx) => (
-            <Task
-              amount={taskDetails?.amount}
-              key={idx}
-              imageUrl={url ?? ""}
-              type="website"
-              description={categoryDetails?.Design_Description ?? ""}
-              votes={MaxVotes}
-              category={taskDetails?.category ?? ""}
-              postDate={taskDetails?.postDate}
-              postMonth={taskDetails?.postMonth}
-              postYear={taskDetails?.postYear}
-              TaskStatus={taskDetails?.done}
-              VotingType={votingDetails?.type ?? ""}
-              votingTypeDetails={votingArr}
-            />
-          ))}
+          categoryDetails?.Design_Url.map((url, idx) => {
+            return (
+              <Task
+                key={idx}
+                imageUrl={url ?? ""}
+                amount={taskDetails?.amount}
+                type="website"
+                votes={MaxVotes}
+                category={taskDetails?.category ?? ""}
+                VotingType={votingDetails?.type ?? ""}
+                votingTypeDetails={particularVotingArr}
+                responses={categoryDetails?.Responses}
+                idx={idx}
+              />
+            );
+          })}
         {taskDetails.category === "Idea_Product" &&
-          categoryDetails?.Idea_Images.map((url, idx) => (
-            <Task
-              amount={taskDetails?.amount}
-              key={idx}
-              imageUrl={url ?? ""}
-              type="image"
-              description={categoryDetails?.Idea_Description ?? ""}
-              votes={MaxVotes}
-              category={taskDetails?.category ?? ""}
-              postDate={taskDetails?.postDate}
-              postMonth={taskDetails?.postMonth}
-              postYear={taskDetails?.postYear}
-              TaskStatus={taskDetails?.done}
-              VotingType={votingDetails?.type ?? ""}
-              votingTypeDetails={votingArr}
-            />
-          ))}
+          categoryDetails?.Idea_Images.map((url, idx) => {
+            return (
+              <Task
+                amount={taskDetails?.amount}
+                key={idx}
+                imageUrl={url ?? ""}
+                type="image"
+                votes={MaxVotes}
+                category={taskDetails?.category ?? ""}
+                VotingType={votingDetails?.type ?? ""}
+                votingTypeDetails={particularVotingArr}
+                responses={categoryDetails?.Responses}
+                idx={idx}
+              />
+            );
+          })}
         {taskDetails.category === "Youtube_Thumbnail" &&
-          categoryDetails?.Youtube_Thumbnail_Images.map((url, idx) => (
-            <Task
-              amount={taskDetails?.amount}
-              key={idx}
-              imageUrl={url ?? ""}
-              type="image"
-              description={""}
-              votes={MaxVotes}
-              category={taskDetails?.category ?? ""}
-              postDate={taskDetails?.postDate}
-              postMonth={taskDetails?.postMonth}
-              postYear={taskDetails?.postYear}
-              TaskStatus={taskDetails?.done}
-              VotingType={votingDetails?.type ?? ""}
-              votingTypeDetails={votingArr}
-            />
-          ))}
+          categoryDetails?.Youtube_Thumbnail_Images.map((url, idx) => {
+            return (
+              <Task
+                amount={taskDetails?.amount}
+                key={idx}
+                imageUrl={url ?? ""}
+                type="image"
+                votes={MaxVotes}
+                category={taskDetails?.category ?? ""}
+                VotingType={votingDetails?.type ?? ""}
+                votingTypeDetails={particularVotingArr}
+                responses={categoryDetails?.Responses}
+                idx={idx}
+              />
+            );
+          })}
         {taskDetails.category === "Miscellaneous" &&
-          categoryDetails?.Images.map((url, idx) => (
-            <Task
-              amount={taskDetails?.amount}
-              key={idx}
-              imageUrl={url ?? ""}
-              type="image"
-              description={categoryDetails?.Description ?? ""}
-              votes={MaxVotes}
-              category={taskDetails?.category ?? ""}
-              postDate={taskDetails?.postDate}
-              postMonth={taskDetails?.postMonth}
-              postYear={taskDetails?.postYear}
-              TaskStatus={taskDetails?.done}
-              VotingType={votingDetails?.type ?? ""}
-              votingTypeDetails={votingArr}
-            />
-          ))}
+          categoryDetails?.Images.map((url, idx) => {
+            return (
+              <Task
+                amount={taskDetails?.amount}
+                key={idx}
+                imageUrl={url ?? ""}
+                type="image"
+                votes={MaxVotes}
+                category={taskDetails?.category ?? ""}
+                VotingType={votingDetails?.type ?? ""}
+                votingTypeDetails={particularVotingArr}
+                responses={categoryDetails?.Responses}
+                idx={idx}
+              />
+            );
+          })}
         {taskDetails.category === "Miscellaneous" &&
-          categoryDetails?.Design_Url.map((url, idx) => (
-            <Task
-              amount={taskDetails?.amount}
-              key={idx}
-              imageUrl={url ?? ""}
-              type="website"
-              description={categoryDetails?.Description ?? ""}
-              votes={MaxVotes}
-              category={taskDetails?.category ?? ""}
-              postDate={taskDetails?.postDate}
-              postMonth={taskDetails?.postMonth}
-              postYear={taskDetails?.postYear}
-              TaskStatus={taskDetails?.done}
-              VotingType={votingDetails?.type ?? ""}
-              votingTypeDetails={votingArr}
-            />
-          ))}
+          categoryDetails?.Design_Url.map((url, idx) => {
+            return (
+              <Task
+                amount={taskDetails?.amount}
+                key={idx}
+                imageUrl={url ?? ""}
+                type="website"
+                votes={MaxVotes}
+                category={taskDetails?.category ?? ""}
+                VotingType={votingDetails?.type ?? ""}
+                votingTypeDetails={particularVotingArr}
+                responses={categoryDetails?.Responses}
+                idx={idx}
+              />
+            );
+          })}
       </div>
     </div>
   );
@@ -251,28 +285,22 @@ function Task({
   amount,
   imageUrl,
   type,
-  description,
   votes,
   category,
-  postDate,
-  postMonth,
-  postYear,
-  TaskStatus,
   VotingType,
   votingTypeDetails,
+  responses,
+  idx,
 }: {
   amount: String;
   imageUrl: string;
   type: string;
-  description: string;
   votes: number;
   category: string;
-  postDate: number;
-  postMonth: number;
-  postYear: number;
-  TaskStatus: boolean;
   VotingType: string;
   votingTypeDetails: any;
+  responses: any;
+  idx: number;
 }) {
   return (
     <TaskCard
@@ -280,14 +308,11 @@ function Task({
       imageUrl={imageUrl}
       votes={votes}
       type={type}
-      description={description}
       category={category}
-      postDate={postDate}
-      postMonth={postMonth}
-      postYear={postYear}
-      TaskStatus={TaskStatus}
       VotingType={VotingType}
       votingTypeDetails={votingTypeDetails}
+      responses={responses}
+      idx={idx}
     />
   );
 }
