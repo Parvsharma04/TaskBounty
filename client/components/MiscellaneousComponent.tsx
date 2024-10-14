@@ -488,23 +488,47 @@ const MiscellaneousComponent = () => {
             <label htmlFor="designUrl" className="text-lg">
               Design/Website Url *
             </label>
-            <input
-              type="text"
-              id="designUrl"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  if (urlPreview.length > 0) {
-                    toast.error("Only one URL is allowed");
-                    return;
+            <div className="flex justify-center items-center w-full gap-2">
+              <input
+                type="text"
+                id="designUrl"
+                max={1}
+                value={url}
+                disabled={disableBtn}
+                onChange={(e) => setUrl(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    if (urlPreview.length > 0) {
+                      toast.error(
+                        "Only one website url should be uploaded at a time."
+                      );
+                    } else {
+                      setUrlPreview([...urlPreview, url]);
+                      setUrl("");
+                    }
                   }
-                  setUrlPreview([...urlPreview, url]);
-                  setUrl("");
-                }
-              }}
-              className="bg-gray-950 rounded-md w-full"
-            />
+                }}
+                className="bg-gray-950 rounded-md w-full"
+              />
+              <button
+                className="bg-blue-600 hover:bg-blue-500 px-3 py-2 rounded"
+                onClick={() => {
+                  if (url.length <= 0) {
+                    toast.error("Please enter some url");
+                    return;
+                  } else if (urlPreview.length > 0) {
+                    toast.error(
+                      "Only one website url should be uploaded at a time."
+                    );
+                  } else {
+                    setUrlPreview([...urlPreview, url]);
+                    setUrl("");
+                  }
+                }}
+              >
+                Upload
+              </button>
+            </div>
           </div>
           {urlPreview.length > 0 && (
             <div className="flex justify-center items-center flex-wrap">
