@@ -14,6 +14,7 @@ import TaskOptions from "./task/TaskCategory";
 import TaskStatement from "./TaskStatement";
 import { useDispatch, useSelector } from "react-redux";
 import { decrement } from "@/redux/slices/BountiesLeftSlice";
+import { RootState } from "@/redux/store";
 const containerVariants = {
   hidden: {
     opacity: 0,
