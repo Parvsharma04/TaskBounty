@@ -45,7 +45,7 @@ export default function NextTask() {
   const [taskOptionSelect, setTaskOptionSelect] = useState(0);
   const [taskVoteOptionSelect, setTaskVoteOptionSelect] = useState(0);
   const dispatch = useDispatch();
-  const tasksLeft = useSelector((state: RootState) => state.BountiesLeft.value);
+  const tasksLeft = useSelector((state: any) => state.BountiesLeft.value);
 
   useEffect(() => {
     if (!wallet.connected) {
