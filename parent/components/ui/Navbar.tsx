@@ -70,7 +70,7 @@ export const Menu = ({
   return (
     <nav
       onMouseLeave={() => setActive(null)} // resets the state
-      className="relative rounded border-b border-white/15 flex items-center space-between space-x-4 px-8 py-6"
+      className="relative rounded border-b border-white/15 flex items-center space-between space-x-4 md:px-8 px-4 md:py-6 py-3"
     >
       {children}
     </nav>
@@ -109,7 +109,6 @@ export const ProductItem = ({
   );
 };
 
-
 interface HoveredLinkProps extends LinkProps {
   children: React.ReactNode; // Keep children as ReactNode for flexibility
   className?: string; // Add className as an optional prop
@@ -119,7 +118,7 @@ export const HoveredLink = ({ children, ...rest }: HoveredLinkProps) => {
   return (
     <Link
       {...rest}
-      className="text-neutral-700 dark:text-neutral-200 hover:text-blue-500"
+      className="dark:text-neutral-200 hover:text-blue-500 text-white"
     >
       {children}
     </Link>

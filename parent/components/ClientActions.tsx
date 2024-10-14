@@ -7,14 +7,13 @@ const ClientActions = () => {
   const router = useRouter();
 
   return (
-    <button
-      onClick={() => {
-        router.push(CLIENT_URL);
-      }}
+    <a
+      href={CLIENT_URL}
+      target="_blank"
       className="bg-blue-700 text-white hover:bg-blue-600 p-2 rounded px-4"
     >
       Create Client Account
-    </button>
+    </a>
   );
 };
 

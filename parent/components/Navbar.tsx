@@ -1,5 +1,5 @@
 "use client";
-import { Chip } from '@nextui-org/react';
+import { Chip } from "@nextui-org/react";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -22,7 +22,7 @@ export default function Navbar({ className }: { className?: string }) {
       <Menu setActive={setActive}>
         <a
           href="/"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
+          className="flex items-center rtl:space-x-reverse"
           onClick={() => handleLinkClick("Home")}
         >
           <motion.img
@@ -35,7 +35,7 @@ export default function Navbar({ className }: { className?: string }) {
             transition={{ duration: 1, ease: "easeInOut" }}
           />
           <motion.span
-            className="self-center text-2xl font-semibold whitespace-nowrap text-white"
+            className="self-center text-2xl font-semibold whitespace-nowrap text-white flex justify-center items-center gap-1"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeInOut" }}

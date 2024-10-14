@@ -139,7 +139,7 @@ export default function Page({
   const GudelinesArr = [categoryDetails?.Description ?? "No Description"];
 
   return (
-    <div className="bg-gray-950 min-h-screen text-white pt-16 pb-10 h-full w-full flex flex-col justify-center items-center gap-10">
+    <div className="bg-gray-950 text-white pt-10 px-10 pb-14 w-full flex flex-col justify-center items-center gap-10">
       {customLoader && <LoadingPage />}
       <AnimatedModal
         isOpen={isOpen}
@@ -148,9 +148,12 @@ export default function Page({
         title="Description"
         content={GudelinesArr}
       />
-      <div className="capitalize font-semibold text-3xl flex flex-wrap justify-center md:justify-between items-center gap-8 md:gap-2 bg-slate-700 w-full px-10 py-4 rounded-xl">
+      <div className="capitalize font-semibold text-3xl flex flex-wrap justify-center md:justify-between items-center gap-8 md:gap-2 bg-slate-800 w-full px-10 py-4 rounded-xl">
         <div className="flex justify-center items-center gap-2">
-          <Chip color="danger" className="md:text-lg font-semibold">
+          <Chip
+            color="default"
+            className="md:text-lg font-semibold bg-slate-700 text-white"
+          >
             Task Date:{" "}
             {new Date(
               taskDetails?.postYear,
@@ -158,7 +161,10 @@ export default function Page({
               taskDetails?.postDate
             ).toLocaleDateString()}
           </Chip>
-          <Chip color="secondary" className="md:text-lg font-semibold">
+          <Chip
+            color="secondary"
+            className="md:text-lg font-semibold bg-slate-700 text-white"
+          >
             Amount: {parseFloat(taskDetails?.amount.toString()) / 1000_000_000}{" "}
             SOL
           </Chip>
@@ -168,7 +174,7 @@ export default function Page({
             isIconOnly
             color="default"
             onPress={onOpen}
-            className="text-xl"
+            className="text-xl bg-slate-700 text-white"
           >
             ?
           </Button>
@@ -179,13 +185,15 @@ export default function Page({
           {taskDetails.category == "Youtube_Thumbnail" &&
             categoryDetails?.Youtube_Thumbnail_Title}
           {taskDetails.category == "Miscellaneous" && categoryDetails?.title}
-          <Chip color="primary">{taskDetails?.category}</Chip>
+          <Chip color="primary" className="bg-slate-700 text-white">
+            {taskDetails?.category}
+          </Chip>
         </div>
         <div className="flex justify-center items-center gap-2">
-          <Chip color="success" className="text-black text-lg">
+          <Chip color="success" className="text-lg bg-slate-700 text-white">
             Task Status: {taskDetails?.done === true ? "Completed" : "Open"}
           </Chip>
-          <Chip color="warning" className="text-lg text-black">
+          <Chip color="warning" className="text-lg bg-slate-700 text-white">
             MaxVotes: {MaxVotes}
           </Chip>
         </div>

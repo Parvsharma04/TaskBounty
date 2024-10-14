@@ -208,30 +208,30 @@ const TaskCard = ({
       </Modal>
 
       <div className="flip-card-inner">
-        <div className="flip-card-front pb-4">
+        <div className="flip-card-front p-6">
           <div className="flex flex-col justify-evenly items-center rounded-xl">
-            <div className="flex flex-col justify-start items-center gap-2">
+            <div className="flex flex-col justify-start items-center gap-4">
               {type == "image" ? (
                 <img
                   src={imageUrl}
                   alt="Avatar"
-                  className="w-60 h-60 rounded-full"
+                  className="w-60 h-60 rounded-md"
                 />
               ) : (
                 <iframe
                   src={imageUrl}
-                  className="w-60 h-60 rounded-full"
+                  className="w-60 h-60 rounded-md"
                   frameBorder="0"
                   allowFullScreen
                 ></iframe>
               )}
-              <span className="text-xl text-black font-semibold flex justify-center items-center gap-2">
+              <span className="text-lg text-white font-semibold flex justify-center items-center gap-2">
                 Type of Category:{" "}
                 <Chip className="text-lg" color="default">
                   {type}
                 </Chip>
               </span>
-              <span className="text-xl text-black font-semibold flex justify-center items-center gap-2">
+              <span className="text-xl text-white font-semibold flex justify-center items-center gap-2">
                 Votes Left:{" "}
                 <Chip className="text-lg" color="default">
                   {votesLeft}

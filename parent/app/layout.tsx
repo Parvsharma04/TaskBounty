@@ -17,7 +17,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "TaskBounty",
-  description: "",
+  description: "Empower you data with TaskBounty",
 };
 
 export default function RootLayout({
