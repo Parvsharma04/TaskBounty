@@ -140,6 +140,7 @@ const TransactionHistory = () => {
         transaction.postDate.toString()
       ),
       (Number(transaction.amount) / 1000_000_000).toFixed(3) + " SOL",
+      transaction.category,
       transaction.status ? "Success" : "Pending",
     ]);
 

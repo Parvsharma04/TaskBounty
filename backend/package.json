@@ -1,5 +1,5 @@
 {
-  "name": "hackindia",
+  "name": "taskbounty_backend",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -7,9 +7,9 @@
     "dev": "tsc -b && nodemon dist/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Arshdeep Rooprai, Parv Sharma",
   "license": "ISC",
-  "description": "",
+  "description": "backend architecture for taskbounty",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.637.0",
     "@aws-sdk/s3-presigned-post": "^3.637.0",

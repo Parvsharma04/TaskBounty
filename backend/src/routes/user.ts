@@ -18,7 +18,6 @@ const s3Client = new S3Client({
   },
   region: process.env.AWS_REGION as string,
 });
-const DEFAULT_TITLE = "Select the most clickable thumbnail";
 const connection = new Connection(
   "https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt"
 );
@@ -732,7 +731,7 @@ router.get("/presignedUrl", authMiddleware, async (req, res) => {
   try {
     const { url, fields } = await createPresignedPost(s3Client, {
       Bucket: process.env.AWS_S3_BUCKET_NAME as string,
-      Key: `fiver/${userId}/${Math.random()}/image.jpg`,
+      Key: `taskbounty/${userId}/${Math.random()}/image.jpg`,
       Conditions: [
         ["content-length-range", 0, 5 * 1024 * 1024], // 5 MB max
       ],
@@ -823,7 +822,7 @@ router.post("/signin", async (req, res) => {
       res.json({ token });
     }
   } catch (error) {
-    res.status(500).json(error)
+    res.status(500).json(error);
   }
 });
 
