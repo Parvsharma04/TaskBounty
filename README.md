@@ -2,7 +2,7 @@
 
 ![Mockup](/TaskBountyMockup.png)
 
-A decentralized, blockchain-based platform that allows users to post tasks, set bounties, and complete tasks to earn rewards without relying on a central authority. This project leverages Web3 technologies to provide a secure, user-owned task management system.
+A decentralized, blockchain-based platform that allows users to post tasks, set bounties, and complete tasks to earn rewards without relying on a central authority. This project leverages Web3 technologies to provide a secure, user-owned task management system. Currently, the app is still under beta testing, which is why it has been deployed on Devnet for development and testing purposes.
 
 ## Table of Contents
 
@@ -127,8 +127,8 @@ Thank you for your interest in contributing to TaskBounty! To set up the project
 
 ### Step 4: Set Up Wallet and Connect to Devnet
 
-1. Install MetaMask on your browser and create a wallet if you haven't already.
-2. Add the Ethereum test network (e.g., Rinkeby, Kovan) in MetaMask for development.
+1. Install any of the wallets on your browser and create a wallet if you haven't already.
+2. Shift the netork from Mainnet to Devnet.
 3. Connect your wallet to the DApp after running the frontend.
 
 ### Step 5: Testing
