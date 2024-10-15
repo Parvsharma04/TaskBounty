@@ -69,15 +69,10 @@ Thank you for your interest in contributing to TaskBounty! To set up the project
    cd backend
    ```
 
-2. Install dependencies:
+2. Install dependencies and run the app:
 
    ```bash
    npm install
-   ```
-
-3. Start the backend server:
-
-   ```bash
    npm run dev
    ```
 
@@ -96,7 +91,6 @@ Thank you for your interest in contributing to TaskBounty! To set up the project
    ```bash
    npm install
    npm run dev
-   ```
    ```
 
    The frontend app should be running on `http://localhost:3001`.
