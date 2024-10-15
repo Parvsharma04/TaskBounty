@@ -37,7 +37,6 @@ This project is a decentralized application (DApp) that enables users to create 
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) and npm installed
-- [MetaMask](https://metamask.io/) wallet extension for Ethereum
 - [Phantom](https://phantom.app/), [Solflare](https://solflare.com/), or [Alpha](https://alpha.solana.com/) wallet extensions for Solana
 
 
