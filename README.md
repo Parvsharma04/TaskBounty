@@ -125,7 +125,7 @@ Thank you for your interest in contributing to TaskBounty! To set up the project
 
    The secondary frontend app should be running on `http://localhost:3003`.
 
-### Step 4: Set Up MetaMask and Connect to Devnet
+### Step 4: Set Up Wallet and Connect to Devnet
 
 1. Install MetaMask on your browser and create a wallet if you haven't already.
 2. Add the Ethereum test network (e.g., Rinkeby, Kovan) in MetaMask for development.
