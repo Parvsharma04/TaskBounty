@@ -8,7 +8,6 @@ import Hero4 from "@/components/Hero4";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import Image from "next/image";
 import { ScrollTrigger } from "gsap/all";
 import FAQ from "@/components/FAQ";
 

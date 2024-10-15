@@ -75,56 +75,52 @@ export default function Page({
   useEffect(() => {
     if (!wallet.connected) {
       router.replace("/");
+      return; // Exit early if wallet is not connected
     }
-  }, [wallet.connected, router]);
 
-  useEffect(() => {
-    //! adding polling logic
-    setCustomLoader(true);
-
-    getTaskDetails(taskId).then((data) => {
-      setTaskDetails(data.taskDetails);
-      setSubmissions(data.responses);
-      setCategoryDetails(data.categoryDetails);
-      setVotingDetails(data.votingDetails);
-      setVotingTypeDetails(data.votingTypeDetails);
-
-      data.categoryDetails &&
-        setMaxVotes(data.categoryDetails.Responses.length - 1);
-
-      votingTypeDetails &&
-        Object.entries(data.votingTypeDetails).forEach(
-          (val: any, idx: number) => {
-            setParticularVotingArr((prev) => [
-              ...prev,
-              {
-                type: val[1],
-                votes: 0,
-                taskOption: 0,
-              },
-            ]);
-          }
-        );
-    });
-
-    const timer = setTimeout(() => {
-      getTaskDetails(taskId).then((data) => {
-        setSubmissions(data.responses);
+    const fetchTaskDetails = async () => {
+      // setCustomLoader(true);
+      try {
+        const data = await getTaskDetails(taskId);
         setTaskDetails(data.taskDetails);
+        setSubmissions(data.responses);
         setCategoryDetails(data.categoryDetails);
         setVotingDetails(data.votingDetails);
         setVotingTypeDetails(data.votingTypeDetails);
-      });
-    }, 5000);
-    setCustomLoader(false);
 
-    return () => {
-      clearTimeout(timer);
+        if (data.categoryDetails) {
+          setMaxVotes(data.categoryDetails.Responses.length - 1);
+        }
+
+        if (data.votingTypeDetails) {
+          const newVotingArr = Object.entries(data.votingTypeDetails).map(
+            ([key, value]: [string, any]) => ({
+              type: value,
+              votes: 0,
+              taskOption: 0,
+            })
+          );
+          setParticularVotingArr(newVotingArr);
+        }
+      } catch (error) {
+        console.error("Error fetching task details:", error);
+      } finally {
+        // setCustomLoader(false);
+      }
     };
-  }, [taskId]);
+
+    // Initial fetch
+    fetchTaskDetails();
+
+    // Start polling every 2 seconds
+    const intervalId = setInterval(fetchTaskDetails, 2000);
+
+    // Cleanup on unmount
+    return () => clearInterval(intervalId);
+  }, [taskId, wallet.connected, router]);
 
   async function getTaskDetails(taskId: string) {
-    setCustomLoader(true);
+    // setCustomLoader(true);
     const response = await axios.get(
       `${BACKEND_URL}/v1/user/task?taskId=${taskId}`,
       {
@@ -133,7 +129,7 @@ export default function Page({
         },
       }
     );
-    setCustomLoader(false);
+    // setCustomLoader(false);
     return response.data;
   }
   const GudelinesArr = [categoryDetails?.Description ?? "No Description"];

@@ -19,7 +19,7 @@ interface TaskCardProps {
   idx?: number;
 }
 
-const TaskCard = ({
+const TaskCard: React.FC<TaskCardProps> = ({
   amount,
   imageUrl,
   type,

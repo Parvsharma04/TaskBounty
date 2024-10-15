@@ -10,7 +10,9 @@ import { authMiddleware } from "../middlewares/middleware";
 import { createTaskInput } from "../types";
 
 const router = Router();
+// INITIALIZING PRISMA CLIENT
 const prismaClient = new PrismaClient();
+// INITIALIZING S3 CLIENT
 const s3Client = new S3Client({
   credentials: {
     accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID as string,
@@ -18,6 +20,7 @@ const s3Client = new S3Client({
   },
   region: process.env.AWS_REGION as string,
 });
+// RPC SERVER
 const connection = new Connection(
   "https://solana-devnet.g.alchemy.com/v2/0scTmkMbVkTEeLPVGwcn3BDnxCxidQTt"
 );
