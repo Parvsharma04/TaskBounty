@@ -332,7 +332,7 @@ export default function Home() {
         >
           <Hero4 />
         </section>
-        <section className="bg-gray-950" id="section7">
+        <section className="bg-gray-950 w-full" id="section7">
           <FAQ />
         </section>
       </div>
