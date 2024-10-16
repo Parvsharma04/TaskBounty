@@ -1,11 +1,8 @@
 "use client"; // Client Component
 
 import { WORKER_URL } from "@/utils";
-import { useRouter } from "next/navigation";
 
 const WorkerActions = () => {
-  const router = useRouter();
-
   return (
     <a
       href={WORKER_URL}

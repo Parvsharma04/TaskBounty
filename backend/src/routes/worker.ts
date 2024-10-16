@@ -53,6 +53,7 @@ router.post("/submission", workerMiddleware, async (req, res) => {
     const body = req.body;
     const parsedBody = createSubmissionInput.safeParse(body);
 
+    // validating the request body
     if (parsedBody.success) {
       const task = await getNextTask(Number(userId));
       if (!task || task?.id !== Number(parsedBody.data.taskId)) {

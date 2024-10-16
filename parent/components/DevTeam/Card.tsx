@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import styled from "styled-components";
 
 interface CardProps {
@@ -20,12 +21,23 @@ const Card = ({ title, github, linkedin, img }: CardProps) => {
             <span className="circle circle3" />
             <span className="circle circle4" />
             <span className="circle circle5">
-              <img src="/images/icon-removebg-preview.png" alt="Logo" />
+              <Image
+                width={100}
+                height={100}
+                src="/images/icon-removebg-preview.png"
+                alt="Logo"
+              />
             </span>
           </div>
           <div className="glass" />
           <div className="content">
-            <img src={img} alt="Headshot" className="headshot" />
+            <Image
+              width={100}
+              height={100}
+              src={img}
+              alt="Headshot"
+              className="headshot"
+            />
             <p className="title">{title}</p>
             <span className="text-black">Co-Founder</span>
           </div>

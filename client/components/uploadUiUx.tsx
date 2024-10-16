@@ -107,6 +107,7 @@ export const UploadUiUxPageComponent = () => {
     setTransactionLoader(true);
     closeConfirmationModal();
     try {
+      // making the transaction initilization by adding program which contains fromPubkey, toPubkey and lamports
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: wallet.publicKey!,
@@ -115,15 +116,18 @@ export const UploadUiUxPageComponent = () => {
         })
       );
 
+      // getting the latest blockhash and context slot in order to register the transaction on network
       const {
         context: { slot: minContextSlot },
         value: { blockhash, lastValidBlockHeight },
       } = await connection.getLatestBlockhashAndContext();
 
+      // sending the transaction to the network and getting the signature
       const signature = await wallet.sendTransaction(transaction, connection, {
         minContextSlot,
       });
 
+      // confirming the transaction by providing the blockhash, lastValidBlockHeight and signature
       await connection.confirmTransaction({
         blockhash,
         lastValidBlockHeight,

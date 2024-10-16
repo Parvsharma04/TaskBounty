@@ -1,11 +1,8 @@
 "use client"; // Client Component
 
 import { CLIENT_URL } from "@/utils";
-import { useRouter } from "next/navigation";
 
 const ClientActions = () => {
-  const router = useRouter();
-
   return (
     <a
       href={CLIENT_URL}
