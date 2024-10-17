@@ -164,7 +164,7 @@ const NavBar = () => {
             </NavbarItem>
             <DropdownMenu
               aria-label="Features"
-              className="w-[340px] bg-gray-800 border-none outline-none p-0"
+              className="w-[340px] bg-gray-800 p-0"
               itemClasses={{
                 base: "gap-4",
               }}

@@ -81,7 +81,7 @@ export const UploadLabellingTask = () => {
       const response = await axios.post(
         `${BACKEND_URL}/v1/user/task`,
         {
-          category: "Data_labelling",
+          category: "Data_Labelling",
           title,
           images,
           description : description,
@@ -358,7 +358,7 @@ export const UploadLabellingTask = () => {
       <div className="flex flex-col w-full gap-5">
         <div className="flex gap-2 justify-center items-center">
           <h1 className="text-2xl text-center md:text-4xl font-bold uppercase">
-            POST NEW BOUNTY
+            Label Your Data
           </h1>
           <Button isIconOnly color="primary" onPress={onOpen}>
             ?
@@ -380,7 +380,7 @@ export const UploadLabellingTask = () => {
 
         <div className="flex flex-col gap-2 justify-start items-start  md:w-full">
           <label htmlFor="designDescription" className="text-base">
-            Description *
+            Description (optional)
           </label>
           <textarea
             rows={2}
