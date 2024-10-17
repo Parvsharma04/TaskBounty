@@ -158,7 +158,7 @@ export default function Page({
 
   return (
     <div className="w-full flex justify-center items-center h-screen">
-      <div className="bg-gray-800 text-white pt-10 px-5 pb-14 w-fit flex flex-col justify-center items-center gap-8 rounded-xl">
+      <div className="bg-gray-800 text-white pt-5 px-5 pb-5 w-fit flex flex-col justify-center items-center gap-8 rounded-xl">
         {customLoader && <LoadingPage />}
         <AnimatedModalTasks
           isOpen={isOpen}
@@ -172,10 +172,10 @@ export default function Page({
           </ul>
         </AnimatedModalTasks>
 
-        <div className="p-3 sm:p-4 mb-4 text-white bg-gray-850 rounded-2xl w-full">
+        <div className="p-3 sm:p-4 text-white bg-gray-850 rounded-2xl w-full">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 md:gap-0 flex-wrap">
             <motion.div
-              className="bg-gray-900 p-4 md:p-6 lg:p-8 rounded-2xl flex justify-center items-center flex-wrap w-full" // Add w-full here
+              className="bg-gray-900 p-4 md:p-6 lg:p-3 rounded-2xl flex justify-center items-center flex-wrap w-full" // Add w-full here
               variants={containerVariants}
               initial="hidden"
               animate="visible"
