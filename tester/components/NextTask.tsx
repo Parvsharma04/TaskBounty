@@ -1,5 +1,6 @@
 "use client";
 
+import { decrement } from "@/redux/slices/BountiesLeftSlice";
 import { BACKEND_URL, Task } from "@/utils";
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -7,14 +8,12 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "./Loading";
 import TaskOptions from "./task/TaskCategory";
 import TaskStatement from "./TaskStatement";
-import { useDispatch, useSelector } from "react-redux";
-import { decrement } from "@/redux/slices/BountiesLeftSlice";
-import { RootState } from "@/redux/store";
 const containerVariants = {
   hidden: {
     opacity: 0,
@@ -248,7 +247,7 @@ export default function NextTask() {
                 </motion.ul>
               </motion.div>
 
-              {currentTask?.category !== "Youtube_Thumbnail" && (
+              {(currentTask?.category !== "Youtube_Thumbnail" && currentTask?.category !== "Data_Labelling" ) && (
                 <motion.div
                   className="bg-gray-900 p-4 md:p-6 lg:p-8 rounded-2xl flex flex-col justify-between items-center h-[26.6rem]"
                   variants={containerVariants}
