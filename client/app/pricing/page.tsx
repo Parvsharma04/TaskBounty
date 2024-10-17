@@ -49,15 +49,11 @@ const pricingPlans = [
   },
 ];
 export default function PricingPage() {
-  const [title, setTitle] = useState("Free");
-  const [amount, setAmount] = useState("0");
-  const [duration, setDuration] = useState(0);
   const [transactionLoader, setTransactionLoader] = useState(false);
   const wallet = useWallet();
   const { connection } = useConnection();
 
-  async function helper() {
-    console.log(title, amount, duration)
+  async function helper(title: any, amount: any, duration: any) {
     const response = await axios.post(
       `${BACKEND_URL}/v1/user/plan`,
       {
@@ -104,12 +100,19 @@ export default function PricingPage() {
       });
 
       toast.success("Transaction successful");
-      helper();
     } catch (err) {
       toast.error("Transaction failed");
     }
     setTransactionLoader(false);
   }
+  const handleBuyNow = (index: any) => {
+    const selectedPlan = pricingPlans[index];
+    helper(selectedPlan.name, selectedPlan.price, 1);
+    // Ensure state is updated before calling makePayment
+    setTimeout(() => {
+      makePayment(Number(selectedPlan.price));
+    }, 0); // Delay execution of makePayment slightly
+  };
 
   return (
     <>
@@ -192,12 +195,7 @@ export default function PricingPage() {
                     </div>
                     {plan.price != "0" ? (
                       <button
-                        onClick={async () => {
-                          setTitle(pricingPlans[index].name);
-                          setAmount(pricingPlans[index].price);
-                          setDuration(1);
-                          makePayment(Number(pricingPlans[index].price));
-                        }}
+                        onClick={() => handleBuyNow(index)}
                         className={` w-full py-2 px-4 rounded transition-colors duration-300 ${
                           plan.popular
                             ? "bg-blue-500 hover:bg-blue-600 text-white"
