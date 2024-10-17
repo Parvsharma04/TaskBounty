@@ -230,6 +230,9 @@ const NavBar = () => {
             />
           </NavbarItem>
           <NavbarItem>
+            <AnimatedLink title="Pricing" href="/pricing" key="pricing" />
+          </NavbarItem>
+          <NavbarItem>
             <AnimatedLink title="Free SOLs" href="/freeSols" key="free-sols" />
           </NavbarItem>
         </NavbarContent>
@@ -345,6 +348,15 @@ const NavBar = () => {
               onClick={() => setIsMenuOpen()}
             >
               Transaction History
+            </Link>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <Link
+              className="w-full my-4"
+              href="/pricing"
+              onClick={() => setIsMenuOpen()}
+            >
+              Pricing
             </Link>
           </NavbarMenuItem>
           <NavbarMenuItem key="freeSols">

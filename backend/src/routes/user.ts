@@ -897,5 +897,38 @@ router.post("/signin", async (req, res) => {
     res.status(500).json(error);
   }
 });
+router.post("/plan", authMiddleware, async (req, res) => {
+  try {
+    const { planName, planAmount, planDuration } = req.body;
+    const plan = await prismaClient.plan.create({
+      data: {
+        title: planName,
+        amount: planAmount,
+        duration: planDuration,
+      },
+    });
+
+    return plan;
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+router.get("/user", authMiddleware, async (req, res) => {
+  try {
+    //@ts-ignore
+    const userId = req.userId;
+    const user = await prismaClient.user.findFirst({
+      where: {
+        id: Number(userId),
+      },
+    });
+
+    res.json({
+      user,
+    });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
 
 export default router;
