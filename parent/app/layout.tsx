@@ -1,8 +1,8 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import type { Metadata } from "next";
-import { Providers } from "../../tester/components/Providers";
 import "./globals.css";
+import { Providers } from "@/components/Providers";
 
 // export const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",

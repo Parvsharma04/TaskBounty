@@ -1,0 +1,32 @@
+# Use an official Node.js runtime as a parent image
+FROM ubuntu
+
+# Installing nodejs and npm
+RUN apt update
+RUN apt install -y curl
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt install -y nodejs
+
+# Set the working directory
+WORKDIR /TaskBounty/worker
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Install missing postcss and autoprefixer dependencies
+RUN npm install postcss autoprefixer --save
+
+# Copy the rest of the application
+COPY . .
+
+# Build the Next.js application
+RUN npm run build
+
+# Expose port 3001 for the Next.js server
+EXPOSE 3000
+
+# Start the Next.js application
+CMD ["npm", "run", "start"]
