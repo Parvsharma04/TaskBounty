@@ -51,6 +51,7 @@ router.get("/task", authMiddleware, async (req, res) => {
         youtubeThumbnail_id: true,
         miscellaneous_id: true,
         Voting_Type_id: true,
+        data_labelling_id: true,
       },
     });
     if (!taskDetails) {
@@ -103,6 +104,17 @@ router.get("/task", authMiddleware, async (req, res) => {
       categoryDetails = await prismaClient.miscellaneous.findFirst({
         where: {
           id: taskDetails?.miscellaneous_id,
+        },
+      });
+    } else if (category == Category.Data_Labelling) {
+      if (!taskDetails?.data_labelling_id) {
+        return res.status(411).json({
+          message: "You dont have access to this task",
+        });
+      }
+      categoryDetails = await prismaClient.data_Labelling.findFirst({
+        where: {
+          id: taskDetails?.data_labelling_id!,
         },
       });
     }
@@ -362,6 +374,8 @@ router.post("/task", authMiddleware, async (req, res) => {
         message: "User not found",
       });
     }
+
+    console.log(parseData.data);
 
     console.log("dummy delay for 10 sec active");
     //! add dummy delay for 10 sec
@@ -707,6 +721,7 @@ router.post("/task", authMiddleware, async (req, res) => {
               });
               return task;
             } else if (category == Category.Data_Labelling) {
+              console.log(parseData.data);
               categoryModel = await tx.data_Labelling.create({
                 data: {
                   title: parseData.data.title,
@@ -741,7 +756,7 @@ router.post("/task", authMiddleware, async (req, res) => {
                   postDate: body.postDate,
                   postMonth: body.postMonth,
                   postYear: body.postYear,
-                  youtubeThumbnail_id: categoryModel.id,
+                  data_labelling_id: categoryModel.id,
                   Voting_Type_id: votingModel.id,
                   status: true,
                   done: false,

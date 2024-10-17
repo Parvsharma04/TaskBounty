@@ -280,6 +280,23 @@ export default function Page({
               />
             );
           })}
+        {taskDetails.category === "Data" &&
+          categoryDetails?.Youtube_Thumbnail_Images.map((url, idx) => {
+            return (
+              <Task
+                amount={taskDetails?.amount}
+                key={idx}
+                imageUrl={url ?? ""}
+                type="image"
+                votes={MaxVotes}
+                category={taskDetails?.category ?? ""}
+                VotingType={votingDetails?.type ?? ""}
+                votingTypeDetails={particularVotingArr}
+                responses={categoryDetails?.Responses}
+                idx={idx}
+              />
+            );
+          })}
       </div>
     </div>
   );
