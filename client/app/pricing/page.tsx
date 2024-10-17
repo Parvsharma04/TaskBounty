@@ -6,7 +6,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import axios from "axios";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -55,18 +55,21 @@ export default function PricingPage() {
   const [transactionLoader, setTransactionLoader] = useState(false);
   const wallet = useWallet();
   const { connection } = useConnection();
+
   async function helper() {
-    const response = await axios.post(`${BACKEND_URL}/v1/user/plan`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-      body: JSON.stringify({
+    const response = await axios.post(
+      `${BACKEND_URL}/v1/user/plan`,
+      {
         planName: title,
         planAmount: amount,
         planDuration: duration,
-      }),
-    });
-    console.log(response.data);
+      },
+      {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      }
+    );
   }
 
   async function makePayment(tasksAmt: number) {
@@ -100,7 +103,7 @@ export default function PricingPage() {
       });
 
       toast.success("Transaction successful");
-      await helper();
+      helper();
     } catch (err) {
       toast.error("Transaction failed");
     }
@@ -188,7 +191,7 @@ export default function PricingPage() {
                     </div>
                     {plan.price != "0" ? (
                       <button
-                        onClick={() => {
+                        onClick={async () => {
                           setTitle(plan.name);
                           setAmount(plan.price);
                           setDuration(1);

@@ -898,9 +898,10 @@ router.post("/signin", async (req, res) => {
   }
 });
 router.post("/plan", authMiddleware, async (req, res) => {
-  console.log(req.body)
   try {
     const { planName, planAmount, planDuration } = req.body;
+
+    // Create the plan
     const plan = await prismaClient.plan.create({
       data: {
         title: planName,
@@ -908,12 +909,28 @@ router.post("/plan", authMiddleware, async (req, res) => {
         duration: planDuration,
       },
     });
+    // update the user
+    await prismaClient.user.update({
+      data: {
+        Plan_id: plan.id,
+      },
+      where: {
+        // @ts-ignore
+        id: Number(req.userId),
+      },
+    });
 
-    return plan;
+    // Log the created plan and the request body for debugging
+    console.log("Created Plan:", plan, "Request Body:", req.body);
+
+    // Send the created plan back to the client
+    return res.status(201).json(plan); // Ensure a proper response is returned
   } catch (err) {
-    res.status(500).json(err);
+    console.error("Error creating plan:", err); // Log the error for debugging
+    res.status(500).json({ message: "Failed to create plan", error: err });
   }
 });
+
 router.get("/user", authMiddleware, async (req, res) => {
   try {
     //@ts-ignore
