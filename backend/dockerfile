@@ -1,0 +1,24 @@
+# Use an official No  de.js runtime as a parent image
+FROM node:18-alpine
+
+# Set the working directory
+WORKDIR /TaskBounty/backend
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+RUN npm install -g typescript
+
+# Copy the rest of the application
+COPY . .
+
+RUN tsc -b
+
+# Expose port 3000
+EXPOSE 3000
+
+# Run the application
+CMD ["node", "dist/index.js"]
