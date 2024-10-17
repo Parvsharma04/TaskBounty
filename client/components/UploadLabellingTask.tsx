@@ -365,7 +365,7 @@ export const UploadLabellingTask = () => {
           </Button>
         </div>
         <div className="flex flex-col justify-center items-start gap-3">
-          <label className="block font-medium text-base">Task details *</label>
+          <label className="block font-medium text-base">Task Title *</label>
           <input
             onChange={(e) => {
               setTitle(e.target.value);

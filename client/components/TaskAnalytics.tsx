@@ -3,6 +3,7 @@
 import { BACKEND_URL } from "@/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
+import * as motion from "framer-motion/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -10,9 +11,8 @@ import DataTable from "react-data-table-component";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ChartAnalytics from "./ChartAnalytics";
-import TaskSummary from "./TaskSummary";
 import LoadingPage from "./Loading";
-import * as motion from "framer-motion/client";
+import TaskSummary from "./TaskSummary";
 
 function TaskAnalytics() {
   const [AllTasks, setAllTasks] = useState([]);
@@ -48,6 +48,7 @@ function TaskAnalytics() {
         }
 
         setAllTasks(res.data.tasksDetails);
+        console.log(res.data)
         DataManipulation(res.data.tasksDetails);
       } catch (err: any) {
         toast.error(err.response.data.message, {

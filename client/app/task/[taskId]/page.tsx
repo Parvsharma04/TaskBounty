@@ -1,15 +1,14 @@
 "use client";
 
+import AnimatedModal from "@/components/AnimatedModal";
 import LoadingPage from "@/components/Loading";
 import TaskCard from "@/components/TaskCard";
 import { BACKEND_URL } from "@/utils";
-import { Chip } from "@nextui-org/react";
+import { Button, Chip, useDisclosure } from "@nextui-org/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import AnimatedModal from "@/components/AnimatedModal";
-import { Button, useDisclosure } from "@nextui-org/react";
 
 export default function Page({
   params: { taskId },
@@ -28,6 +27,7 @@ export default function Page({
     Idea_Images: string[];
     Youtube_Thumbnail_Images: string[];
     Images: string[];
+    image_url: string[];
     Responses: any;
   }
   interface TaskDetailsProps {
@@ -130,6 +130,7 @@ export default function Page({
       }
     );
     // setCustomLoader(false);
+    console.log(response.data)
     return response.data;
   }
   const GudelinesArr = [categoryDetails?.Description ?? "No Description"];
@@ -280,8 +281,8 @@ export default function Page({
               />
             );
           })}
-        {taskDetails.category === "Data" &&
-          categoryDetails?.Youtube_Thumbnail_Images.map((url, idx) => {
+        {taskDetails.category === "Data_Labelling" &&
+          categoryDetails?.image_url.map((url, idx) => {
             return (
               <Task
                 amount={taskDetails?.amount}
