@@ -1,10 +1,13 @@
 import NavBar from "@/components/Appbar";
 import FooterPage from "@/components/Footer";
-import { Wallet } from "./wallet/Wallet";
+import { store } from "@/redux/store";
 import type { Metadata } from "next";
 import { Baloo_Bhai_2, Inter } from "next/font/google";
 import localFont from "next/font/local";
+import { Provider } from "react-redux";
 import "./globals.css";
+import { Wallet } from "./wallet/Wallet";
+("react-redux");
 
 const inter = Inter({ subsets: ["latin"] });
 export const myFont = localFont({
@@ -35,11 +38,13 @@ export default function RootLayout({
       <body
         className={`${inter.className} ${myFont.variable} ${myFont2.variable} ${myFont3.variable} bg-gray-950 text-white`}
       >
-        <Wallet>
-          <NavBar />
-          {children}
-          <FooterPage />
-        </Wallet>
+        <Provider store={store}>
+          <Wallet>
+            <NavBar />
+            {children}
+            <FooterPage />
+          </Wallet>
+        </Provider>
       </body>
     </html>
   );
