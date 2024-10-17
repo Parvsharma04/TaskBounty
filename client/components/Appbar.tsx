@@ -191,7 +191,15 @@ const NavBar = () => {
                 description="Get your youtube thumbnails rated by the best designers in the world."
                 startContent={icons.flash}
               >
-                <Link href="/uploadTask">Youtube Thumbnail</Link>
+                <Link href="/uploadTask">Youtube Thumbnail </Link>
+              </DropdownItem>
+              <DropdownItem
+                onClick={() => navigate.push("/uploadLabellingTask")}
+                key="Label Data"
+                description="Obtain your model's accuracy and throughput by labeling your data."
+                startContent={icons.flash}
+              >
+                <Link href="/uploadTask">Label Data</Link>
               </DropdownItem>
               <DropdownItem
                 onClick={() => navigate.push("/miscellaneousUpload")}
@@ -289,6 +297,16 @@ const NavBar = () => {
                 >
                   <Link href="/uploadTask" onClick={() => setIsMenuOpen()}>
                     Youtube Thumbnail
+                  </Link>
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => navigate.push("/uploadLabellingTask")}
+                  key="Youtube thumbnail"
+                  description="Get your youtube thumbnails rated by the best designers in the world."
+                  startContent={icons.flash}
+                >
+                  <Link href="/uploadTask" onClick={() => setIsMenuOpen()}>
+                    Label Data
                   </Link>
                 </DropdownItem>
                 <DropdownItem
