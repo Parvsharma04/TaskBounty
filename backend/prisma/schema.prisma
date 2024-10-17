@@ -11,6 +11,9 @@ model User {
   id      Int    @id @default(autoincrement())
   address String @unique
   tasks   Task[]
+
+  Plan_id Int? // Foreign key for Plan
+  Plan    Plan? @relation(fields: [Plan_id], references: [id])
 }
 
 model Worker {
@@ -22,6 +25,15 @@ model Worker {
   locked_amount  String
   withdrawn      String       @default("0") // Added field with default value of 0
   payouts        Payouts[]
+}
+
+model Plan {
+  id       Int    @id @default(autoincrement())
+  title    String
+  amount   String
+  duration Int
+
+  User User[]
 }
 
 model Task {
@@ -56,6 +68,8 @@ model Task {
 
   data_labelling_id Int? // Foreign key for Data Labelling
   data_labelling    Data_Labelling? @relation(fields: [data_labelling_id], references: [id])
+
+  paid Boolean @default(false)
 }
 
 model UI_UX_Design {
