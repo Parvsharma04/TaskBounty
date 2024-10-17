@@ -528,6 +528,12 @@ router.post("/task", authMiddleware, async (req, res) => {
                   Description: string;
                   Design_Url: string[];
                   Voting_Type: String;
+                }
+              | {
+                  id: number;
+                  title: String;
+                  description: String;
+                  image_url: string[];
                 };
             if (category == Category.UI_UX_Design) {
               categoryModel = await tx.uI_UX_Design.create({
@@ -699,6 +705,49 @@ router.post("/task", authMiddleware, async (req, res) => {
                   done: false,
                 },
               });
+              return task;
+            } else if (category == Category.Data_Labelling) {
+              categoryModel = await tx.data_Labelling.create({
+                data: {
+                  title: parseData.data.title,
+                  image_url: parseData.data.images,
+                  description: parseData.data.description ?? "",
+                },
+              });
+
+              await Promise.all(
+                (parseData.data.images ?? []).map(async (image: string) => {
+                  await tx.option.create({
+                    data: {
+                      image_url: image ?? "",
+                      Data_Labelling_id: categoryModel.id,
+                    },
+                  });
+                })
+              );
+
+              const votingModel = await voting_type_generator(parseData);
+
+              if (votingModel === null) {
+                return "Invalid voting type";
+              }
+
+              const task = await tx.task.create({
+                data: {
+                  category: category,
+                  amount: amountTransferred,
+                  signature: parseData.data.signature,
+                  user_id: userId,
+                  postDate: body.postDate,
+                  postMonth: body.postMonth,
+                  postYear: body.postYear,
+                  youtubeThumbnail_id: categoryModel.id,
+                  Voting_Type_id: votingModel.id,
+                  status: true,
+                  done: false,
+                },
+              });
+
               return task;
             }
           },

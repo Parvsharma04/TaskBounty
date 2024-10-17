@@ -52,6 +52,9 @@ model Task {
 
   miscellaneous_id Int? // Foreign key for Miscellaneous
   miscellaneous    Miscellaneous? @relation(fields: [miscellaneous_id], references: [id])
+
+  data_labelling_id Int? // Foreign key for Data Labelling
+  data_labelling    Data_Labelling? @relation(fields: [data_labelling_id], references: [id])
 }
 
 model UI_UX_Design {
@@ -99,6 +102,17 @@ model Miscellaneous {
 
   Task   Task[]
   Option Option[]
+}
+
+model Data_Labelling {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  image_url   String[]
+  Responses   Json     @default("[{\"id\": \"worker_id\", \"value\": \"Five_Star\"}]")
+
+  Task   Task[]
+  option Option[]
 }
 
 model Voting_Type {
@@ -173,6 +187,9 @@ model Option {
 
   Miscellaneous_id Int? // Foreign key for Miscellaneous
   Miscellaneous    Miscellaneous? @relation(fields: [Miscellaneous_id], references: [id])
+
+  Data_Labelling_id Int? // Foreign key for Data Labelling
+  Data_Labelling    Data_Labelling? @relation(fields: [Data_Labelling_id], references: [id])
 }
 
 model Submission {
@@ -214,6 +231,7 @@ enum Category {
   Idea_Product
   Youtube_Thumbnail
   Miscellaneous
+  Data_Labelling
 }
 
 enum Voting_Types {

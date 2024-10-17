@@ -117,6 +117,12 @@ router.post("/submission", workerMiddleware, async (req, res) => {
             id: taskmodel?.miscellaneous_id!,
           },
         });
+      } else if (taskCategory === "Data_Labelling") {
+        categoryModel = await prismaClient.data_Labelling.findFirst({
+          where: {
+            id: taskmodel?.data_labelling_id!,
+          },
+        });
       }
 
       const worker = await prismaClient.worker.findFirst({
@@ -259,6 +265,30 @@ router.post("/submission", workerMiddleware, async (req, res) => {
             await tx.miscellaneous.update({
               where: {
                 id: taskmodel?.miscellaneous_id!,
+              },
+              data: {
+                Responses: Array.isArray(categoryModel?.Responses)
+                  ? [
+                      ...categoryModel.Responses,
+                      {
+                        id: userId,
+                        value: parsedBody.data.voteOptionId,
+                        taskOption: parsedBody.data.optionId,
+                      },
+                    ]
+                  : [
+                      {
+                        id: userId,
+                        value: parsedBody.data.voteOptionId,
+                        taskOption: parsedBody.data.optionId,
+                      },
+                    ],
+              },
+            });
+          } else if (taskCategory === "Data_Labelling") {
+            await tx.data_Labelling.update({
+              where: {
+                id: taskmodel?.data_labelling_id!,
               },
               data: {
                 Responses: Array.isArray(categoryModel?.Responses)
