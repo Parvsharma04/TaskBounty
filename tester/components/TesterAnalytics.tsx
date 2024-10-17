@@ -1,6 +1,7 @@
 "use client";
 
 import { setValue } from "@/redux/slices/BountiesLeftSlice";
+import { setReputation } from "@/redux/slices/ReputationSlice";
 import { BACKEND_URL, SubmissionProp, TesterData } from "@/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
@@ -46,8 +47,10 @@ export const TesterAnalytics: React.FC = () => {
         }
       );
       const data = response.data;
-      console.log(response.data)
+      // console.log(response.data, response.data.testerData.submissions.length)
       dispatch(setValue(data.testerData.tasksLeft))
+      dispatch(setReputation(response.data.testerData.tasksLeft))
+
       setTotalEarned(
         parseFloat(data.testerData.pending_amount) +
           parseFloat(data.testerData.locked_amount)
@@ -64,6 +67,7 @@ export const TesterAnalytics: React.FC = () => {
 
   useEffect(() => {
     if (!wallet.connected) {
+      dispatch(setReputation(0))
       router.push("/");
     } else {
       getTesterData();

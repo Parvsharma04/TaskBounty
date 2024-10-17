@@ -1,6 +1,9 @@
-"use client"
+"use client";
+import { setValue } from "@/redux/slices/BountiesLeftSlice";
+import { setReputation } from "@/redux/slices/ReputationSlice";
 import { BACKEND_URL } from "@/utils";
 import { Chip } from "@nextui-org/chip";
+import { Badge, Progress } from "@nextui-org/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -9,13 +12,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { slide as Menu } from "react-burger-menu";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { RootState } from "../redux/store";
 import AnimatedLink from "./AnimatedLink";
 import Loading from "./Loading";
-import { RootState } from "../redux/store";
-import { useSelector } from "react-redux";
-import { Badge } from "@nextui-org/react";
 
 const WalletMultiButtonDynamic = dynamic(
   async () =>
@@ -34,6 +36,19 @@ const NavBar = () => {
   const [showLinks, setShowLinks] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const tasksLeft = useSelector((state: RootState) => state.BountiesLeft.value);
+  const reputation = useSelector((state: RootState) => state.Reputation.value);
+  const dispatch = useDispatch();
+
+  async function getData() {
+    // console.log("gd");
+    const response = await axios.get(`${BACKEND_URL}/v1/worker/getTesterData`, {
+      params: { publicKey: wallet.publicKey?.toBase58() },
+      headers: { Authorization: localStorage.getItem("token") || "" },
+    });
+    // console.log(response.data.testerData.submissions.length);
+    dispatch(setReputation(response.data.testerData.submissions.length));
+    dispatch(setValue(response.data.testerData.tasksLeft));
+  }
 
   async function getToken() {
     setLoader(true);
@@ -51,6 +66,7 @@ const NavBar = () => {
         localStorage.setItem("token", response.data.token);
         setShowLinks(true);
         setPayoutAmt(response.data.amount);
+        await getData();
         setLoader(false);
       } catch (error) {
         console.error("Error fetching token:", error);
@@ -211,22 +227,44 @@ const NavBar = () => {
             TaskBounty{"  "}
             <Chip color="secondary">Beta</Chip>
           </motion.span>
-       </Link>
-        <div className="hidden xl:flex xl:items-center xl:space-x-8">
+        </Link>
         {showLinks && (
           <>
-            <AnimatedLink title="Home" href="/" />
-            {tasksLeft > 0 ?
-              < Badge content={tasksLeft} color="secondary" className="absolute top-0 right-0 px-[0.35rem] transform translate-x-1/2 -translate-y-1/2">
+            <div className="hidden xl:flex xl:items-center xl:space-x-8 max-w-">
+              <AnimatedLink title="Home" href="/" />
+              {tasksLeft > 0 ? (
+                <Badge
+                  content={tasksLeft}
+                  color="secondary"
+                  className="absolute top-0 right-0 px-[0.35rem] transform translate-x-1/2 -translate-y-1/2"
+                >
+                  <AnimatedLink title="Hunt Bounties" href="/bounty" />
+                </Badge>
+              ) : (
                 <AnimatedLink title="Hunt Bounties" href="/bounty" />
-              </Badge> :
-              <AnimatedLink title="Hunt Bounties" href="/bounty" />
-            }
-            <AnimatedLink title="Tester Analytics" href="/tester-analytics" />
-            <AnimatedLink title="Transactions" href="/transactions" />
+              )}
+              <AnimatedLink title="Tester Analytics" href="/tester-analytics" />
+              <AnimatedLink title="Transactions" href="/transactions" />
+            </div>
+
+            <Progress
+              size="sm"
+              radius="full"
+              classNames={{
+                base: "w-80 hidden md:block",
+                track:
+                  "bg-gray-800 border border-gray-600 dark:bg-gray-800 dark:border-gray-600", // Use dark colors for the track and border
+                indicator:
+                  " h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 ",
+                label: "text-white font-semibold", // Make sure the text is bright
+                value: "text-white", // Show value as bright white for dark mode
+              }}
+              label="Reputation"
+              value={reputation}
+              showValueLabel={true}
+            />
           </>
         )}
-        </div>
 
         {/* Wallet and Payout Buttons for desktop */}
         <div className="hidden xl:block">
@@ -284,3 +322,6 @@ const NavBar = () => {
 };
 
 export default NavBar;
+function dispatch(arg0: { payload: number; type: "Reputation/setReputation" }) {
+  throw new Error("Function not implemented.");
+}

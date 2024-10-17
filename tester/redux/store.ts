@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
 import BountiesLeftSlice from './slices/BountiesLeftSlice'
+import ReputationSlice from './slices/ReputationSlice'
 
 export const store = configureStore({
   reducer: {
-    BountiesLeft: BountiesLeftSlice
+    BountiesLeft: BountiesLeftSlice,
+    Reputation: ReputationSlice,
   },
 })
 

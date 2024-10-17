@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Featured from "@/components/Featured";
 import Footer from "@/components/Footer";
 import { useEffect } from "react";
@@ -8,7 +8,7 @@ import HeroSection from "../components/HeroSection/index";
 export default function Home() {
 
   useEffect(() => {
-    if (typeof window !== "undefined") { // Check if window is available
+    if (typeof window !== "undefined") {
       (async () => {
         const LocomotiveScroll = (await import("locomotive-scroll")).default;
         const locomotiveScroll = new LocomotiveScroll();
