@@ -941,8 +941,14 @@ router.get("/user", authMiddleware, async (req, res) => {
       },
     });
 
+    const plan = await prismaClient.plan.findFirst({
+      where:{
+        id: user?.Plan_id!
+      }
+    })
+
     res.json({
-      user,
+      plan
     });
   } catch (error) {
     res.status(500).json(error);

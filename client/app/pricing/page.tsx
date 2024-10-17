@@ -6,7 +6,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import axios from "axios";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -57,6 +57,7 @@ export default function PricingPage() {
   const { connection } = useConnection();
 
   async function helper() {
+    console.log(title, amount, duration)
     const response = await axios.post(
       `${BACKEND_URL}/v1/user/plan`,
       {
