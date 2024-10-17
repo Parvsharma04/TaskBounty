@@ -1,14 +1,12 @@
+"use client";
 import NavBar from "@/components/Appbar";
 import FooterPage from "@/components/Footer";
 import { store } from "@/redux/store";
-import type { Metadata } from "next";
 import { Baloo_Bhai_2, Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { Provider } from "react-redux";
 import "./globals.css";
 import { Wallet } from "./wallet/Wallet";
-("react-redux");
-
 const inter = Inter({ subsets: ["latin"] });
 export const myFont = localFont({
   src: "../fonts/GiuliaDEMO-Bold.otf",
@@ -22,12 +20,6 @@ export const myFont3 = Baloo_Bhai_2({
   subsets: ["latin"],
   variable: "--myFont3",
 });
-
-export const metadata: Metadata = {
-  title: "User-TaskBounty",
-  description: "",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{

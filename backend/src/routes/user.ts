@@ -898,6 +898,7 @@ router.post("/signin", async (req, res) => {
   }
 });
 router.post("/plan", authMiddleware, async (req, res) => {
+  console.log(req.body)
   try {
     const { planName, planAmount, planDuration } = req.body;
     const plan = await prismaClient.plan.create({

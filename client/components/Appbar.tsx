@@ -1,4 +1,5 @@
 "use client";
+import { RootState } from "@/redux/store";
 import { BACKEND_URL } from "@/utils";
 import {
   Activity,
@@ -31,6 +32,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useReducer, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "../styles/home.css";
 import AnimatedLink from "./AnimatedLink";
 
@@ -47,6 +49,20 @@ const NavBar = () => {
   const navigate = useRouter();
   const wallet = useWallet();
   const [isMenuOpen, setIsMenuOpen] = useReducer((current) => !current, false);
+  const plan = useSelector((state: RootState) => state.membershipPlan);
+  const amount = useSelector((state: RootState) => state.membershipAmount);
+  const duration = useSelector((state: RootState) => state.membershipDuration)
+  const dispatch = useDispatch()
+
+
+  async function helper() {
+    const response = await axios.get(`${BACKEND_URL}/v1/user/user`, {
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+    });
+    console.log(response.data)
+  }
 
   useEffect(() => {
     async function getToken() {
@@ -63,6 +79,7 @@ const NavBar = () => {
         });
         localStorage.setItem("token", response.data.token);
         setHasToken(true);
+        await helper();
       } catch (error) {
         console.error("Error fetching token:", error);
       }

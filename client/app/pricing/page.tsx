@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
-import { Transaction, SystemProgram, PublicKey } from "@solana/web3.js";
+import TransactionLoadingPage from "@/components/TransactionLoading";
+import { BACKEND_URL, PARENT_WALLET_ADDRESS } from "@/utils";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PARENT_WALLET_ADDRESS } from "@/utils";
+import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import axios from "axios";
+import Link from "next/link";
+import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import TransactionLoadingPage from "@/components/TransactionLoading";
-import Link from "next/link";
 
 const pricingPlans = [
   {
@@ -48,9 +49,25 @@ const pricingPlans = [
   },
 ];
 export default function PricingPage() {
+  const [title, setTitle] = useState("Free");
+  const [amount, setAmount] = useState("0");
+  const [duration, setDuration] = useState(0);
   const [transactionLoader, setTransactionLoader] = useState(false);
   const wallet = useWallet();
   const { connection } = useConnection();
+  async function helper() {
+    const response = await axios.post(`${BACKEND_URL}/v1/user/plan`, {
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+      body: JSON.stringify({
+        planName: title,
+        planAmount: amount,
+        planDuration: duration,
+      }),
+    });
+    console.log(response.data);
+  }
 
   async function makePayment(tasksAmt: number) {
     setTransactionLoader(true);
@@ -83,6 +100,7 @@ export default function PricingPage() {
       });
 
       toast.success("Transaction successful");
+      await helper();
     } catch (err) {
       toast.error("Transaction failed");
     }
@@ -118,81 +136,88 @@ export default function PricingPage() {
             the majority have suffered alteration in some form.
           </p>
           <div className="grid md:grid-cols-3 gap-8">
-            {pricingPlans.map((plan, index) => (
-              <div
-                key={index}
-                className={`relative bg-gray-900 border border-gray-800 rounded-lg overflow-hidden ${
-                  plan.popular ? "border-blue-500 border-2" : ""
-                } transition-transform duration-300 hover:scale-105`}
-              >
-                {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-blue-500 text-white py-1 px-4 rounded-bl-lg text-sm font-semibold">
-                    Popular
-                  </div>
-                )}
-                <div className="p-6 flex flex-col justify-center items-center">
-                  <h3 className="text-xl font-semibold text-center text-white mb-2">
-                    {plan.name}
-                  </h3>
-                  <p className="text-gray-400 text-center mb-6">
-                    Lorem Ipsum simply dummy text of the printing.
-                  </p>
-                  <ul className="space-y-2 mb-6">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li
-                        key={featureIndex}
-                        className="flex items-center text-gray-300"
-                      >
-                        <svg
-                          className="w-4 h-4 mr-2 text-green-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M5 13l4 4L19 7"
-                          ></path>
-                        </svg>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="text-4xl font-bold mb-4 text-center text-white">
-                    {plan.price} SOL
-                    <span className="text-base font-normal text-gray-400">
-                      /month
-                    </span>
-                  </div>
-                  {plan.price != "0" ? (
-                    <button
-                      onClick={() => makePayment(Number(plan.price))}
-                      className={` w-full py-2 px-4 rounded transition-colors duration-300 ${
-                        plan.popular
-                          ? "bg-blue-500 hover:bg-blue-600 text-white"
-                          : "bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white"
-                      }`}
-                    >
-                      Buy Now
-                    </button>
-                  ) : (
-                    <Link
-                      href="/uploadUiUx"
-                      className={`bg-gray-800 w-full py-2 px-4 rounded transition-colors duration-300 text-center block${
-                        plan.popular
-                          ? "bg-blue-500 hover:bg-blue-600 text-white"
-                          : "bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white"
-                      }`}
-                    >
-                      Get Started
-                    </Link>
+            {pricingPlans.map((plan, index) => {
+              return (
+                <div
+                  key={index}
+                  className={`relative bg-gray-900 border border-gray-800 rounded-lg overflow-hidden ${
+                    plan.popular ? "border-blue-500 border-2" : ""
+                  } transition-transform duration-300 hover:scale-105`}
+                >
+                  {plan.popular && (
+                    <div className="absolute top-0 right-0 bg-blue-500 text-white py-1 px-4 rounded-bl-lg text-sm font-semibold">
+                      Popular
+                    </div>
                   )}
+                  <div className="p-6 flex flex-col justify-center items-center">
+                    <h3 className="text-xl font-semibold text-center text-white mb-2">
+                      {plan.name}
+                    </h3>
+                    <p className="text-gray-400 text-center mb-6">
+                      Lorem Ipsum simply dummy text of the printing.
+                    </p>
+                    <ul className="space-y-2 mb-6">
+                      {plan.features.map((feature, featureIndex) => (
+                        <li
+                          key={featureIndex}
+                          className="flex items-center text-gray-300"
+                        >
+                          <svg
+                            className="w-4 h-4 mr-2 text-green-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 13l4 4L19 7"
+                            ></path>
+                          </svg>
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="text-4xl font-bold mb-4 text-center text-white">
+                      {plan.price} SOL
+                      <span className="text-base font-normal text-gray-400">
+                        /month
+                      </span>
+                    </div>
+                    {plan.price != "0" ? (
+                      <button
+                        onClick={() => {
+                          setTitle(plan.name);
+                          setAmount(plan.price);
+                          setDuration(1);
+                          makePayment(Number(plan.price));
+                        }}
+                        className={` w-full py-2 px-4 rounded transition-colors duration-300 ${
+                          plan.popular
+                            ? "bg-blue-500 hover:bg-blue-600 text-white"
+                            : "bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white"
+                        }`}
+                      >
+                        Buy Now
+                      </button>
+                    ) : (
+                      <Link
+                        href="/uploadUiUx"
+                        className={`bg-gray-800 w-full py-2 px-4 rounded transition-colors duration-300 text-center block${
+                          plan.popular
+                            ? "bg-blue-500 hover:bg-blue-600 text-white"
+                            : "bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white"
+                        }`}
+                      >
+                        Get Started
+                      </Link>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
