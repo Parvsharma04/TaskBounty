@@ -1,12 +1,19 @@
 "use client";
 
-import AnimatedModal from "@/components/AnimatedModal";
+import AnimatedModalTasks from "@/components/AnimatedModalTasks";
 import LoadingPage from "@/components/Loading";
 import TaskCard from "@/components/TaskCard";
 import { BACKEND_URL } from "@/utils";
-import { Button, Chip, useDisclosure } from "@nextui-org/react";
+import {
+  Accordion,
+  AccordionItem,
+  Button,
+  Chip,
+  useDisclosure,
+} from "@nextui-org/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -30,6 +37,7 @@ export default function Page({
     image_url: string[];
     Responses: any;
   }
+
   interface TaskDetailsProps {
     amount: String;
     category: string;
@@ -72,6 +80,18 @@ export default function Page({
     }[]
   >([]);
 
+  const containerVariants = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        delayChildren: 0.3,
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
   useEffect(() => {
     if (!wallet.connected) {
       router.replace("/");
@@ -79,7 +99,6 @@ export default function Page({
     }
 
     const fetchTaskDetails = async () => {
-      // setCustomLoader(true);
       try {
         const data = await getTaskDetails(taskId);
         setTaskDetails(data.taskDetails);
@@ -104,8 +123,6 @@ export default function Page({
         }
       } catch (error) {
         console.error("Error fetching task details:", error);
-      } finally {
-        // setCustomLoader(false);
       }
     };
 
@@ -120,7 +137,6 @@ export default function Page({
   }, [taskId, wallet.connected, router]);
 
   async function getTaskDetails(taskId: string) {
-    // setCustomLoader(true);
     const response = await axios.get(
       `${BACKEND_URL}/v1/user/task?taskId=${taskId}`,
       {
@@ -129,174 +145,199 @@ export default function Page({
         },
       }
     );
-    // setCustomLoader(false);
+    console.log(response.data);
     return response.data;
   }
+
   const GudelinesArr = [categoryDetails?.Description ?? "No Description"];
 
   return (
-    <div className="bg-gray-950 text-white pt-10 px-10 pb-14 w-full flex flex-col justify-center items-center gap-10">
-      {customLoader && <LoadingPage />}
-      <AnimatedModal
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onOpenChange={onOpenChange}
-        title="Description"
-        content={GudelinesArr}
-      />
-      <div className="capitalize font-semibold text-3xl flex flex-wrap justify-center md:justify-between items-center gap-8 md:gap-2 bg-slate-800 w-full px-10 py-4 rounded-xl">
-        <div className="flex justify-center items-center gap-2">
-          <Chip
-            color="default"
-            className="md:text-lg font-semibold bg-slate-700 text-white"
-          >
-            Task Date:{" "}
-            {new Date(
-              taskDetails?.postYear,
-              taskDetails?.postMonth,
-              taskDetails?.postDate
-            ).toLocaleDateString()}
-          </Chip>
-          <Chip
-            color="secondary"
-            className="md:text-lg font-semibold bg-slate-700 text-white"
-          >
-            Amount: {parseFloat(taskDetails?.amount.toString()) / 1000_000_000}{" "}
-            SOL
-          </Chip>
+    <div className="w-full flex justify-center items-center h-screen">
+      <div className="bg-gray-800 text-white pt-10 px-5 pb-14 w-fit flex flex-col justify-center items-center gap-8 rounded-xl">
+        {customLoader && <LoadingPage />}
+        <AnimatedModalTasks
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          title="Description"
+        >
+          <ul className="list-disc ml-4">
+            {GudelinesArr.map((val, idx) => (
+              <li key={idx}>{val}</li>
+            ))}
+          </ul>
+        </AnimatedModalTasks>
+
+        <div className="p-3 sm:p-4 mb-4 text-white bg-gray-850 rounded-2xl w-full">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 md:gap-0 flex-wrap">
+            <motion.div
+              className="bg-gray-900 p-4 md:p-6 lg:p-8 rounded-2xl flex justify-center items-center flex-wrap w-full" // Add w-full here
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 1, ease: "easeInOut" }}
+            >
+              <Accordion className="max-w-full w-full">
+                <AccordionItem
+                  key="1"
+                  aria-label="Accordion 1"
+                  title={
+                    <div className="flex justify-between">
+                      <span className="text-white">
+                        {taskDetails.category === "UI_UX_Design" &&
+                          categoryDetails?.Design_Title}
+                        {taskDetails.category === "Idea_Product" &&
+                          categoryDetails?.Idea_Title}
+                        {taskDetails.category === "Youtube_Thumbnail" &&
+                          categoryDetails?.Youtube_Thumbnail_Title}
+                        {taskDetails.category === "Miscellaneous" &&
+                          categoryDetails?.title}
+                        {taskDetails.category === "Data_Labelling" &&
+                          categoryDetails?.title}
+                      </span>
+                      <Button
+                        isIconOnly
+                        color="default"
+                        onPress={onOpen}
+                        className="text-xl bg-slate-700 text-white"
+                      >
+                        ?
+                      </Button>
+                    </div>
+                  }
+                >
+                  <div className="flex wrap gap-3">
+                    <Chip color="default">
+                      Task Date:{" "}
+                      {new Date(
+                        taskDetails?.postYear,
+                        taskDetails?.postMonth,
+                        taskDetails?.postDate
+                      ).toLocaleDateString()}
+                    </Chip>
+
+                    <Chip color="secondary">
+                      Amount:{" "}
+                      {parseFloat(taskDetails?.amount.toString()) /
+                        1000_000_000}{" "}
+                      SOL
+                    </Chip>
+
+                    <Chip color="primary">{taskDetails?.category}</Chip>
+                    <Chip color="success">
+                      Task Status: {taskDetails?.done ? "Completed" : "Open"}
+                    </Chip>
+                    <Chip color="warning">MaxVotes: {MaxVotes}</Chip>
+                  </div>
+                </AccordionItem>
+              </Accordion>
+            </motion.div>
+          </div>
         </div>
-        <div className="flex justify-center items-center gap-2">
-          <Button
-            isIconOnly
-            color="default"
-            onPress={onOpen}
-            className="text-xl bg-slate-700 text-white"
-          >
-            ?
-          </Button>
-          {taskDetails.category == "UI_UX_Design" &&
-            categoryDetails?.Design_Title}
-          {taskDetails.category == "Idea_Product" &&
-            categoryDetails?.Idea_Title}
-          {taskDetails.category == "Youtube_Thumbnail" &&
-            categoryDetails?.Youtube_Thumbnail_Title}
-          {taskDetails.category == "Miscellaneous" && categoryDetails?.title}
-          <Chip color="primary" className="bg-slate-700 text-white">
-            {taskDetails?.category}
-          </Chip>
+
+        <div className="flex flex-wrap justify-center items-center gap-5">
+          {taskDetails.category === "UI_UX_Design" &&
+            categoryDetails?.Design_Url.map((url, idx) => {
+              return (
+                <Task
+                  key={idx}
+                  imageUrl={url ?? ""}
+                  amount={taskDetails?.amount}
+                  type="website"
+                  votes={MaxVotes}
+                  category={taskDetails?.category ?? ""}
+                  VotingType={votingDetails?.type ?? ""}
+                  votingTypeDetails={particularVotingArr}
+                  responses={categoryDetails?.Responses}
+                  idx={idx}
+                />
+              );
+            })}
+          {taskDetails.category === "Idea_Product" &&
+            categoryDetails?.Idea_Images.map((url, idx) => {
+              return (
+                <Task
+                  amount={taskDetails?.amount}
+                  key={idx}
+                  imageUrl={url ?? ""}
+                  type="image"
+                  votes={MaxVotes}
+                  category={taskDetails?.category ?? ""}
+                  VotingType={votingDetails?.type ?? ""}
+                  votingTypeDetails={particularVotingArr}
+                  responses={categoryDetails?.Responses}
+                  idx={idx}
+                />
+              );
+            })}
+          {taskDetails.category === "Youtube_Thumbnail" &&
+            categoryDetails?.Youtube_Thumbnail_Images.map((url, idx) => {
+              return (
+                <Task
+                  amount={taskDetails?.amount}
+                  key={idx}
+                  imageUrl={url ?? ""}
+                  type="image"
+                  votes={MaxVotes}
+                  category={taskDetails?.category ?? ""}
+                  VotingType={votingDetails?.type ?? ""}
+                  votingTypeDetails={particularVotingArr}
+                  responses={categoryDetails?.Responses}
+                  idx={idx}
+                />
+              );
+            })}
+          {taskDetails.category === "Miscellaneous" &&
+            categoryDetails?.Images.map((url, idx) => {
+              return (
+                <Task
+                  amount={taskDetails?.amount}
+                  key={idx}
+                  imageUrl={url ?? ""}
+                  type="image"
+                  votes={MaxVotes}
+                  category={taskDetails?.category ?? ""}
+                  VotingType={votingDetails?.type ?? ""}
+                  votingTypeDetails={particularVotingArr}
+                  responses={categoryDetails?.Responses}
+                  idx={idx}
+                />
+              );
+            })}
+          {taskDetails.category === "Miscellaneous" &&
+            categoryDetails?.Design_Url.map((url, idx) => {
+              return (
+                <Task
+                  amount={taskDetails?.amount}
+                  key={idx}
+                  imageUrl={url ?? ""}
+                  type="website"
+                  votes={MaxVotes}
+                  category={taskDetails?.category ?? ""}
+                  VotingType={votingDetails?.type ?? ""}
+                  votingTypeDetails={particularVotingArr}
+                  responses={categoryDetails?.Responses}
+                  idx={idx}
+                />
+              );
+            })}
+          {taskDetails.category === "Data_Labelling" &&
+            categoryDetails?.image_url.map((url, idx) => {
+              return (
+                <Task
+                  amount={taskDetails?.amount}
+                  key={idx}
+                  imageUrl={url ?? ""}
+                  type="image"
+                  votes={MaxVotes}
+                  category={taskDetails?.category ?? ""}
+                  VotingType={votingDetails?.type ?? ""}
+                  votingTypeDetails={particularVotingArr}
+                  responses={categoryDetails?.Responses}
+                  idx={idx}
+                />
+              );
+            })}
         </div>
-        <div className="flex justify-center items-center gap-2">
-          <Chip color="success" className="text-lg bg-slate-700 text-white">
-            Task Status: {taskDetails?.done === true ? "Completed" : "Open"}
-          </Chip>
-          <Chip color="warning" className="text-lg bg-slate-700 text-white">
-            MaxVotes: {MaxVotes}
-          </Chip>
-        </div>
-      </div>
-      <div className="flex flex-wrap justify-center items-center gap-5">
-        {taskDetails.category === "UI_UX_Design" &&
-          categoryDetails?.Design_Url.map((url, idx) => {
-            return (
-              <Task
-                key={idx}
-                imageUrl={url ?? ""}
-                amount={taskDetails?.amount}
-                type="website"
-                votes={MaxVotes}
-                category={taskDetails?.category ?? ""}
-                VotingType={votingDetails?.type ?? ""}
-                votingTypeDetails={particularVotingArr}
-                responses={categoryDetails?.Responses}
-                idx={idx}
-              />
-            );
-          })}
-        {taskDetails.category === "Idea_Product" &&
-          categoryDetails?.Idea_Images.map((url, idx) => {
-            return (
-              <Task
-                amount={taskDetails?.amount}
-                key={idx}
-                imageUrl={url ?? ""}
-                type="image"
-                votes={MaxVotes}
-                category={taskDetails?.category ?? ""}
-                VotingType={votingDetails?.type ?? ""}
-                votingTypeDetails={particularVotingArr}
-                responses={categoryDetails?.Responses}
-                idx={idx}
-              />
-            );
-          })}
-        {taskDetails.category === "Youtube_Thumbnail" &&
-          categoryDetails?.Youtube_Thumbnail_Images.map((url, idx) => {
-            return (
-              <Task
-                amount={taskDetails?.amount}
-                key={idx}
-                imageUrl={url ?? ""}
-                type="image"
-                votes={MaxVotes}
-                category={taskDetails?.category ?? ""}
-                VotingType={votingDetails?.type ?? ""}
-                votingTypeDetails={particularVotingArr}
-                responses={categoryDetails?.Responses}
-                idx={idx}
-              />
-            );
-          })}
-        {taskDetails.category === "Miscellaneous" &&
-          categoryDetails?.Images.map((url, idx) => {
-            return (
-              <Task
-                amount={taskDetails?.amount}
-                key={idx}
-                imageUrl={url ?? ""}
-                type="image"
-                votes={MaxVotes}
-                category={taskDetails?.category ?? ""}
-                VotingType={votingDetails?.type ?? ""}
-                votingTypeDetails={particularVotingArr}
-                responses={categoryDetails?.Responses}
-                idx={idx}
-              />
-            );
-          })}
-        {taskDetails.category === "Miscellaneous" &&
-          categoryDetails?.Design_Url.map((url, idx) => {
-            return (
-              <Task
-                amount={taskDetails?.amount}
-                key={idx}
-                imageUrl={url ?? ""}
-                type="website"
-                votes={MaxVotes}
-                category={taskDetails?.category ?? ""}
-                VotingType={votingDetails?.type ?? ""}
-                votingTypeDetails={particularVotingArr}
-                responses={categoryDetails?.Responses}
-                idx={idx}
-              />
-            );
-          })}
-        {taskDetails.category === "Data_Labelling" &&
-          categoryDetails?.image_url.map((url, idx) => {
-            return (
-              <Task
-                amount={taskDetails?.amount}
-                key={idx}
-                imageUrl={url ?? ""}
-                type="image"
-                votes={MaxVotes}
-                category={taskDetails?.category ?? ""}
-                VotingType={votingDetails?.type ?? ""}
-                votingTypeDetails={particularVotingArr}
-                responses={categoryDetails?.Responses}
-                idx={idx}
-              />
-            );
-          })}
       </div>
     </div>
   );
