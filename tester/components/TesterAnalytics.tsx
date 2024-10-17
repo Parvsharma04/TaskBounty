@@ -1,16 +1,16 @@
 "use client";
 
+import { setValue } from "@/redux/slices/BountiesLeftSlice";
 import { BACKEND_URL, SubmissionProp, TesterData } from "@/utils";
 import { useWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useIsMobile } from "../libs/useIsMobile";
 import Graph from "./charts/Graph";
 import Loading from "./Loading";
 import TesterDash from "./TesterDash";
-import { useDispatch } from "react-redux";
-import { setValue } from "@/redux/slices/BountiesLeftSlice";
 
 export const TesterAnalytics: React.FC = () => {
   const wallet = useWallet();
@@ -46,6 +46,7 @@ export const TesterAnalytics: React.FC = () => {
         }
       );
       const data = response.data;
+      console.log(response.data)
       dispatch(setValue(data.testerData.tasksLeft))
       setTotalEarned(
         parseFloat(data.testerData.pending_amount) +

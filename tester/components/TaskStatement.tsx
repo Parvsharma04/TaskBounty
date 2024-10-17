@@ -22,6 +22,8 @@ const TaskStatement: React.FC<TaskStatementProps> = ({
         return <Chip color="danger">YouTube Thumbnail</Chip>;
       case "Miscellaneous":
         return <Chip color="primary">Miscellaneous</Chip>;
+      case "Data_Labelling":
+        return <Chip color="primary">Data Labelling</Chip>;
       default:
         return null;
     }

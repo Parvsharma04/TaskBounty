@@ -70,6 +70,12 @@ export const getNextTask = async (userId: number) => {
             id: task.miscellaneous_id!,
           },
         });
+      } else if (task?.category === "Data_Labelling") {
+        categoryDetails = await prismaClient.data_Labelling.findFirst({
+          where: {
+            id: task.data_labelling_id!,
+          },
+        });
       }
 
       if (!task?.Voting_Type_id) {
@@ -140,10 +146,19 @@ export const getNextTask = async (userId: number) => {
       } else if (
         category === "Miscellaneous" &&
         categoryDetails &&
-        "title" in categoryDetails
+        "title" in categoryDetails &&
+        "description" in categoryDetails
       ) {
         title = categoryDetails.title;
-        description = categoryDetails.Description;
+        description = categoryDetails.description;
+      } else if (
+        category === "Data_Labelling" &&
+        categoryDetails &&
+        "title" in categoryDetails &&
+        "description" in categoryDetails
+      ) {
+        title = categoryDetails.title;
+        description = categoryDetails.description;
       }
 
       let options = [];
@@ -218,6 +233,25 @@ export const getNextTask = async (userId: number) => {
           id: uuidv4(),
           image_url: modifiedImages,
         });
+      } else if (
+        category === "Data_Labelling" &&
+        categoryDetails &&
+        "image_url" in categoryDetails
+      ) {
+        const images =
+          "image_url" in categoryDetails ? categoryDetails.image_url : [];
+
+        const modifiedImages = images.map((image) => {
+          return {
+            type: "image_url",
+            image_url: image,
+          };
+        });
+
+        options.push({
+          id: uuidv4(),
+          image_url: modifiedImages,
+        });
       }
 
       return {
@@ -231,9 +265,9 @@ export const getNextTask = async (userId: number) => {
         votingTypeDetails,
       };
     }
-  } catch (error:any) {
+  } catch (error: any) {
     return {
-      message: "error"
-    }
+      message: "error",
+    };
   }
 };

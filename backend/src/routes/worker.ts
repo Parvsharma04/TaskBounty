@@ -129,7 +129,17 @@ router.post("/submission", workerMiddleware, async (req, res) => {
         where: {
           id: Number(userId),
         },
+        select: {
+          submissions: true,
+          address: true,
+          verified: true,
+          pending_amount: true,
+          locked_amount: true,
+          withdrawn: true,
+          payouts: true,
+        },
       });
+      console.log(worker);
       if (!worker) {
         return res.status(403).json({
           message: "Worker not found",
@@ -313,18 +323,32 @@ router.post("/submission", workerMiddleware, async (req, res) => {
 
           // Update worker
           console.log("Updating worker");
+          if (worker.submissions.length == 49) {
+            await tx.worker.update({
+              where: {
+                id: userId,
+              },
+              data: {
+                verified: true,
+              },
+            });
+          }
+
           await tx.worker.update({
             where: {
               id: userId,
             },
             data: {
-              pending_amount: (
-                Number(worker.pending_amount) + Number(amount)
-              ).toString(),
+              verified: (worker.submissions.length === 49) ? true : worker.verified,
+              pending_amount:
+                worker.submissions.length >= 50
+                  ? (Number(worker.pending_amount) + Number(amount)).toString()
+                  : worker.pending_amount.toString(),
             },
           });
           return submission;
         });
+
         const nextTask = await getNextTask(Number(userId));
         res.status(200).json({
           nextTask,
@@ -579,6 +603,12 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
 
   try {
     // Fetch the worker's data, including submissions and payouts
+    const worker = await prismaClient.worker.findUnique({
+      where: {
+        address: String(publicKey), // Match the worker's address to the provided public key
+      },
+    });
+
     const workerData = await prismaClient.worker.findUnique({
       where: {
         address: String(publicKey), // Match the worker's address to the provided public key
@@ -634,6 +664,7 @@ router.get("/getTesterData", workerMiddleware, async (req, res) => {
 
     // Return response with worker's data, calculated task count, and tasks left
     res.json({
+      worker: worker,
       testerData: {
         pending_amount: workerData.pending_amount,
         locked_amount: workerData.locked_amount,

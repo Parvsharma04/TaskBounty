@@ -16,6 +16,7 @@ model User {
 model Worker {
   id             Int          @id @default(autoincrement())
   address        String       @unique
+  verified       Boolean      @default(false)
   submissions    Submission[]
   pending_amount String // amount in lamports (* 10^9)
   locked_amount  String
