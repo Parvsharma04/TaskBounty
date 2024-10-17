@@ -67,7 +67,7 @@ export default function Page({
     null
   );
   const [votingTypeDetails, setVotingTypeDetails] = useState([]);
-  const [customLoader, setCustomLoader] = useState(false);
+  const [customLoader, setCustomLoader] = useState(true);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [MaxVotes, setMaxVotes] = useState(0);
   const wallet = useWallet();
@@ -79,6 +79,7 @@ export default function Page({
       taskOption: number;
     }[]
   >([]);
+  const [loaded, setLoaded] = useState(false);
 
   const containerVariants = {
     hidden: { opacity: 0, scale: 0.9 },
@@ -121,6 +122,11 @@ export default function Page({
           );
           setParticularVotingArr(newVotingArr);
         }
+
+        if (!loaded) {
+          setLoaded(true); // Mark as loaded
+          setCustomLoader(false); // Disable loader
+        }
       } catch (error) {
         console.error("Error fetching task details:", error);
       }
@@ -145,7 +151,6 @@ export default function Page({
         },
       }
     );
-    console.log(response.data);
     return response.data;
   }
 
