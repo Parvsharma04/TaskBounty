@@ -148,7 +148,11 @@ const NavBar = () => {
           <NavbarItem>
             <AnimatedLink title="Home" href="/" key="home" />
           </NavbarItem>
-          <Dropdown>
+          <Dropdown
+            classNames={{
+              base: "p-0 rounded shadow-lg",
+            }}
+          >
             <NavbarItem>
               <DropdownTrigger>
                 <Button
@@ -164,7 +168,7 @@ const NavBar = () => {
             </NavbarItem>
             <DropdownMenu
               aria-label="Features"
-              className="w-[340px] bg-gray-800 p-0"
+              className="w-[340px] bg-gray-800 border-gray-800"
               itemClasses={{
                 base: "gap-4",
               }}
@@ -247,7 +251,7 @@ const NavBar = () => {
               Home
             </Link>
           </NavbarMenuItem>
-          <NavbarMenuItem key="Features">
+          <NavbarMenuItem key="Features" className="b-0">
             <Dropdown>
               <NavbarItem>
                 <DropdownTrigger>
