@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
+import { useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ChartAnalytics from "./ChartAnalytics";
@@ -23,6 +24,9 @@ function TaskAnalytics() {
   const wallet = useWallet();
   const Router = useRouter();
   const [Loading, setLoading] = useState(false);
+  const plan = useSelector((state: any) => state.plan)
+  const amount = useSelector((state: any) => state.amount)
+  const duration = useSelector((state: any) => state.duration)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,6 +69,7 @@ function TaskAnalytics() {
     };
 
     fetchData();
+    console.log(plan, amount, duration)
   }, []);
   useEffect(() => {
     if (!wallet.connected) {

@@ -935,21 +935,25 @@ router.get("/user", authMiddleware, async (req, res) => {
   try {
     //@ts-ignore
     const userId = req.userId;
+    console.log(userId);
     const user = await prismaClient.user.findFirst({
       where: {
         id: Number(userId),
       },
     });
-
-    const plan = await prismaClient.plan.findFirst({
-      where:{
-        id: user?.Plan_id!
-      }
-    })
-
-    res.json({
-      plan
-    });
+    console.log(user);
+    if (user?.Plan_id != null) {
+      const plan = await prismaClient.plan.findFirst({
+        where: {
+          id: user?.Plan_id!,
+        },
+      });
+      res.json({
+        plan,
+      });
+    } else {
+      res.json({ msg: "No plan activated" });
+    }
   } catch (error) {
     res.status(500).json(error);
   }

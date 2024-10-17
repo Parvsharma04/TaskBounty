@@ -1,4 +1,7 @@
 "use client";
+import { AmountIncrement } from "@/redux/slices/MembershipAmountSlice ";
+import { durationIncrement } from "@/redux/slices/MembershipDurationSlice";
+import { planIncrement } from "@/redux/slices/MembershipPlanSlice";
 import { RootState } from "@/redux/store";
 import { BACKEND_URL } from "@/utils";
 import {
@@ -61,6 +64,9 @@ const NavBar = () => {
         Authorization: localStorage.getItem("token"),
       },
     });
+    dispatch(planIncrement())
+    dispatch(AmountIncrement(response.data.amount))
+    dispatch(durationIncrement(response.data.duration))
     console.log(response.data)
   }
 
