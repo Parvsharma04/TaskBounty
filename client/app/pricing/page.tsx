@@ -192,10 +192,10 @@ export default function PricingPage() {
                     {plan.price != "0" ? (
                       <button
                         onClick={async () => {
-                          setTitle(plan.name);
-                          setAmount(plan.price);
+                          setTitle(pricingPlans[index].name);
+                          setAmount(pricingPlans[index].price);
                           setDuration(1);
-                          makePayment(Number(plan.price));
+                          makePayment(Number(pricingPlans[index].price));
                         }}
                         className={` w-full py-2 px-4 rounded transition-colors duration-300 ${
                           plan.popular
