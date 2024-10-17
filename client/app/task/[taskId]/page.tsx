@@ -130,7 +130,6 @@ export default function Page({
       }
     );
     // setCustomLoader(false);
-    console.log(response.data)
     return response.data;
   }
   const GudelinesArr = [categoryDetails?.Description ?? "No Description"];

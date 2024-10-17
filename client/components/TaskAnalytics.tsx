@@ -48,7 +48,6 @@ function TaskAnalytics() {
         }
 
         setAllTasks(res.data.tasksDetails);
-        console.log(res.data)
         DataManipulation(res.data.tasksDetails);
       } catch (err: any) {
         toast.error(err.response.data.message, {

@@ -322,6 +322,14 @@ router.get("/getAllTask", authMiddleware, async (req, res) => {
             where: { id: task.miscellaneous_id },
           });
           title = categoryDetails?.title ?? "No Title";
+        } else if (category === Category.Data_Labelling) {
+          if (!task.data_labelling_id) {
+            throw new Error("You don't have access to this task");
+          }
+          categoryDetails = await prismaClient.data_Labelling.findFirst({
+            where: { id: task.data_labelling_id },
+          });
+          title = categoryDetails?.title ?? "No Title";
         }
 
         // Push task details to resTasksDetails array
@@ -374,8 +382,6 @@ router.post("/task", authMiddleware, async (req, res) => {
         message: "User not found",
       });
     }
-
-    console.log(parseData.data);
 
     console.log("dummy delay for 10 sec active");
     //! add dummy delay for 10 sec
@@ -721,7 +727,6 @@ router.post("/task", authMiddleware, async (req, res) => {
               });
               return task;
             } else if (category == Category.Data_Labelling) {
-              console.log(parseData.data);
               categoryModel = await tx.data_Labelling.create({
                 data: {
                   title: parseData.data.title,
