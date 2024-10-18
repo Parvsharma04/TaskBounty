@@ -1,6 +1,7 @@
 "use client";
 
 import { decrement } from "@/redux/slices/BountiesLeftSlice";
+import { increment } from "@/redux/slices/ReputationSlice";
 import { BACKEND_URL, Task } from "@/utils";
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -45,6 +46,7 @@ export default function NextTask() {
   const [taskVoteOptionSelect, setTaskVoteOptionSelect] = useState(0);
   const dispatch = useDispatch();
   const tasksLeft = useSelector((state: any) => state.BountiesLeft.value);
+  const reputation = useSelector((state: any) => state.Reputation);
 
   useEffect(() => {
     if (!wallet.connected) {
@@ -109,6 +111,7 @@ export default function NextTask() {
       if (response.status === 200) {
         toast.success("Task completed successfully!");
         dispatch(decrement());
+        dispatch(increment());
       }
 
       const nextTask = response.data.nextTask;
