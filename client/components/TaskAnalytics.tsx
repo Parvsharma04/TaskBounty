@@ -8,7 +8,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ChartAnalytics from "./ChartAnalytics";
@@ -18,15 +17,21 @@ import TaskSummary from "./TaskSummary";
 function TaskAnalytics() {
   const [AllTasks, setAllTasks] = useState([]);
   const [amtSpent, setAmtSpent] = useState("0.0");
+  const [plan, setPlan] = useState([]);
   const [totalTasks, setTotalTasks] = useState(0);
   const [doneTasks, setDoneTasks] = useState(0);
   const [pendingTasks, setPendingTasks] = useState(0);
   const wallet = useWallet();
   const Router = useRouter();
   const [Loading, setLoading] = useState(false);
-  const plan = useSelector((state: any) => state.plan)
-  const amount = useSelector((state: any) => state.amount)
-  const duration = useSelector((state: any) => state.duration)
+  // const plan = useSelector((state: any) => {
+  //   state.membershipPlan.plan;
+  //   console.log(state);
+  // });
+  // const amount = useSelector((state: any) => state.membershipAmount.amount);
+  // const duration = useSelector(
+  //   (state: any) => state.membershipDuration.duration
+  // );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,7 +39,7 @@ function TaskAnalytics() {
         setLoading(true);
         let res = await axios.get(`${BACKEND_URL}/v1/user/getAllTask`, {
           headers: {
-            Authorization: localStorage.getItem("token"),
+            authorization: localStorage.getItem("token"),
           },
         });
 
@@ -53,6 +58,13 @@ function TaskAnalytics() {
 
         setAllTasks(res.data.tasksDetails);
         DataManipulation(res.data.tasksDetails);
+        let userPlan = await axios.get(`${BACKEND_URL}/v1/user/user`, {
+          headers: {
+            authorization: localStorage.getItem("token"),
+          },
+        });
+        setPlan(userPlan.data)
+        console.log(userPlan)
       } catch (err: any) {
         toast.error(err.response.data.message, {
           position: "top-left",
@@ -69,7 +81,7 @@ function TaskAnalytics() {
     };
 
     fetchData();
-    console.log(plan, amount, duration)
+    // console.log(plan, amount, duration);
   }, []);
   useEffect(() => {
     if (!wallet.connected) {
@@ -224,6 +236,7 @@ function TaskAnalytics() {
           prevTotalTasks={1}
           prevDoneTasks={3}
           prevPendingTasks={3}
+          plan={plan}
         />
       )}
       {!Loading && (

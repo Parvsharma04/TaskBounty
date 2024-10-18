@@ -1,12 +1,16 @@
 "use client";
 
 import TransactionLoadingPage from "@/components/TransactionLoading";
+import { AmountIncrement } from "@/redux/slices/MembershipAmountSlice ";
+import { durationIncrement } from "@/redux/slices/MembershipDurationSlice";
+import { planIncrement } from "@/redux/slices/MembershipPlanSlice";
 import { BACKEND_URL, PARENT_WALLET_ADDRESS } from "@/utils";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import axios from "axios";
 import Link from "next/link";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -52,6 +56,7 @@ export default function PricingPage() {
   const [transactionLoader, setTransactionLoader] = useState(false);
   const wallet = useWallet();
   const { connection } = useConnection();
+  const dispatch = useDispatch();
 
   async function helper(title: any, amount: any, duration: any) {
     const response = await axios.post(
@@ -69,10 +74,62 @@ export default function PricingPage() {
     );
   }
 
+  // async function makePayment(tasksAmt: number) {
+  //   setTransactionLoader(true);
+  //   try {
+  //     // making the transaction initilization by adding program which contains fromPubkey, toPubkey and lamports
+  //     const transaction = new Transaction().add(
+  //       SystemProgram.transfer({
+  //         fromPubkey: wallet.publicKey!,
+  //         toPubkey: new PublicKey(PARENT_WALLET_ADDRESS),
+  //         lamports: 1000000000 * tasksAmt,
+  //       })
+  //     );
+
+  //     // getting the latest blockhash and context slot in order to register the transaction on network
+  //     const {
+  //       context: { slot: minContextSlot },
+  //       value: { blockhash, lastValidBlockHeight },
+  //     } = await connection.getLatestBlockhashAndContext();
+
+  //     // sending the transaction to the network and getting the signature
+  //     const signature = await wallet.sendTransaction(transaction, connection, {
+  //       minContextSlot,
+  //     });
+
+  //     // confirming the transaction by providing the blockhash, lastValidBlockHeight and signature
+  //     await connection.confirmTransaction({
+  //       blockhash,
+  //       lastValidBlockHeight,
+  //       signature,
+  //     });
+
+  //     toast.success("Transaction successful");
+  //   } catch (err) {
+  //     toast.error("Transaction failed");
+  //   }
+  //   setTransactionLoader(false);
+  // }
+  const handleBuyNow = async (index: any) => {
+    const selectedPlan = pricingPlans[index];
+
+    // Initiate payment
+    const paymentStatus = await makePayment(Number(selectedPlan.price));
+
+    // If payment was successful, call the helper function
+    if (paymentStatus) {
+      await helper(selectedPlan.name, selectedPlan.price, 1);
+      console.log("Plan updated on backend.");
+      dispatch(planIncrement());
+      dispatch(AmountIncrement(selectedPlan.price.toString()));
+      dispatch(durationIncrement(1));
+      // Dispatch actions if needed here
+    }
+  };
+
   async function makePayment(tasksAmt: number) {
     setTransactionLoader(true);
     try {
-      // making the transaction initilization by adding program which contains fromPubkey, toPubkey and lamports
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: wallet.publicKey!,
@@ -81,18 +138,15 @@ export default function PricingPage() {
         })
       );
 
-      // getting the latest blockhash and context slot in order to register the transaction on network
       const {
         context: { slot: minContextSlot },
         value: { blockhash, lastValidBlockHeight },
       } = await connection.getLatestBlockhashAndContext();
 
-      // sending the transaction to the network and getting the signature
       const signature = await wallet.sendTransaction(transaction, connection, {
         minContextSlot,
       });
 
-      // confirming the transaction by providing the blockhash, lastValidBlockHeight and signature
       await connection.confirmTransaction({
         blockhash,
         lastValidBlockHeight,
@@ -100,19 +154,14 @@ export default function PricingPage() {
       });
 
       toast.success("Transaction successful");
+      setTransactionLoader(false);
+      return true; // Payment succeeded
     } catch (err) {
       toast.error("Transaction failed");
+      setTransactionLoader(false);
+      return false; // Payment failed
     }
-    setTransactionLoader(false);
   }
-  const handleBuyNow = (index: any) => {
-    const selectedPlan = pricingPlans[index];
-    helper(selectedPlan.name, selectedPlan.price, 1);
-    // Ensure state is updated before calling makePayment
-    setTimeout(() => {
-      makePayment(Number(selectedPlan.price));
-    }, 0); // Delay execution of makePayment slightly
-  };
 
   return (
     <>

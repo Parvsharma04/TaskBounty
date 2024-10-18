@@ -1,8 +1,4 @@
 "use client";
-import { AmountIncrement } from "@/redux/slices/MembershipAmountSlice ";
-import { durationIncrement } from "@/redux/slices/MembershipDurationSlice";
-import { planIncrement } from "@/redux/slices/MembershipPlanSlice";
-import { RootState } from "@/redux/store";
 import { BACKEND_URL } from "@/utils";
 import {
   Activity,
@@ -35,7 +31,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useReducer, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import "../styles/home.css";
 import AnimatedLink from "./AnimatedLink";
 
@@ -52,11 +47,11 @@ const NavBar = () => {
   const navigate = useRouter();
   const wallet = useWallet();
   const [isMenuOpen, setIsMenuOpen] = useReducer((current) => !current, false);
-  const plan = useSelector((state: RootState) => state.membershipPlan);
-  const amount = useSelector((state: RootState) => state.membershipAmount);
-  const duration = useSelector((state: RootState) => state.membershipDuration)
-  const dispatch = useDispatch()
-
+  // const plan = useSelector((state: RootState) => state.membershipPlan);
+  // const amount = useSelector((state: RootState) => state.membershipAmount);
+  // const duration = useSelector((state: RootState) => state.membershipDuration)
+  // const dispatch = useDispatch()
+  const [plan, setPlan] = useState([]);
 
   async function helper() {
     const response = await axios.get(`${BACKEND_URL}/v1/user/user`, {
@@ -64,10 +59,12 @@ const NavBar = () => {
         Authorization: localStorage.getItem("token"),
       },
     });
-    dispatch(planIncrement())
-    dispatch(AmountIncrement(response.data.amount))
-    dispatch(durationIncrement(response.data.duration))
-    console.log(response.data)
+    setPlan(response.data.plan);
+    console.log(plan)
+    // dispatch(planIncrement())
+    // dispatch(AmountIncrement(response.data.amount))
+    // dispatch(durationIncrement(response.data.duration))
+    // console.log(response.data)
   }
 
   useEffect(() => {
@@ -252,9 +249,11 @@ const NavBar = () => {
               key="transaction-history"
             />
           </NavbarItem>
-          <NavbarItem>
-            <AnimatedLink title="Pricing" href="/pricing" key="pricing" />
-          </NavbarItem>
+          {!plan?.length && (
+            <NavbarItem>
+              <AnimatedLink title="Pricing" href="/pricing" key="pricing" />
+            </NavbarItem>
+          )}
           <NavbarItem>
             <AnimatedLink title="Free SOLs" href="/freeSols" key="free-sols" />
           </NavbarItem>
