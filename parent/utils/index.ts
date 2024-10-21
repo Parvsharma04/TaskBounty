@@ -1,2 +1,2 @@
-export const CLIENT_URL = "https://taskbounty-deploy.vercel.app/";
-export const WORKER_URL = "https://taskbounty-worker.vercel.app/";
+export const CLIENT_URL = "https://client.taskbounty.in/";
+export const WORKER_URL = "https://worker.taskbounty.in/";
