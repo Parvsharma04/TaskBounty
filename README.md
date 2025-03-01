@@ -1,166 +1,177 @@
 # TaskBounty
 
-![Mockup](/TaskBountyMockup.png)
+![TaskBounty Mockup](/TaskBountyMockup.png)
 
-A decentralized, blockchain-based platform that allows users to post tasks, set bounties, and complete tasks to earn rewards without relying on a central authority. This project leverages Web3 technologies to provide a secure, user-owned task management system. Currently, the app is still under beta testing, which is why it has been deployed on Devnet for development and testing purposes.
+A **decentralized, blockchain-based platform** where users can **post tasks, set bounties, and complete tasks** to earn rewards—without relying on a central authority. TaskBounty leverages **Web3 technologies** to ensure a **secure, user-owned** task management system. 
 
-## Table of Contents
+> 🚀 The app is currently in **beta testing** and deployed on **Devnet** for development and testing purposes.
+
+![GitHub Repo stars](https://img.shields.io/github/stars/Parvsharma04/TaskBounty?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/Parvsharma04/TaskBounty?style=for-the-badge)
+![GitHub contributors](https://img.shields.io/github/contributors/Parvsharma04/TaskBounty?style=for-the-badge)
+![GitHub commits](https://img.shields.io/github/commit-activity/t/Parvsharma04/TaskBounty?style=for-the-badge)
+
+---
+
+## ⭐ Star This Project
+
+If you find this project useful, **support us by giving a star!** 🌟  
+Click the **Star** button at the top-right of the repository to stay updated and show appreciation.
+
+---
+
+## 📌 Table of Contents
 
 - [Introduction](#introduction)
 - [Features](#features)
 - [Technology Stack](#technology-stack)
+- [Getting Started](#getting-started)
 - [Contributing](#contributing)
 - [License](#license)
 
-## Introduction
+---
 
-This project is a decentralized application (DApp) that enables users to create tasks, set bounties, and complete tasks for rewards. The decentralized nature of this platform ensures that users have full ownership of their tasks and rewards, with no central entity controlling the platform.
+## 🎯 Introduction
 
-## Features
+TaskBounty is a **decentralized application (DApp)** designed to empower users to **create tasks, set bounties, and complete tasks for rewards**—all while maintaining full ownership of their data. 
 
-- **Decentralized User Authentication**: Secure and private user authentication using wallets (e.g., MetaMask).
-- **Post Tasks**: Users can create, edit, and delete their tasks stored on the blockchain.
-- **Set and Claim Bounties**: Users can set bounties for tasks, and other users can claim them upon completion.
-- **Censorship Resistance**: Task and bounty data is stored on a decentralized network, making it resistant to censorship.
-- **User-Owned Data**: Users have full ownership of their data, including tasks and bounties.
+The decentralized nature of the platform ensures **no central entity controls** your tasks or rewards, providing a **secure, censorship-resistant** environment for users worldwide.
 
-## Technology Stack
+---
 
-<!-- - **Smart Contracts**: Solidity -->
+## 🌟 Features
 
-- **Blockchain**: Solana
-- **Frontend**: Next.js, Web3.js
-- **Backend**: Node.js, Express.js
-- **Database**: PostgreSQL
-- **Wallet Integration**: MetaMask, Phantom, Solflare, Alpha
+✅ **Decentralized Authentication** – Secure login using wallets like **MetaMask, Phantom, Solflare, and Alpha**.  
+✅ **Post & Manage Tasks** – Users can **create, edit, and delete** tasks on the blockchain.  
+✅ **Set & Claim Bounties** – Tasks can have **bounty rewards**, which other users can claim upon completion.  
+✅ **Censorship Resistance** – All task and bounty data is stored **decentralized**, making it immune to censorship.  
+✅ **User-Owned Data** – No centralized control; users **own their data** and assets.
 
-## Prerequisites
+---
 
-- [Node.js](https://nodejs.org/) and npm installed
-- [Phantom](https://phantom.app/), [Solflare](https://solflare.com/), or [Alpha](https://alpha.solana.com/) wallet extensions for Solana
+## 🛠 Technology Stack
 
+🔹 **Blockchain**: Solana  
+🔹 **Frontend**: Next.js, Web3.js  
+🔹 **Backend**: Node.js, Express.js  
+🔹 **Database**: PostgreSQL  
+🔹 **Wallet Integration**: MetaMask, Phantom, Solflare, Alpha  
 
+---
 
-## Contributing
+## 🚀 Getting Started
 
-Thank you for your interest in contributing to TaskBounty! To set up the project for development and start contributing, follow the steps below:
+### ⚙️ Prerequisites
 
-### Step 1: Fork and Clone the Repository
+Ensure you have the following installed:
+- [Node.js](https://nodejs.org/) & npm
+- Wallet extension (e.g., [Phantom](https://phantom.app/), [Solflare](https://solflare.com/), [Alpha](https://alpha.solana.com/))
 
-1. Fork the repository on GitHub to your account.
-2. Clone your forked repository locally using the command:
+### 🏗 Setup & Installation
 
-   ```bash
-   git clone git@github.com:Parvsharma04/TaskBounty.git
-   ```
+#### Step 1: Clone the Repository
 
-3. Navigate into the project directory:
+```bash
+git clone git@github.com:Parvsharma04/TaskBounty.git
+cd TaskBounty
+```
 
-   ```bash
-   cd TaskBounty
-   ```
+#### Step 2: Set Up Backend
 
-### Step 2: Set Up the Backend
+```bash
+cd backend
+npm install
+npm run dev
+```
 
-1. Navigate to the backend directory:
+> Backend will be running at `http://localhost:3000`.
 
-   ```bash
-   cd backend
-   ```
+#### Step 3: Set Up Frontend (Parent)
 
-2. Install dependencies and run the app:
+```bash
+cd ../parent
+npm install
+npm run dev
+```
 
-   ```bash
-   npm install
-   npm run dev
-   ```
+> Frontend will be available at `http://localhost:3001`.
 
-   The backend should now be running on `http://localhost:3000`.
+#### Step 4: Set Up Client Frontend
 
-### Step 3: Set Up the Frontend
+```bash
+cd ../client
+npm install
+npm run dev
+```
 
-1. Navigate to the frontend client directories:
+> Client frontend will be running at `http://localhost:3002`.
 
-   ```bash
-   cd ../parent
-   ```
+#### Step 5: Set Up Worker/Tester Frontend
 
-2. Install dependencies and run the app:
+```bash
+cd ../tester
+npm install
+npm run dev
+```
 
-   ```bash
-   npm install
-   npm run dev
-   ```
+> Worker/Tester frontend will be running at `http://localhost:3003`.
 
-   The frontend app should be running on `http://localhost:3001`.
+### 🔗 Connect Wallet & Switch to Devnet
 
-4. Similarly, navigate to the `Client` directory:
+1. Install a supported wallet extension.
+2. Switch the network from **Mainnet** to **Devnet**.
+3. Connect your wallet to the DApp.
 
-   ```bash
-   cd ../client
-   ```
+### ✅ Running Tests
 
-5. Install dependencies and run the app:
+Before pushing any changes, ensure the build is error-free:
 
-   ```bash
-   npm install
-   npm run dev
-   ```
+```bash
+npm run build
+```
 
-   The secondary frontend app should be running on `http://localhost:3002`.
+---
 
-6. Similarly, navigate to the `Worker/Tester` directory:
+## 🤝 Contributing
 
-   ```bash
-   cd ../tester
-   ```
+🚀 We welcome contributions! Follow these steps to get started:
 
-7. Install dependencies and run the app:
+### 🛠 Development Workflow
 
-   ```bash
-   npm install
-   npm run dev
-   ```
+#### Step 1: Fork & Clone
 
-   The secondary frontend app should be running on `http://localhost:3003`.
+```bash
+git clone git@github.com:your-username/TaskBounty.git
+cd TaskBounty
+```
 
-### Step 4: Set Up Wallet and Connect to Devnet
+#### Step 2: Create a Branch
 
-1. Install any of the wallets on your browser and create a wallet if you haven't already.
-2. Shift the netork from Mainnet to Devnet.
-3. Connect your wallet to the DApp after running the frontend.
+```bash
+git checkout -b feature-branch
+```
 
-### Step 5: Testing
+#### Step 3: Make Changes & Commit
 
-1. Run tests using:
+```bash
+git add .
+git commit -m "Description of changes"
+git push origin feature-branch
+```
 
-   ```bash
-   npm run build
-   ```
+#### Step 4: Submit a Pull Request
 
-2. Make sure there are no errors in the build before pushing changes.
+Open a **Pull Request (PR)** on the main repository and follow the contribution guidelines.
 
-### Step 6: Submitting Changes
+💡 Have questions? Check out the [Issues](https://github.com/Parvsharma04/TaskBounty/issues) section!
 
-1. Create a new branch for your feature or bug fix:
+---
 
-   ```bash
-   git checkout -b feature-branch
-   ```
+## 📜 License
 
-2. Commit your changes and push the branch to your fork:
+🔒 **Proprietary License** – This project is **not open-source**. You may **not** use, modify, distribute, or create derivative works based on this code **without explicit written permission**.
 
-   ```bash
-   git add .
-   git commit -m "Description of your changes"
-   git push origin feature-branch
-   ```
+---
 
-3. Open a Pull Request (PR) on the main repository for your branch, following the contribution guidelines.
+### 🚀 TaskBounty – Redefining Task Management in Web3 🌍
 
-Happy coding! Let us know if you have any questions in the [Issues](https://github.com/Parvsharma04/TaskBounty/issues) section.
-
-
-## License
-
-This project is proprietary and not open-source. No permission is granted to use, modify, distribute, or create derivative works based on this code without explicit written permission.
